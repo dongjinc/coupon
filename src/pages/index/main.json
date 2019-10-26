@@ -1,0 +1,6 @@
+{
+    "navigationBarTitleText": "惠得多",
+    "usingComponents": {
+      "van-button": "/static/vant/button/index"
+    }
+}
