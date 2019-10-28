@@ -1,7 +1,7 @@
 <template>
   <view class="banner-container">
       <swiper 
-      :style = "{width:'100vw', height: '410rpx'}"
+      :style = "{width:'100vw', height: '470rpx'}"
         :indicator-dots="indicatorDots"
         :autoplay="autoplay" 
         :interval="interval" 

@@ -1,7 +1,19 @@
 <template>
     <view>
-      <bannerSwiper :imgUrls="imgUrls"></bannerSwiper>
-      <van-button @tap="detail">接口请求</van-button>
+      <view style="background-image: linear-gradient(180deg,#eb3e47, #ffffff)">
+        <van-search background="null" :value="searchValue" placeholder="请输入搜索关键词" />
+        <bannerSwiper :imgUrls="imgUrls"></bannerSwiper>
+      </view>
+      <view style="margin-top:10rpx">
+        <van-tabs :active="tabActive" swipeable animated line-height="0px" @change="onChange">
+          <van-tab title="精选">内容 1</van-tab>
+          <van-tab title="百货">内容 2</van-tab>
+          <van-tab title="食品">内容 3</van-tab>
+          <van-tab title="内衣">内容 4</van-tab>
+          <van-tab title="水果">内容 4</van-tab>
+          <van-tab title="化妆">内容 4</van-tab>
+        </van-tabs>
+      </view>
   </view>
 </template>
 
@@ -12,6 +24,8 @@ export default {
   components: { bannerSwiper },
   data() {
     return {
+      searchValue: '',
+      tabActive: 0,
       imgUrls: [
         'https://mishi-image.oss-cn-hangzhou.aliyuncs.com/yry/wxapp/test/goodslist/menu-gulaorou.png',
         'https://mishi-image.oss-cn-hangzhou.aliyuncs.com/yry/wxapp/test/goodslist/menu-heniu.png',
@@ -32,7 +46,22 @@ export default {
       const result = await get('url')
       console.log(result)
       console.log(1)
-    }
+    },
+    onChange() {}
   }
 }
 </script>
+<style>
+page{
+  background:#f6f5f4;
+}
+.van-search{
+  background: null!important;
+}
+.van-search__content {
+  border-radius: 16px!important;
+}
+.van-tab--active{
+  color: #eb3e47!important;
+}
+</style>
