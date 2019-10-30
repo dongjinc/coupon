@@ -31,6 +31,7 @@ export default {
 </script>
 
 <style>
+@import url('../static/icon/iconfont.css');
 .container {
   height: 100%;
   display: flex;
