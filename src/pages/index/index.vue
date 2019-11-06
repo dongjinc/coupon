@@ -7,8 +7,8 @@
       <view class="tabs-container">
         <van-tabs sticky :active="tabActive" swipeable animated line-height="0px" @change="onChange">
           <van-tab title="精选">
-            <view style="background:#fff">
-            <indexList v-for="item in 10" :key="item"></indexList>
+            <view v-for="item in 10" :key="item" @tap="moveToDetail(item)" style="background:#fff" >
+                <indexList></indexList>
             </view>
           </van-tab>
           <van-tab title="百货">
@@ -57,9 +57,9 @@ export default {
     bindViewTap() {
       const url = '../logs/main'
       if (mpvuePlatform === 'wx') {
-        mpvue.switchTab({ url })
+        wx.switchTab({ url })
       } else {
-        mpvue.navigateTo({ url })
+        wx.navigateTo({ url })
       }
     },
     async detail() {
@@ -70,7 +70,13 @@ export default {
     // 移动到搜索页
     moveToSearch() {
       const url = '../search/main?index=true'
-      mpvue.navigateTo({url})
+      wx.navigateTo({url})
+    },
+    // 移动详情页
+    moveToDetail(i) {
+      const url = '../detail/main'
+      wx.navigateTo({url})
+      console.log(i)
     },
     onChange() {}
   }
