@@ -60,12 +60,20 @@
           </view>
         </view>
         <!-- 详情 -->
-        <view style="height:500rpx"></view>
+        <view style="padding-bottom:100rpx">
+          <image src="https://img.alicdn.com/imgextra/i1/356060330/O1CN01jV2NDF1EJBGpElxQi_!!356060330.jpg_430x430q90.jpg" style="width:100%;height:600rpx" />
+        </view>
        </view>
        <!-- 分享以及立刻购买 -->
-       <view style="position:fixed;display:flex;height:100rpx;background:red;bottom:0;width:100%">
-         <view style="background:#eb2498;flex:1">分享商品</view>
-         <view style="background:#bf4733;flex:1">立即购买</view>
+       <view style="position:fixed;display:flex;height:100rpx;background:red;bottom:0;width:100%;font-size:25rpx;color:white">
+         <view style="background:#eaa59e;flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column">
+           <view style="font-size:31rpx">分享商品</view>
+           <view><text class="iconfont share" style="font-size:25rpx"></text>拿奖励</view>
+         </view>
+         <view style="background:#d44f38;flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column">
+           <view style="font-size:31rpx">立即购买</view>
+           <view>省3.26元</view>
+         </view>
        </view>
     </view>
 </template>
