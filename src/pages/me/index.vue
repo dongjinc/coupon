@@ -1,9 +1,9 @@
 <template>
   <view>
     <!-- 头部 -->
-    <view style="height:540rpx">
+    <view style="height:520rpx">
       <!-- 个人 -->
-      <view style="display:flex;padding:150rpx 16rpx 0 16rpx;">
+      <view style="display:flex;padding:130rpx 20rpx 0 20rpx;">
         <image
           src="https://ss0.bdstatic.com/94oJfD_bAAcT8t7mm9GUKT-xh_/timg?image&quality=100&size=b4000_4000&sec=1573316656&di=e6346dfae80b451c19ccf8e6253ae28a&src=http://downhdlogo.yy.com/hdlogo/640640/630/630/71/1000710067/u1000710067JGb2l8C.png"
           style="width:100rpx;height:100rpx;border-radius:50%"
@@ -19,9 +19,14 @@
             style="padding:9rpx;background:#FFE4B5;position:absolute;top:24px;border-radius:25rpx;font-size:23rpx;border:2rpx solid #FFA500;color:#FFA500"
           >金币666</text>
         </view>
+        <view style="margin-left:auto">
+          <text
+            style="margin-left:auto;line-height:50px;padding:8rpx;font-size:25rpx;background:#e86453;border-radius:10rpx;color:#fff"
+          >🧱赚更多</text>
+        </view>
       </view>
       <view
-        style="background:#e86453;height:200rpx;border-radius:20rpx 20rpx 0 0;margin:24rpx 16rpx;padding:20rpx 15rpx 20rpx 45rpx;color:#fff;font-size:26rpx"
+        style="background:#e86453;height:200rpx;border-radius:20rpx 20rpx 0 0;margin:24rpx 20rpx;padding:20rpx 15rpx 20rpx 45rpx;color:#fff;font-size:26rpx"
       >
         <text>可提现余额</text>
         <view style="display:flex;justify-content:space-between;align-items:center">
@@ -56,7 +61,7 @@
         style="text-align:center;height:200rpx"
         indicator-dots="true"
         autoplay="true"
-        interval="2000"
+        interval="5000"
         duration="1000"
       >
         <block v-for="(item, index) in personalBanner" :key="index">
@@ -66,6 +71,24 @@
         </block>
       </swiper>
     </view>
+    <view style="margin:30rpx 40rpx;padding:10rpx 20rpx;background:#fff;border-radius:25rpx">
+      <text style="font-weight:bold">我的</text>
+      <view style="margin:20rpx 0;display:flex;align-items:center">
+        <image src="/static/images/order.png" style="width:60rpx;height:60rpx;margin-right:15rpx" />
+        <text style="color:#555;font-size:28rpx;margin-right:30rpx">订单</text>
+        <image src="/static/images/footer.png" style="width:60rpx;height:60rpx;margin-right:15rpx" />
+        <text style="color:#555;font-size:28rpx">浏览</text>
+      </view>
+    </view>
+    <!-- <view style="margin:30rpx 40rpx;padding:10rpx 20rpx;background:#fff;border-radius:25rpx">
+      <text style="font-weight:bold">常用功能</text>
+      <view style="margin:20rpx 0;display:flex;align-items:center">
+        <image src="/static/images/order.png" style="width:60rpx;height:60rpx;margin-right:15rpx" />
+        <text style="color:#555;font-size:28rpx;margin-right:30rpx">订单</text>
+        <image src="/static/images/footer.png" style="width:60rpx;height:60rpx;margin-right:15rpx" />
+        <text style="color:#555;font-size:28rpx">浏览</text>
+      </view>
+    </view>-->
   </view>
 </template>
 <script>
