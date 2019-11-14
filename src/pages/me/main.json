@@ -1,12 +1,13 @@
 {
   "navigationBarBackgroundColor": "#e84443",
-  "backgroundTextStyle":"dark",
+  "backgroundTextStyle": "dark",
+  "navigationBarTextStyle": "white",
   "usingComponents": {
     "van-button": "/static/vant/button/index",
     "van-search": "/static/vant/search/index",
     "van-tab": "/static/vant/tab/index",
     "van-tabs": "/static/vant/tabs/index"
   },
-  "navigationStyle":"custom",
+  "navigationBarTitleText": "我的",
   "enablePullDownRefresh": true
 }

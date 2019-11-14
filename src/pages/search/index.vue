@@ -91,7 +91,6 @@ page {
   display: flex;
   top: 0;
   width: 100%;
-  height: 54px;
   background: #dc6364;
 }
 .search-container {

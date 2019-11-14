@@ -18,22 +18,26 @@
     "selectedColor": "#eb3e47",
     "borderStyle": "white",
 
-    "list": [{
-      "text": "首页",
-      "pagePath": "pages/index/main",
-      "iconPath": "static/tabs/home.png",
-      "selectedIconPath": "static/tabs/home-active.png"
-    }, {
-      "text": "搜索",
-      "pagePath": "pages/search/main",
-      "iconPath": "static/tabs/search.png",
-      "selectedIconPath": "static/tabs/search-active.png"
-    }, {
-      "text": "我的",
-      "pagePath": "pages/me/main",
-      "iconPath": "static/tabs/me.png",
-      "selectedIconPath": "static/tabs/me-active.png"
-    }],
+    "list": [
+      {
+        "text": "首页",
+        "pagePath": "pages/index/main",
+        "iconPath": "static/tabs/home.png",
+        "selectedIconPath": "static/tabs/home-active.png"
+      },
+      {
+        "text": "搜索",
+        "pagePath": "pages/search/main",
+        "iconPath": "static/tabs/search.png",
+        "selectedIconPath": "static/tabs/search-active.png"
+      },
+      {
+        "text": "我的",
+        "pagePath": "pages/me/main",
+        "iconPath": "static/tabs/me.png",
+        "selectedIconPath": "static/tabs/me-active.png"
+      }
+    ],
     "position": "bottom"
   }
 }

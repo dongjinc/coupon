@@ -1,9 +1,9 @@
 <template>
   <view>
     <!-- 头部 -->
-    <view style="height:520rpx">
+    <view>
       <!-- 个人 -->
-      <view style="display:flex;padding:130rpx 20rpx 0 20rpx;">
+      <view style="display:flex;padding:40rpx 20rpx 0 20rpx;">
         <image
           src="https://ss0.bdstatic.com/94oJfD_bAAcT8t7mm9GUKT-xh_/timg?image&quality=100&size=b4000_4000&sec=1573316656&di=e6346dfae80b451c19ccf8e6253ae28a&src=http://downhdlogo.yy.com/hdlogo/640640/630/630/71/1000710067/u1000710067JGb2l8C.png"
           style="width:100rpx;height:100rpx;border-radius:50%"
@@ -35,9 +35,9 @@
             <text style="font-size:50rpx;margin-left:8rpx">0.00</text>
           </text>
           <view
-            style="display:flex;align-items:center;padding:12rpx;background:#fff;color:#e86453;border-radius:25rpx;font-size:24rpx"
+            style="display:flex;align-items:center;padding:12rpx;background:#fff;color:#e86453;border-radius:25rpx;"
           >
-            我的收入
+            <view>我的收入</view>
             <view class="iconfont iconyou" style="font-size:21rpx;"></view>
           </view>
         </view>
@@ -63,6 +63,7 @@
         autoplay="true"
         interval="5000"
         duration="1000"
+        indicator-active-color="#fff"
       >
         <block v-for="(item, index) in personalBanner" :key="index">
           <swiper-item style="border-radius:25rpx;height:200rpx">
@@ -71,13 +72,20 @@
         </block>
       </swiper>
     </view>
-    <view style="margin:30rpx 40rpx;padding:10rpx 20rpx;background:#fff;border-radius:25rpx">
-      <text style="font-weight:bold">我的</text>
-      <view style="margin:20rpx 0;display:flex;align-items:center">
-        <image src="/static/images/order.png" style="width:60rpx;height:60rpx;margin-right:15rpx" />
-        <text style="color:#555;font-size:28rpx;margin-right:30rpx">订单</text>
-        <image src="/static/images/footer.png" style="width:60rpx;height:60rpx;margin-right:15rpx" />
-        <text style="color:#555;font-size:28rpx">浏览</text>
+    <view
+      style="margin:30rpx 40rpx;padding:10rpx 20rpx;background:#fff;border-radius:25rpx;display:flex;"
+    >
+      <view style="margin:20rpx 0;text-align:center;margin-right:27rpx;">
+        <image src="/static/images/order.png" style="width:60rpx;height:60rpx;" />
+        <view style="color:#555;font-size:26rpx;">我的订单</view>
+      </view>
+      <view style="margin:20rpx 0;text-align:center;margin-right:27rpx;">
+        <image src="/static/images/footer.png" style="width:60rpx;height:60rpx;" />
+        <view style="color:#555;font-size:26rpx">浏览记录</view>
+      </view>
+      <view style="margin:20rpx 0;text-align:center;margin-right:27rpx;">
+        <image src="/static/images/question.png" style="width:60rpx;height:60rpx;" />
+        <view style="color:#555;font-size:26rpx">常见问题</view>
       </view>
     </view>
     <!-- <view style="margin:30rpx 40rpx;padding:10rpx 20rpx;background:#fff;border-radius:25rpx">

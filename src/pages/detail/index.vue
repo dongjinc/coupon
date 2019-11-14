@@ -1,6 +1,6 @@
 <template>
   <view class="detail-container">
-    <view class="back" @tap="back">
+    <view class="back" :style="{top: topBack}" @tap="back">
       <image src="/static/images/back.png" />
     </view>
     <!-- 预览图 -->
@@ -168,7 +168,8 @@ export default {
   name: 'detail',
   data() {
     return {
-      swiperHeight: '430px'
+      swiperHeight: '430px',
+      topBack: '56rpx'
     }
   },
   methods: {
@@ -176,8 +177,11 @@ export default {
       wx.navigateBack()
     },
     imageHeight(e) {
+      // rpx与px单位之间的换算 : 750/windowWidth = 屏幕的高度（rpx）/windowHeight
       // https://www.jb51.net/article/138776.htm 计算swiper图片
       const winWid = wx.getSystemInfoSync().windowWidth
+      const winInfo = wx.getSystemInfoSync()
+      this.topBack = (750 / winWid * 1) * (winInfo.model === 'iPhone X' ? 55 : 28) + 'rpx'
       const imagw = e.target.width
       const imagh = e.target.height
       this.swiperHeight = (winWid * imagh / imagw) + 'px'
