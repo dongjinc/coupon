@@ -4,7 +4,8 @@
     "pages/me/main",
     "pages/counter/main",
     "pages/search/main",
-    "pages/detail/main"
+    "pages/detail/main",
+    "pages/income/main"
   ],
   "window": {
     "backgroundTextStyle": "light",

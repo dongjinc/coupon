@@ -28,13 +28,16 @@
       <view
         style="background:#e86453;height:200rpx;border-radius:20rpx 20rpx 0 0;margin:24rpx 20rpx;padding:20rpx 15rpx 20rpx 45rpx;color:#fff;font-size:26rpx"
       >
-        <text>可提现余额</text>
         <view style="display:flex;justify-content:space-between;align-items:center">
-          <text>
-            ¥
-            <text style="font-size:50rpx;margin-left:8rpx">0.00</text>
-          </text>
+          <view style="display:flex;flex-direction:column;width:60%" @tap="onWithdrawal">
+            <text>可提现余额</text>
+            <view>
+              ¥
+              <text style="font-size:58rpx;">0.00</text>
+            </view>
+          </view>
           <view
+            @tap="moveToIncome"
             style="display:flex;align-items:center;padding:12rpx;background:#fff;color:#e86453;border-radius:25rpx;"
           >
             <view>我的收入</view>
@@ -42,7 +45,7 @@
           </view>
         </view>
         <view
-          style="display:flex;justify-content:space-between;align-items:center;margin-top:50rpx"
+          style="display:flex;justify-content:space-between;align-items:center;margin:40rpx 0 5rpx"
         >
           <text>
             即将到账
@@ -108,6 +111,18 @@ export default {
         'http://img3.imgtn.bdimg.com/it/u=219617380,3771697655&fm=26&gp=0.jpg',
         'http://img1.imgtn.bdimg.com/it/u=162228925,3147880140&fm=26&gp=0.jpg'
       ]
+    }
+  },
+  methods: {
+    moveToIncome() {
+      const url = '../income/main'
+      wx.navigateTo({
+        url
+      })
+    },
+    // 提现
+    onWithdrawal() {
+      console.log('11')
     }
   }
 }
