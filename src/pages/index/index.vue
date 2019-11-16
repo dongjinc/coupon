@@ -37,7 +37,7 @@
 <script>
 import bannerSwiper from '@/components/banner-swiper'
 import indexList from '@/components/index-list'
-import { get, PageBase } from '@/utils/http'
+import { PageBase } from '@/utils/http'
 export default {
   components: { bannerSwiper, indexList },
   data() {
@@ -66,7 +66,6 @@ export default {
   },
   onReachBottom() {
     // 到这底部在这里需要做什么事情
-    this.pageObj.page += 1
     this.getTopList()
   },
   onPullDownRefresh() {
@@ -79,13 +78,9 @@ export default {
     }, 1500)
   },
   methods: {
-    love() {
-      console.log(this.pageList[0].next())
-    },
     async getTopList() {
       const result = await this.pageList[0].next()
       this.topList[0].push(...result)
-      console.log(this.topList)
     },
     bindViewTap() {
       const url = '../logs/main'
@@ -95,21 +90,17 @@ export default {
         wx.navigateTo({ url })
       }
     },
-    async detail() {
-      const result = await get('/api/v1/goods/catList')
-      console.log(result)
-      console.log(1)
-    },
     // 移动到搜索页
     moveToSearch() {
       const url = '../search/main?index=true'
       wx.switchTab({ url })
     },
     // 移动详情页
-    moveToDetail(i) {
+    moveToDetail(item) {
+      // todo 优化
       const url = '../detail/main'
       wx.navigateTo({ url })
-      console.log(i)
+      console.log(item)
     },
     onChange() { }
   }

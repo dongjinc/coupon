@@ -172,9 +172,7 @@ export default {
       topBack: '56rpx'
     }
   },
-  mounted() {
-    this.getpage()
-  },
+  mounted() { },
   methods: {
     back() {
       wx.navigateBack()

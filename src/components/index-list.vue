@@ -2,23 +2,23 @@
   <view class="item-container">
     <img :src="item.goodsThumbnailUrl" />
     <view class="item-right-container">
-      <view class="right-title">{{item.goodsName}}</view>
-      <view class="right-sales">销量{{item.salesTip}}</view>
-      <view v-if="item.couponDiscount !== '0' ">
-        <text class="right-coupon coupon-cash">{{item.couponDiscount}}元券</text>
+      <view class="right-title">{{ item.goodsName }}</view>
+      <view class="right-sales">销量{{ item.salesTip }}</view>
+      <view v-if="item.couponDiscount !== '0'">
+        <text class="right-coupon coupon-cash">{{ item.couponDiscount }}元券</text>
         <!-- <text class="right-return-cash coupon-cash"></text> -->
       </view>
       <view class="right-bottom-container">
         <view class="post-coupon">
-          <text v-if="item.couponDiscount !== '0' ">券后</text>
+          <text v-if="item.couponDiscount !== '0'">券后</text>
           <text>¥</text>
-          <text class="post-coupon-price">{{item.couponPrice}}</text>
+          <text class="post-coupon-price">{{ item.couponPrice }}</text>
         </view>
         <view class="save-money">
           <text class="iconfont iconfenxiang" v-if="item.commission"></text>
           <text>省</text>
           <text>¥</text>
-          <text>{{item.commission}}</text>
+          <text>{{ item.commission }}</text>
         </view>
       </view>
     </view>
@@ -92,7 +92,7 @@ export default {
       }
       .save-money {
         background: #cd4939;
-        width: 35%;
+        width: 37%;
         font-size: 29rpx;
         color: #fff;
         text-align: center;

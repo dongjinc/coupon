@@ -4,7 +4,7 @@ import { global } from './global.js'
  * @param {*} url
  */
 const request = (method, url) => {
-  return function(api, param = {}) {
+  return function (api, param = {}) {
     return new Promise((resolve, reject) => {
       wx.request({
         url: url + '/' + api,
@@ -29,12 +29,12 @@ const request = (method, url) => {
  *  method GET
  */
 const gets = request('GET', global.node_uri)
-export const get = function(api, param = {}) {
+export const get = function (api, param = {}) {
   if (!param) return gets(api)
   return gets(api + serialize(param))
 }
 // get方法处理
-const serialize = function(obj, ary = []) {
+const serialize = function (obj, ary = []) {
   for (let p in obj) {
     if (obj.hasOwnProperty(p) && obj[p]) {
       ary.push(`${encodeURIComponent(p)}=${encodeURIComponent(obj[p])}`)
@@ -50,16 +50,20 @@ export const post = request('POST', global.node_uri)
 
 export class PageBase {
   currentPage = 0
-  url = ''
+  pageApi = ''
+
   constructor(api) {
-    this.url = api
+    this.pageApi = api
   }
-  getPageList = async function() {
-    const result = await get(this.url, { page: this.currentPage })
+  getPageList = async function () {
+    const result = await get(this.pageApi, { page: this.currentPage })
     return result
   }
   next() {
     this.currentPage++
     return this.getPageList()
+  }
+  reset() {
+    this.currentPage = 0
   }
 }
