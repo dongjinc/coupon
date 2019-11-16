@@ -1,26 +1,24 @@
 <template>
   <view class="item-container">
-    <img
-      src="https://img30.360buyimg.com/jdcms/s300x300_jfs/t1/18256/13/13656/95361/5ca1d0c5Efcb1005c/d6f50495b3c4baa8.jpg.webp"
-    />
+    <img :src="item.goodsThumbnailUrl" />
     <view class="item-right-container">
-      <view class="right-title">【3.84元限时抢，抢完恢复79.9元】返季清仓</view>
-      <view class="right-sales">销量10万+件</view>
-      <view>
-        <text class="right-coupon coupon-cash">2元券</text>
-        <text class="right-return-cash coupon-cash">返现5%</text>
+      <view class="right-title">{{item.goodsName}}</view>
+      <view class="right-sales">销量{{item.salesTip}}</view>
+      <view v-if="item.couponDiscount !== '0' ">
+        <text class="right-coupon coupon-cash">{{item.couponDiscount}}元券</text>
+        <!-- <text class="right-return-cash coupon-cash"></text> -->
       </view>
       <view class="right-bottom-container">
         <view class="post-coupon">
-          <text>券后</text>
+          <text v-if="item.couponDiscount !== '0' ">券后</text>
           <text>¥</text>
-          <text>17.89</text>
+          <text class="post-coupon-price">{{item.couponPrice}}</text>
         </view>
         <view class="save-money">
-          <text class="iconfont iconfenxiang"></text>
+          <text class="iconfont iconfenxiang" v-if="item.commission"></text>
           <text>省</text>
           <text>¥</text>
-          <text>1.89</text>
+          <text>{{item.commission}}</text>
         </view>
       </view>
     </view>
@@ -29,7 +27,12 @@
 <script>
 export default {
   name: 'indexList',
-  props: {}
+  props: {
+    item: {
+      type: Object,
+      default: () => { }
+    }
+  }
 }
 </script>
 <style lang="scss">
@@ -48,6 +51,7 @@ export default {
     font-size: 21rpx;
     flex: 1;
     flex-direction: column;
+    justify-content: space-between;
     .right-title {
       margin-top: 10rpx;
       font-size: 27rpx;
@@ -72,7 +76,6 @@ export default {
     }
     .right-bottom-container {
       display: flex;
-      margin-top: 8rpx;
       justify-content: space-between;
       height: 60rpx;
       line-height: 60rpx;
@@ -83,7 +86,7 @@ export default {
         :nth-child(2) {
           margin: 0 2rpx;
         }
-        :nth-child(3) {
+        &-price {
           font-size: 33rpx;
         }
       }

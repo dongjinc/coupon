@@ -78,7 +78,7 @@
     <view
       style="margin:30rpx 40rpx;padding:10rpx 20rpx;background:#fff;border-radius:25rpx;display:flex;"
     >
-      <view style="margin:20rpx 0;text-align:center;margin-right:27rpx;">
+      <view style="margin:20rpx 0;text-align:center;margin-right:27rpx;" @tap="moveToOrder">
         <image src="/static/images/order.png" style="width:60rpx;height:60rpx;" />
         <view style="color:#555;font-size:26rpx;">我的订单</view>
       </view>
@@ -122,7 +122,14 @@ export default {
     },
     // 提现
     onWithdrawal() {
-      console.log('11')
+
+    },
+    // 我的订单
+    moveToOrder() {
+      const url = '../order/main'
+      wx.navigateTo({
+        url
+      })
     }
   }
 }

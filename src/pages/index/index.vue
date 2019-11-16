@@ -13,8 +13,13 @@
     <view class="tabs-container">
       <van-tabs sticky :active="tabActive" swipeable animated line-height="0px" @change="onChange">
         <van-tab title="精选">
-          <view v-for="item in 10" :key="item" @tap="moveToDetail(item)" style="background:#fff">
-            <indexList></indexList>
+          <view
+            v-for="item in topList[0]"
+            :key="item"
+            @tap="moveToDetail(item)"
+            style="background:#fff"
+          >
+            <indexList :item="item"></indexList>
           </view>
         </van-tab>
         <van-tab title="百货">
@@ -32,13 +37,20 @@
 <script>
 import bannerSwiper from '@/components/banner-swiper'
 import indexList from '@/components/index-list'
-import { get } from '@/api/http'
+import { get, PageBase } from '@/utils/http'
 export default {
   components: { bannerSwiper, indexList },
   data() {
     return {
       searchValue: '',
       tabActive: 0,
+      pageObj: {
+        page: 1
+      },
+      topList: [
+        [], [], []
+      ],
+      pageList: [],
       imgUrls: [
         'https://mishi-image.oss-cn-hangzhou.aliyuncs.com/yry/wxapp/test/goodslist/menu-gulaorou.png',
         'https://mishi-image.oss-cn-hangzhou.aliyuncs.com/yry/wxapp/test/goodslist/menu-heniu.png',
@@ -46,9 +58,16 @@ export default {
       ]
     }
   },
+  mounted() {
+    this.pageList = [
+      new PageBase('api/v1/goods/topList')
+    ]
+    this.getTopList()
+  },
   onReachBottom() {
     // 到这底部在这里需要做什么事情
-    console.log(123)
+    this.pageObj.page += 1
+    this.getTopList()
   },
   onPullDownRefresh() {
     console.log(123)
@@ -60,6 +79,14 @@ export default {
     }, 1500)
   },
   methods: {
+    love() {
+      console.log(this.pageList[0].next())
+    },
+    async getTopList() {
+      const result = await this.pageList[0].next()
+      this.topList[0].push(...result)
+      console.log(this.topList)
+    },
     bindViewTap() {
       const url = '../logs/main'
       if (mpvuePlatform === 'wx') {
@@ -69,7 +96,7 @@ export default {
       }
     },
     async detail() {
-      const result = await get('url')
+      const result = await get('/api/v1/goods/catList')
       console.log(result)
       console.log(1)
     },
