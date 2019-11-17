@@ -55,6 +55,11 @@ export default {
     .right-title {
       margin-top: 10rpx;
       font-size: 27rpx;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .right-sales {
       margin: 10rpx 0 24rpx;

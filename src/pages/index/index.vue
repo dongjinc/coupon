@@ -11,7 +11,7 @@
       <bannerSwiper :imgUrls="imgUrls"></bannerSwiper>
     </view>
     <view class="tabs-container">
-      <van-tabs sticky :active="tabActive" swipeable animated line-height="0px" @change="onChange">
+      <van-tabs animated sticky :active="tabActive" swipeable line-height="0px" @change="onChange">
         <van-tab title="精选">
           <view
             v-for="item in topList[0]"
@@ -23,12 +23,55 @@
           </view>
         </van-tab>
         <van-tab title="百货">
-          <view v-for="item in 100" :key="item">{{item}}</view>
+          <view
+            v-for="item in topList[1]"
+            :key="item"
+            @tap="moveToDetail(item)"
+            style="background:#fff"
+          >
+            <indexList :item="item"></indexList>
+          </view>
         </van-tab>
-        <van-tab title="食品">内容 3</van-tab>
-        <van-tab title="内衣">内容 4</van-tab>
-        <van-tab title="水果">内容 4</van-tab>
-        <van-tab title="化妆">内容 4</van-tab>
+        <van-tab title="食品">
+          <view
+            v-for="item in topList[2]"
+            :key="item"
+            @tap="moveToDetail(item)"
+            style="background:#fff"
+          >
+            <indexList :item="item"></indexList>
+          </view>
+        </van-tab>
+        <van-tab title="内衣">
+          <view
+            v-for="item in topList[3]"
+            :key="item"
+            @tap="moveToDetail(item)"
+            style="background:#fff"
+          >
+            <indexList :item="item"></indexList>
+          </view>
+        </van-tab>
+        <van-tab title="水果">
+          <view
+            v-for="item in topList[4]"
+            :key="item"
+            @tap="moveToDetail(item)"
+            style="background:#fff"
+          >
+            <indexList :item="item"></indexList>
+          </view>
+        </van-tab>
+        <van-tab title="化妆">
+          <view
+            v-for="item in topList[5]"
+            :key="item"
+            @tap="moveToDetail(item)"
+            style="background:#fff"
+          >
+            <indexList :item="item"></indexList>
+          </view>
+        </van-tab>
       </van-tabs>
     </view>
   </view>
@@ -38,17 +81,19 @@
 import bannerSwiper from '@/components/banner-swiper'
 import indexList from '@/components/index-list'
 import { PageBase } from '@/utils/http'
+const classArray = [0, 8172, 6398, 8583, 8182, 18637]
 export default {
   components: { bannerSwiper, indexList },
   data() {
     return {
       searchValue: '',
       tabActive: 0,
+      tabClassId: null,
       pageObj: {
         page: 1
       },
       topList: [
-        [], [], []
+        [], [], [], [], [], []
       ],
       pageList: [],
       imgUrls: [
@@ -58,18 +103,29 @@ export default {
       ]
     }
   },
+  watch: {
+    tabActive(val) {
+      if (!this.pageList[this.tabActive].currentPage) {
+        this.getTopList()
+      }
+    }
+  },
   mounted() {
     this.pageList = [
-      new PageBase('api/v1/goods/topList')
+      new PageBase('api/v1/goods/topList'),
+      new PageBase('api/v1/goods/catList'),
+      new PageBase('api/v1/goods/catList'),
+      new PageBase('api/v1/goods/catList'),
+      new PageBase('api/v1/goods/catList'),
+      new PageBase('api/v1/goods/catList')
     ]
     this.getTopList()
   },
   onReachBottom() {
     // 到这底部在这里需要做什么事情
-    this.getTopList()
+    this.getTopList(false)
   },
   onPullDownRefresh() {
-    console.log(123)
     wx.showNavigationBarLoading()
     setTimeout(function () {
       // complete
@@ -78,9 +134,28 @@ export default {
     }, 1500)
   },
   methods: {
-    async getTopList() {
-      const result = await this.pageList[0].next()
-      this.topList[0].push(...result)
+    onScroll(e) {
+      return {
+        scrollTop: '800px', isFixed: false
+      }
+    },
+    // 获取列表
+    async getTopList(loading = true) {
+      if (loading) wx.showLoading({ title: '加载中...' })
+      try {
+        const result = await this.pageList[this.tabActive].next(classArray[this.tabActive])
+        this.topList[this.tabActive].push(...result)
+      } catch (e) {
+
+      } finally {
+        if (loading) {
+          wx.hideLoading()
+        }
+      }
+    },
+    onChange(e) {
+      this.tabActive = e.mp.detail.index
+      console.log(this.pageList[this.tabActive])
     },
     bindViewTap() {
       const url = '../logs/main'
@@ -101,8 +176,7 @@ export default {
       const url = '../detail/main'
       wx.navigateTo({ url })
       console.log(item)
-    },
-    onChange() { }
+    }
   }
 }
 </script>

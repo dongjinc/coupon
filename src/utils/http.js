@@ -51,17 +51,16 @@ export const post = request('POST', global.node_uri)
 export class PageBase {
   currentPage = 0
   pageApi = ''
-
   constructor(api) {
     this.pageApi = api
   }
-  getPageList = async function () {
-    const result = await get(this.pageApi, { page: this.currentPage })
+  getPageList = async function (catId) {
+    const result = await get(this.pageApi, { page: this.currentPage, catId })
     return result
   }
-  next() {
+  next(catId) {
     this.currentPage++
-    return this.getPageList()
+    return this.getPageList(catId)
   }
   reset() {
     this.currentPage = 0
