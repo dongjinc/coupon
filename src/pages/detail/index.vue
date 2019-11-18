@@ -19,9 +19,9 @@
           <text>¥</text>
           <text class="coupon-price">{{goodsItem.couponPrice}}</text>
           <text
-            class="normal-price font-27"
+            class="min-group-price font-27"
             v-if="goodsItem.couponDiscount !== '0'"
-          >¥{{goodsItem.normalPrice}}</text>
+          >¥{{goodsItem.minGroupPrice}}</text>
         </view>
         <view class="commodity-assemble font-25">销量{{goodsItem.salesTip}}</view>
       </view>
@@ -310,7 +310,7 @@ page {
           font-size: 50rpx;
           font-weight: bold;
         }
-        .normal-price {
+        .min-group-price {
           color: #808281;
           text-decoration: line-through;
         }
