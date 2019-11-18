@@ -22,7 +22,7 @@
             <indexList :item="item"></indexList>
           </view>
         </van-tab>
-        <van-tab title="百货">
+        <van-tab title="水果">
           <view
             v-for="item in topList[1]"
             :key="item"
@@ -32,7 +32,7 @@
             <indexList :item="item"></indexList>
           </view>
         </van-tab>
-        <van-tab title="食品">
+        <van-tab title="零食">
           <view
             v-for="item in topList[2]"
             :key="item"
@@ -52,7 +52,7 @@
             <indexList :item="item"></indexList>
           </view>
         </van-tab>
-        <van-tab title="水果">
+        <van-tab title="男装">
           <view
             v-for="item in topList[4]"
             :key="item"
@@ -62,7 +62,7 @@
             <indexList :item="item"></indexList>
           </view>
         </van-tab>
-        <van-tab title="化妆">
+        <van-tab title="美妆">
           <view
             v-for="item in topList[5]"
             :key="item"
@@ -81,7 +81,7 @@
 import bannerSwiper from '@/components/banner-swiper'
 import indexList from '@/components/index-list'
 import { PageBase } from '@/utils/http'
-const classArray = [0, 8172, 6398, 8583, 8182, 18637]
+const classArray = [0, 8182, 6398, 8583, 239, 18637]
 export default {
   components: { bannerSwiper, indexList },
   data() {
@@ -92,9 +92,7 @@ export default {
       pageObj: {
         page: 1
       },
-      topList: [
-        [], [], [], [], [], []
-      ],
+      topList: [[], [], [], [], [], []],
       pageList: [],
       imgUrls: [
         'https://mishi-image.oss-cn-hangzhou.aliyuncs.com/yry/wxapp/test/goodslist/menu-gulaorou.png',
@@ -128,7 +126,7 @@ export default {
   // 下拉刷新
   onPullDownRefresh() {
     wx.showNavigationBarLoading()
-    setTimeout(function () {
+    setTimeout(function() {
       // complete
       wx.hideNavigationBarLoading() // 完成停止加载
       wx.stopPullDownRefresh() // 停止下拉刷新
@@ -139,10 +137,11 @@ export default {
     async getTopList(loading = true) {
       if (loading) wx.showLoading({ title: '加载中...' })
       try {
-        const result = await this.pageList[this.tabActive].next(classArray[this.tabActive])
+        const result = await this.pageList[this.tabActive].next(
+          classArray[this.tabActive]
+        )
         this.topList[this.tabActive].push(...result)
       } catch (e) {
-
       } finally {
         if (loading) {
           wx.hideLoading()
