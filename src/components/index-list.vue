@@ -15,7 +15,7 @@
           <text class="post-coupon-price">{{ item.couponPrice }}</text>
         </view>
         <view class="save-money">
-          <text class="iconfont iconfenxiang" v-if="item.commission"></text>
+          <text class="iconfont iconfenxiang"></text>
           <text>省</text>
           <text>¥</text>
           <text>{{ item.commission }}</text>

@@ -6,18 +6,8 @@
     <!-- 预览图 -->
     <swiper :indicator-dots="false" :style="{height: swiperHeight}">
       <block>
-        <swiper-item>
-          <image
-            @load="imageHeight"
-            :style="{height: swiperHeight,width:'100%'}"
-            src="https://img.alicdn.com/imgextra/i1/356060330/O1CN01jV2NDF1EJBGpElxQi_!!356060330.jpg_430x430q90.jpg"
-          />
-        </swiper-item>
-        <swiper-item>
-          <image
-            :style="{height: swiperHeight,width:'100%'}"
-            src="https://img.alicdn.com/imgextra/i1/356060330/O1CN01jV2NDF1EJBGpElxQi_!!356060330.jpg_430x430q90.jpg"
-          />
+        <swiper-item v-for="(item, index) in goodsItem.goodsGalleryUrls" :key="index">
+          <image @load="imageHeight" :style="{height: swiperHeight,width:'100%'}" :src="item" />
         </swiper-item>
       </block>
     </swiper>
@@ -25,26 +15,31 @@
       <!-- <image src="https://img.alicdn.com/imgextra/i1/356060330/O1CN01jV2NDF1EJBGpElxQi_!!356060330.jpg_430x430q90.jpg" style="width:100%;height:350px" /> -->
       <view class="commodity-title">
         <view class="commodity-price font-27">
-          <text>券后</text>
+          <text v-if="goodsItem.couponDiscount !== '0'">券后</text>
           <text>¥</text>
-          <text>17.89</text>
-          <text class="font-27">¥19.89</text>
+          <text class="coupon-price">{{goodsItem.couponPrice}}</text>
+          <text
+            class="normal-price font-27"
+            v-if="goodsItem.couponDiscount !== '0'"
+          >¥{{goodsItem.normalPrice}}</text>
         </view>
-        <view class="commodity-assemble font-25">已拼10万+件</view>
+        <view class="commodity-assemble font-25">销量{{goodsItem.salesTip}}</view>
       </view>
-      <view class="commodity-coupon">
+      <view class="commodity-coupon" v-if="goodsItem.couponDiscount !== '0'">
         <text>发券</text>
-        <text class="coupon-rest">2元券剩余1000000张</text>
+        <text
+          class="coupon-rest"
+        >{{goodsItem.couponDiscount}}元券剩余{{goodsItem.couponRemainQuantity}}张</text>
       </view>
-      <view class="commodity-return-cash">
+      <!-- <view class="commodity-return-cash">
         <text class="cash">返现</text>
         <text class="estimate">
           得16%预计
           <text style="color:#be5041">1.29元</text>，晋升到中级预计赚2.66元
         </text>
         <text class="iconfont iconyou right" style="margin-left:auto"></text>
-      </view>
-      <text class="commodity-name">富贵秋冬女加绒羽绒服上衣粉红色少女长低领针毛绒</text>
+      </view>-->
+      <text class="commodity-name">{{goodsItem.goodsName}}</text>
       <view class="commodity-service font-25">
         <text>退货包运费 · 极速退款 · 极速退款 · 极速退款</text>
         <text class="iconfont iconyou" style="margin-left:auto"></text>
@@ -60,37 +55,40 @@
       </view>
       <!-- 更多商品 -->
       <view class="more-commodity">
-        <view v-for="item in 7" :key="item" class="more-commodity-item">
-          <image
-            src="https://img.alicdn.com/imgextra/i1/356060330/O1CN01jV2NDF1EJBGpElxQi_!!356060330.jpg_430x430q90.jpg"
-          />
+        <view
+          v-for="(item, index) in goodsItem.recommend"
+          :key="index"
+          class="more-commodity-item"
+          @tap="moveToDetail(item)"
+        >
+          <image :src="item.goodsThumbnailUrl" />
           <view class="post-coupon">
-            <text>券后</text>
+            <text v-if="item.couponDiscount !== '0'">券后</text>
             <text>¥</text>
-            <text style="font-size:25rpx">17.89</text>
+            <text style="font-size:25rpx">{{item.couponPrice}}</text>
           </view>
         </view>
       </view>
     </view>
 
-    <view class="similar-commodity">
+    <!-- <view class="similar-commodity">
       <view class="similar-title">
         <view>商品评价</view>
         <view class="right-all">
           <text>查看全部</text>
           <text class="iconfont iconyou"></text>
         </view>
-      </view>
-      <!-- 评论 -->
-      <view class="more-commodity comment-container">
-        <!-- 评论标签 -->
-        <view class="comment-tag">
+    </view>-->
+    <!-- 评论 -->
+    <!-- <view class="more-commodity comment-container"> -->
+    <!-- 评论标签 -->
+    <!-- <view class="comment-tag">
           <view class="comment-tag-item">正品(18)</view>
           <view class="comment-tag-item">质量很好(10218)</view>
           <view class="comment-tag-item">衣服很好(389218)</view>
-        </view>
-        <!-- 评论列表 -->
-        <view class="comment-list">
+    </view>-->
+    <!-- 评论列表 -->
+    <!-- <view class="comment-list">
           <view class="comment-list-top">
             <view class="comment-list-top-left">
               <image
@@ -103,23 +101,23 @@
           <view style="color:#696969">这件衣服很好看。。。</view>
         </view>
       </view>
-    </view>
+    </view>-->
     <!-- 店铺 -->
     <view class="similar-commodity">
       <view class="commodity-shop">
         <view class="commodity-shop-top">
           <image
-            src="https://ss0.bdstatic.com/94oJfD_bAAcT8t7mm9GUKT-xh_/timg?image&quality=100&size=b4000_4000&sec=1573316656&di=e6346dfae80b451c19ccf8e6253ae28a&src=http://downhdlogo.yy.com/hdlogo/640640/630/630/71/1000710067/u1000710067JGb2l8C.png"
+            src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1573834603444&di=6f0b79cf28303fb69de7d3afc3c4f84e&imgtype=0&src=http%3A%2F%2Fwx1.sinaimg.cn%2Flarge%2Fac18b792ly1ftczwflpczj20dm0dmgq2.jpg"
           />
           <view class="commodity-shop-top-left">
             <view>
-              <text style="font-size:27rpx">良品店子铺</text>
-              <text class="commodity-shop-top-left-extension">全国推广1%</text>
+              <text style="font-size:27rpx">{{goodsItem.mallName}}</text>
+              <!-- <text class="commodity-shop-top-left-extension">全国推广1%</text> -->
             </view>
-            <view class="commodity-shop-top-left-number">
+            <!-- <view class="commodity-shop-top-left-number">
               <text>商品数量：9</text>
               <text style="margin-left:18rpx">已拼：10万+件</text>
-            </view>
+            </view>-->
           </view>
         </view>
         <view class="commodity-shop-bottom">进入店铺</view>
@@ -127,25 +125,28 @@
       <view class="shop-comment">
         <text>
           描述相符
-          <text class="shop-comment-status">高</text>
+          <text class="shop-comment-status">{{goodsItem.descTxt}}</text>
         </text>
         <text>
           服务态度
-          <text class="shop-comment-status">高</text>
+          <text class="shop-comment-status">{{goodsItem.servTxt}}</text>
         </text>
         <text>
           物流服务
-          <text class="shop-comment-status">高</text>
+          <text class="shop-comment-status">{{goodsItem.lgstTxt}}</text>
         </text>
       </view>
     </view>
     <!-- 详情 -->
     <view class="similar-commodity">
       <view class="similar-title">商品详情</view>
-      <view class="commodity-details">
-        <image
-          src="https://img.alicdn.com/imgextra/i1/356060330/O1CN01jV2NDF1EJBGpElxQi_!!356060330.jpg_430x430q90.jpg"
-        />
+      <view style="margin:10px 0;font-size:30rpx;text-indent:30px;">{{goodsItem.goodsDesc}}</view>
+      <view
+        class="commodity-details"
+        v-for="(item, index) in goodsItem.goodsDescImageUrls"
+        :key="index"
+      >
+        <image :src="item" :style="{height: swiperHeight,width:'100%'}" @tap="viewImage(item)" />
       </view>
     </view>
     <!-- 分享以及立刻购买 -->
@@ -158,22 +159,63 @@
       </view>
       <view class="share-purchase-commodity bg-right">
         <view class="font-31">立即购买</view>
-        <view>省3.26元</view>
+        <view>省{{goodsItem.commission}}元</view>
       </view>
     </view>
   </view>
 </template>
 <script>
+import { get } from '@/utils/http'
+
 export default {
   name: 'detail',
   data() {
     return {
-      swiperHeight: '430px',
-      topBack: '56rpx'
+      swiperHeight: '375px',
+      topBack: '56rpx',
+      // 详情内容
+      goodsItem: {}
     }
   },
-  mounted() { },
+  onLoad(query) {
+    this.getGoodDetail()
+  },
+  // 下拉刷新
+  onPullDownRefresh() {
+    wx.showNavigationBarLoading()
+    setTimeout(function () {
+      // complete
+      wx.hideNavigationBarLoading() // 完成停止加载
+      wx.stopPullDownRefresh() // 停止下拉刷新
+    }, 1500)
+  },
   methods: {
+    // 详情页
+    async getGoodDetail() {
+      wx.showLoading({ title: '加载中...' })
+      try {
+        const result = await get('api/v1/goods/detail', { goodsId: this.$mp.query.id })
+        this.goodsItem = result
+        console.log(result)
+      } catch (e) {
+      } finally {
+        wx.hideLoading()
+      }
+    },
+    // 预览图片
+    viewImage(url) {
+      wx.previewImage({
+        current: url,
+        urls: this.goodsItem.goodsDescImageUrls
+      })
+    },
+    // 移动详情页
+    moveToDetail(item) {
+      // todo 优化
+      const url = `../detail/main?id=${item.goodsId}`
+      wx.navigateTo({ url })
+    },
+    // 返回
     back() {
       wx.navigateBack()
     },
@@ -241,12 +283,12 @@ page {
           margin: 0 3rpx;
           font-weight: bold;
         }
-        :nth-child(3) {
+        .coupon-price {
           margin-right: 12rpx;
           font-size: 50rpx;
           font-weight: bold;
         }
-        :nth-child(4) {
+        .normal-price {
           color: #808281;
           text-decoration: line-through;
         }
@@ -419,12 +461,15 @@ page {
     /** 商品详情 */
     .commodity-details {
       margin-top: 15rpx;
-      padding-bottom: 100rpx;
+      &:last-child {
+        padding-bottom: 100rpx;
+      }
       image {
         width: 100%;
         height: 600rpx;
       }
     }
+
     .more-commodity {
       display: flex;
       margin-top: 15rpx;
@@ -441,11 +486,15 @@ page {
         image {
           width: 100%;
           height: 150rpx;
+          border-radius: 10rpx;
         }
         .post-coupon {
           font-size: 18rpx;
           font-weight: bold;
           color: #be5041;
+          :nth-child(2) {
+            margin: 0 1rpx;
+          }
         }
       }
     }

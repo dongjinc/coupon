@@ -122,9 +122,10 @@ export default {
     this.getTopList()
   },
   onReachBottom() {
-    // 到这底部在这里需要做什么事情
+    // 到底部触发刷新
     this.getTopList(false)
   },
+  // 下拉刷新
   onPullDownRefresh() {
     wx.showNavigationBarLoading()
     setTimeout(function () {
@@ -134,11 +135,6 @@ export default {
     }, 1500)
   },
   methods: {
-    onScroll(e) {
-      return {
-        scrollTop: '800px', isFixed: false
-      }
-    },
     // 获取列表
     async getTopList(loading = true) {
       if (loading) wx.showLoading({ title: '加载中...' })
@@ -153,9 +149,9 @@ export default {
         }
       }
     },
+    // 切换tab
     onChange(e) {
       this.tabActive = e.mp.detail.index
-      console.log(this.pageList[this.tabActive])
     },
     bindViewTap() {
       const url = '../logs/main'
@@ -173,9 +169,8 @@ export default {
     // 移动详情页
     moveToDetail(item) {
       // todo 优化
-      const url = '../detail/main'
+      const url = `../detail/main?id=${item.goodsId}`
       wx.navigateTo({ url })
-      console.log(item)
     }
   }
 }

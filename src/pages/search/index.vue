@@ -67,9 +67,18 @@ export default {
     this.searchListItem = []
     console.log(param)
   },
+  onShow() {
+    this.searchListItem = []
+  },
   methods: {
     onSearch() {
-      console.log(123)
+      wx.getStorage({
+        key: 'search',
+        success(res) {
+          console.log(res.data)
+        }
+      })
+      wx.setStorage({ key: 'search', data: ['大衣', '眼镜', '上衣'] })
       this.searchListItem.push(1)
       console.log(this.searchListItem)
     }
