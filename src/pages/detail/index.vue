@@ -41,8 +41,7 @@
       </view>-->
       <text class="commodity-name">{{goodsItem.goodsName}}</text>
       <view class="commodity-service font-25">
-        <text>退货包运费 · 极速退款 · 极速退款 · 极速退款</text>
-        <text class="iconfont iconyou" style="margin-left:auto"></text>
+        <text>拼多多，拼多多，拼的多，省的多。</text>
       </view>
     </view>
     <view class="similar-commodity">
