@@ -9,7 +9,7 @@
     },
     "miniprogramRoot": "dist/wx/",
     "compileType": "miniprogram",
-    "appid": "touristappid",
+    "appid": "wx0b9425e3c941f815",
     "projectname": "coupon",
     "condition": {
         "search": {
