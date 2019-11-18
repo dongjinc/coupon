@@ -19,7 +19,6 @@
     "backgroundColor": "#fafafa",
     "selectedColor": "#eb3e47",
     "borderStyle": "white",
-
     "list": [
       {
         "text": "首页",
@@ -41,5 +40,8 @@
       }
     ],
     "position": "bottom"
-  }
+  },
+  "navigateToMiniProgramAppIdList": [
+    "wx32540bd863b27570"
+  ]
 }

@@ -157,7 +157,7 @@
           <text class="iconfont iconjinbi font-25"></text>拿奖励
         </view>
       </view>
-      <view class="share-purchase-commodity bg-right">
+      <view class="share-purchase-commodity bg-right" @tap="toPddWeApp">
         <view class="font-31">立即购买</view>
         <view>省{{goodsItem.commission}}元</view>
       </view>
@@ -183,7 +183,7 @@ export default {
   // 下拉刷新
   onPullDownRefresh() {
     wx.showNavigationBarLoading()
-    setTimeout(function () {
+    setTimeout(function() {
       // complete
       wx.hideNavigationBarLoading() // 完成停止加载
       wx.stopPullDownRefresh() // 停止下拉刷新
@@ -194,7 +194,9 @@ export default {
     async getGoodDetail() {
       wx.showLoading({ title: '加载中...' })
       try {
-        const result = await get('api/v1/goods/detail', { goodsId: this.$mp.query.id })
+        const result = await get('api/v1/goods/detail', {
+          goodsId: this.$mp.query.id
+        })
         this.goodsItem = result
         console.log(result)
       } catch (e) {
@@ -224,10 +226,31 @@ export default {
       // https://www.jb51.net/article/138776.htm 计算swiper图片
       const winWid = wx.getSystemInfoSync().windowWidth
       const winInfo = wx.getSystemInfoSync()
-      this.topBack = (750 / winWid * 1) * (winInfo.model === 'iPhone X' ? 55 : 28) + 'rpx'
+      this.topBack =
+        750 / winWid * 1 * (winInfo.model === 'iPhone X' ? 55 : 28) + 'rpx'
       const imagw = e.target.width
       const imagh = e.target.height
-      this.swiperHeight = (winWid * imagh / imagw) + 'px'
+      this.swiperHeight = winWid * imagh / imagw + 'px'
+    },
+    async toPddWeApp() {
+      try {
+        const result = await get('api/v1/goods/generateWeAppInfo', {
+          goodsId: this.$mp.query.id
+        })
+        let pddWeAppInfo = result
+        // console.log(result)
+        console.log(pddWeAppInfo)
+        wx.navigateToMiniProgram({
+          appId: pddWeAppInfo.appId,
+          path: pddWeAppInfo.pagePath,
+          success(res) {
+            // 打开成功
+          }
+        })
+      } catch (e) {
+      } finally {
+        wx.hideLoading()
+      }
     }
   }
 }
