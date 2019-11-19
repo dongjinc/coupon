@@ -149,12 +149,12 @@
       </view>
     </view>
     <!-- 分享以及立刻购买 -->
-    <view class="share-container font-25">
+    <view class="share-container font-25" :class="[isIponeX?'is-iphone-x':'']">
       <view class="share-purchase-commodity bg-left">
         <view class="font-31">分享商品</view>
-        <view>
+        <!-- <view>
           <text class="iconfont iconjinbi font-25"></text>拿奖励
-        </view>
+        </view>-->
       </view>
       <view class="share-purchase-commodity bg-right" @tap="toPddWeApp">
         <view class="font-31">立即购买</view>
@@ -173,16 +173,28 @@ export default {
       swiperHeight: '375px',
       topBack: '56rpx',
       // 详情内容
-      goodsItem: {}
+      goodsItem: {},
+      currentPageId: '',
+      isIponeX: wx.getSystemInfoSync().model === 'iPhone X'
     }
   },
-  onLoad(query) {
-    this.getGoodDetail()
+  onLoad() {
+  },
+  async onShow() {
+    /* eslint-disable no-undef */
+    const list = getCurrentPages()
+    this.currentPageId = list[list.length - 1].options.id
+    if (!list[list.length - 1].data.goodsItem) {
+      await this.getGoodDetail()
+      list[list.length - 1].data.goodsItem = this.goodsItem
+    } else {
+      this.goodsItem = list[list.length - 1].data.goodsItem
+    }
   },
   // 下拉刷新
   onPullDownRefresh() {
     wx.showNavigationBarLoading()
-    setTimeout(function() {
+    setTimeout(function () {
       // complete
       wx.hideNavigationBarLoading() // 完成停止加载
       wx.stopPullDownRefresh() // 停止下拉刷新
@@ -194,10 +206,9 @@ export default {
       wx.showLoading({ title: '加载中...' })
       try {
         const result = await get('api/v1/goods/detail', {
-          goodsId: this.$mp.query.id
+          goodsId: this.currentPageId
         })
-        this.goodsItem = result
-        console.log(result)
+        this.goodsItem = { ...result }
       } catch (e) {
       } finally {
         wx.hideLoading()
@@ -234,11 +245,9 @@ export default {
     async toPddWeApp() {
       try {
         const result = await get('api/v1/goods/generateWeAppInfo', {
-          goodsId: this.$mp.query.id
+          goodsId: this.currentPageId
         })
         let pddWeAppInfo = result
-        // console.log(result)
-        console.log(pddWeAppInfo)
         wx.navigateToMiniProgram({
           appId: pddWeAppInfo.appId,
           path: pddWeAppInfo.pagePath,
@@ -484,7 +493,7 @@ page {
     .commodity-details {
       margin-top: 15rpx;
       &:last-child {
-        padding-bottom: 100rpx;
+        padding-bottom: 125rpx;
       }
       image {
         width: 100%;
@@ -526,9 +535,11 @@ page {
     display: flex;
     bottom: 0;
     width: 100%;
-    height: 100rpx;
-    background: red;
+    background: #fff;
     color: white;
+    > view {
+      padding: 16rpx 0;
+    }
     .share-purchase-commodity {
       display: flex;
       align-items: center;
@@ -542,6 +553,9 @@ page {
     .bg-right {
       background: #d44f38;
     }
+  }
+  .is-iphone-x {
+    padding-bottom: 25rpx;
   }
 }
 </style>
