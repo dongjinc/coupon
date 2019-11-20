@@ -88,10 +88,6 @@ export default {
     return {
       searchValue: '',
       tabActive: 0,
-      tabClassId: null,
-      pageObj: {
-        page: 1
-      },
       topList: [[], [], [], [], [], []],
       pageList: [],
       imgUrls: [
@@ -126,7 +122,7 @@ export default {
   // 下拉刷新
   onPullDownRefresh() {
     wx.showNavigationBarLoading()
-    setTimeout(function() {
+    setTimeout(function () {
       // complete
       wx.hideNavigationBarLoading() // 完成停止加载
       wx.stopPullDownRefresh() // 停止下拉刷新

@@ -6,7 +6,9 @@
         :focus="true"
         background="null"
         use-action-slot
+        clearable
         :value="searchValue"
+        @change="searchValue = $event.mp.detail"
         placeholder="请输入搜索的商品"
       >
         <view slot="action" @tap="onSearch" style="color:white">搜索</view>
@@ -22,30 +24,39 @@
         <view>规格</view>
         <view>筛选</view>
       </view>
-      <indexList v-for="item in 10" :key="item"></indexList>
+      <view
+        v-for="(item, index) in searchListItem"
+        :key="index"
+        style="background:#fff"
+        @tap="moveToDetail(item)"
+      >
+        <indexList :item="item"></indexList>
+      </view>
       <!-- 最近搜索 -->
     </view>
     <view v-else class="history-container" style="margin-top:60px">
       <view class="history-container-title">
         <text class="iconfont iconjiaoji"></text>
         <text>最近搜索</text>
-        <text class="iconfont iconshanchu"></text>
+        <text class="iconfont iconshanchu" @tap="delSearchHis"></text>
       </view>
       <view class="history-container-item">
-        <view>可惜不是你嗷嗷</view>
-        <view>22221</view>
-        <view>一生衣服</view>
-        <view>22221</view>
+        <view
+          v-for="(item, index) in searchHistoryList"
+          :key="index"
+          @tap="clickSearch(item)"
+        >{{item}}</view>
       </view>
       <view class="history-container-title">
         <text class="iconfont icontansuo"></text>
         <text>探索发现</text>
       </view>
       <view class="history-container-item">
-        <view>衣服扣子</view>
-        <view>电话充费</view>
-        <view>联通大王卡</view>
-        <view>办公电脑</view>
+        <view
+          v-for="(item, index) in searchExploreList"
+          :key="index"
+          @tap="clickSearch(item)"
+        >{{item}}</view>
       </view>
     </view>
     <!-- 搜索发现 -->
@@ -53,34 +64,95 @@
 </template>
 <script>
 import indexList from '@/components/index-list'
-
+import { get } from '@/utils/http'
 export default {
   name: 'search',
   components: { indexList },
   data() {
     return {
       searchValue: '',
-      searchListItem: []
+      searchListItem: [],
+      searchHistoryList: [],
+      searchExploreList: ['电话充费', '联通大王卡', '衣服扣子', '办公电脑'],
+      formObj: {
+        page: 1,
+        sortType: 0
+      }
     }
   },
-  onLoad(param) {
-    this.searchListItem = []
-    console.log(param)
-  },
+  onLoad(param) { },
   onShow() {
-    this.searchListItem = []
+    // 获取storage里面的值
+    try {
+      const res = wx.getStorageSync('search')
+      if (res) {
+        this.searchHistoryList = res
+      }
+    } catch (e) { console.log(e) }
+    /* eslint-disable no-undef */
   },
+  onReachBottom() {
+    // 到底部触发刷新
+    this.formObj.page++
+    this.getSearchList()
+  },
+  // 下拉刷新
+  onPullDownRefresh() {
+    wx.showNavigationBarLoading()
+    setTimeout(function () {
+      // complete
+      wx.hideNavigationBarLoading() // 完成停止加载
+      wx.stopPullDownRefresh() // 停止下拉刷新
+    }, 1500)
+  },
+  // 判断是否是从Tab跳转过来的
+  // onTabItemTap() {
+  //   wx.showLoading({ title: '加载中...' })
+  //   this.searchListItem = []
+  //   this.searchValue = ''
+  //   setTimeout(() => {
+  //     wx.hideLoading()
+  //   }, 700)
+  // },
   methods: {
-    onSearch() {
-      wx.getStorage({
-        key: 'search',
+    async onSearch() {
+      if (this.searchValue === '') return wx.showToast({ title: '请输入要搜索的商品!', icon: 'none', duration: 1500 })
+      if (!this.searchHistoryList.includes(this.searchValue)) {
+        wx.setStorage({ key: 'search', data: [this.searchValue, ...this.searchHistoryList] })
+      }
+      this.getSearchList()
+    },
+    // 搜索数据
+    async getSearchList() {
+      try {
+        const result = await get('api/v1/goods/search', { ...this.formObj, keyword: this.searchValue })
+        this.searchListItem.push(...result)
+      } catch (e) { console.log(e) }
+    },
+    // 清空storage
+    delSearchHis() {
+      const that = this
+      wx.showModal({
+        title: '提示',
+        content: '确定要清空最近搜索内容吗？',
         success(res) {
-          console.log(res.data)
+          if (res.confirm) {
+            that.searchHistoryList = []
+            wx.setStorage({ key: 'search', data: [] })
+          }
         }
       })
-      wx.setStorage({ key: 'search', data: ['大衣', '眼镜', '上衣'] })
-      this.searchListItem.push(1)
-      console.log(this.searchListItem)
+    },
+    // 点击搜索
+    clickSearch(item) {
+      this.searchValue = item
+      this.onSearch()
+    },
+    // 移动详情页
+    moveToDetail(item) {
+      // todo 优化
+      const url = `../detail/main?id=${item.goodsId}`
+      wx.navigateTo({ url })
     }
   }
 }
