@@ -7,7 +7,8 @@
     "van-button": "/static/vant/button/index",
     "van-search": "/static/vant/search/index",
     "van-tab": "/static/vant/tab/index",
-    "van-tabs": "/static/vant/tabs/index"
+    "van-tabs": "/static/vant/tabs/index",
+    "van-sticky": "/static/vant/sticky/index"
   },
   "enablePullDownRefresh": true
 }

@@ -158,7 +158,7 @@ export default {
     },
     // 移动到搜索页
     moveToSearch() {
-      const url = '../search/main?index=true'
+      const url = '../search/main'
       wx.switchTab({ url })
     },
     // 移动详情页

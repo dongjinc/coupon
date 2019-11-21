@@ -1,1 +1,14 @@
-{}
+{
+  "navigationBarBackgroundColor": "#fff",
+  "backgroundTextStyle": "dark",
+  "navigationBarTextStyle": "black",
+  "usingComponents": {
+    "van-button": "/static/vant/button/index",
+    "van-search": "/static/vant/search/index",
+    "van-tab": "/static/vant/tab/index",
+    "van-tabs": "/static/vant/tabs/index",
+    "van-notice-bar": "/static/vant/notice-bar/index"
+  },
+  "navigationBarTitleText": "我的订单",
+  "enablePullDownRefresh": true
+}

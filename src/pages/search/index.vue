@@ -9,21 +9,24 @@
         clearable
         :value="searchValue"
         @change="searchValue = $event.mp.detail"
+        @clear="searchListItem = []"
         placeholder="请输入搜索的商品"
       >
         <view slot="action" @tap="onSearch" style="color:white">搜索</view>
       </van-search>
     </view>
     <view v-if="searchListItem.length !== 0" class="search-container">
-      <view
-        style="display:flex;justify-content:space-between;padding:18rpx;position:sticky;top:54px;font-size:27rpx;color:#585858;background:#fff"
-      >
-        <!-- 综合  销量  规格  筛选-->
-        <view>综合</view>
-        <view>销量</view>
-        <view>规格</view>
-        <view>筛选</view>
-      </view>
+      <van-sticky offset-top="50">
+        <view
+          style="display:flex;justify-content:space-between;padding:18rpx;position:sticky;top:54px;font-size:27rpx;color:#585858;background:#fff"
+        >
+          <!-- 综合  销量  规格  筛选-->
+          <view>综合</view>
+          <view>销量</view>
+          <view>规格</view>
+          <view>筛选</view>
+        </view>
+      </van-sticky>
       <view
         v-for="(item, index) in searchListItem"
         :key="index"
