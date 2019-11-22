@@ -77,9 +77,10 @@
 <script>
 const sortTypeObj = {
   '综合': 0,
-  '销量': 2,
-  '价格': 4
+  '价格': 4,
+  '销量': 6
 }
+const sortTypeArr = ['综合', '', '', '价格', '价格', '销量', '销量']
 export default {
   name: 'sort',
   props: {
@@ -97,8 +98,7 @@ export default {
   },
   watch: {
     sortType(newVal) {
-      const arr = ['综合', '销量', '销量', '价格', '价格']
-      this.activeItem = arr[newVal]
+      this.activeItem = sortTypeArr[newVal]
     }
   },
   mounted() {
