@@ -16,16 +16,8 @@
       </van-search>
     </view>
     <view v-if="searchListItem.length !== 0" class="search-container">
-      <van-sticky offset-top="50">
-        <view
-          style="display:flex;justify-content:space-between;padding:18rpx;position:sticky;top:54px;font-size:27rpx;color:#585858;background:#fff"
-        >
-          <!-- 综合  销量  规格  筛选-->
-          <view>综合</view>
-          <view>销量</view>
-          <view>规格</view>
-          <view>筛选</view>
-        </view>
+      <van-sticky offset-top="50" style="width:100%!important">
+        <sort @sortType="changeType" :sortType="formObj.sortType"></sort>
       </van-sticky>
       <view
         v-for="(item, index) in searchListItem"
@@ -67,10 +59,11 @@
 </template>
 <script>
 import indexList from '@/components/index-list'
+import sort from '@/components/sort'
 import { get } from '@/utils/http'
 export default {
   name: 'search',
-  components: { indexList },
+  components: { indexList, sort },
   data() {
     return {
       searchValue: '',
@@ -117,6 +110,13 @@ export default {
   //     wx.hideLoading()
   //   }, 700)
   // },
+  watch: {
+    'formObj.sortType': {
+      handler(newVal) {
+        this.getSearchList(true)
+      }
+    }
+  },
   methods: {
     async onSearch() {
       if (this.searchValue === '') return wx.showToast({ title: '请输入要搜索的商品!', icon: 'none', duration: 1500 })
@@ -126,11 +126,15 @@ export default {
       this.getSearchList()
     },
     // 搜索数据
-    async getSearchList() {
+    async getSearchList(isSort) {
       try {
         const result = await get('api/v1/goods/search', { ...this.formObj, keyword: this.searchValue })
-        this.searchListItem.push(...result)
+        if (isSort) this.searchListItem = result
+        else this.searchListItem.push(...result)
       } catch (e) { console.log(e) }
+    },
+    changeType(val) {
+      this.$set(this.formObj, 'sortType', val)
     },
     // 清空storage
     delSearchHis() {

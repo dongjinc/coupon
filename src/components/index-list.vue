@@ -97,7 +97,7 @@ export default {
       }
       .save-money {
         background: #cd4939;
-        width: 37%;
+        width: 38%;
         font-size: 29rpx;
         color: #fff;
         text-align: center;
