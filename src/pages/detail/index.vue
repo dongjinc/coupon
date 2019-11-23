@@ -7,7 +7,12 @@
     <swiper :indicator-dots="false" :style="{height: swiperHeight}">
       <block>
         <swiper-item v-for="(item, index) in goodsItem.goodsGalleryUrls" :key="index">
-          <image @load="imageHeight" :style="{height: swiperHeight,width:'100%'}" :src="item" />
+          <image
+            lazy-load="true"
+            @load="imageHeight"
+            :style="{height: swiperHeight,width:'100%'}"
+            :src="item"
+          />
         </swiper-item>
       </block>
     </swiper>
@@ -106,6 +111,7 @@
       <view class="commodity-shop">
         <view class="commodity-shop-top">
           <image
+            :lazy-load="true"
             src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1573834603444&di=6f0b79cf28303fb69de7d3afc3c4f84e&imgtype=0&src=http%3A%2F%2Fwx1.sinaimg.cn%2Flarge%2Fac18b792ly1ftczwflpczj20dm0dmgq2.jpg"
           />
           <view class="commodity-shop-top-left">

@@ -69,7 +69,7 @@ export default {
       searchValue: '',
       searchListItem: [],
       searchHistoryList: [],
-      searchExploreList: ['电话充费', '联通大王卡', '衣服扣子', '办公电脑'],
+      searchExploreList: ['红富士苹果', '每日坚果', '卫生纸', '曲奇饼干', 'iphone 11'],
       formObj: {
         page: 1,
         sortType: 0

@@ -1,6 +1,6 @@
 <template>
   <view class="item-container">
-    <img :src="item.goodsThumbnailUrl" />
+    <image :src="item.goodsThumbnailUrl" lazy-load="true" />
     <view class="item-right-container">
       <view class="right-title">{{ item.goodsName }}</view>
       <view class="right-sales">销量{{ item.salesTip }}</view>
