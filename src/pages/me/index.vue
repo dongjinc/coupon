@@ -12,20 +12,20 @@
           style="display:flex;flex-direction:column;justify-content:space-between;margin-left:15rpx;font-size:26rpx;position:relative"
         >
           <view style="display: flex;align-items:center">
-            15275905257
+            普通会员
             <view class="iconfont iconyou" style="font-size:21rpx;margin-left:10rpx"></view>
           </view>
-          <text
+          <!-- <text
             style="padding:9rpx;background:#FFE4B5;position:absolute;top:24px;border-radius:25rpx;font-size:23rpx;border:2rpx solid #FFA500;color:#FFA500"
-          >金币666</text>
+          >金币666</text>-->
         </view>
-        <view style="display:flex;align-items:center;margin-left:auto">
+        <!-- <view style="display:flex;align-items:center;margin-left:auto">
           <view
             style="display:flex;align-items:center;height:30rpx;line-height:50px;padding:8rpx;font-size:25rpx;background:#e86453;border-radius:10rpx;color:#fff"
           >
             <text class="iconfont iconjinbi1"></text>赚更多
           </view>
-        </view>
+        </view>-->
       </view>
       <view v-else style="text-align:center;margin-top: 50rpx;">
         <button
@@ -134,6 +134,9 @@ export default {
   methods: {
     // 获取用户登录
     async getUserInfo(e) {
+      wx.showLoading({
+        title: '加载中...'
+      })
       if (e.mp.detail.userInfo) {
         try {
           const result = await post('api/v1/login/wx', {
@@ -148,7 +151,7 @@ export default {
         } catch (e) {
           console.log(e)
         } finally {
-
+          wx.hideLoading()
         }
       } else {
         console.log('error')
