@@ -8,7 +8,7 @@
         @click="moveToSearch"
         readonly
       />
-      <bannerSwiper :imgUrls="imgUrls"></bannerSwiper>
+      <!-- <bannerSwiper :imgUrls="imgUrls"></bannerSwiper> -->
     </view>
     <view class="tabs-container">
       <van-tabs animated sticky :active="tabActive" swipeable line-height="0px" @change="onChange">

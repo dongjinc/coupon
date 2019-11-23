@@ -65,7 +65,7 @@
         ></i>
       </view>
     </view>
-    <view style="margin: 0 auto">筛选</view>
+    <view style="margin: 0 auto"></view>
     <van-popup
       :show="sumPopup"
       position="top"

@@ -179,6 +179,7 @@ export default {
     }
   },
   onLoad() {
+    this.goodsItem = {}
   },
   async onShow() {
     /* eslint-disable no-undef */

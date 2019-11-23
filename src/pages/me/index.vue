@@ -3,7 +3,7 @@
     <!-- 头部 -->
     <view>
       <!-- 个人 -->
-      <view style="display:flex;padding:40rpx 20rpx 0 20rpx;">
+      <view style="display:flex;padding:40rpx 20rpx 0 20rpx;" v-if="isLogin">
         <image
           src="https://ss0.bdstatic.com/94oJfD_bAAcT8t7mm9GUKT-xh_/timg?image&quality=100&size=b4000_4000&sec=1573316656&di=e6346dfae80b451c19ccf8e6253ae28a&src=http://downhdlogo.yy.com/hdlogo/640640/630/630/71/1000710067/u1000710067JGb2l8C.png"
           style="width:100rpx;height:100rpx;border-radius:50%"
@@ -27,7 +27,16 @@
           </view>
         </view>
       </view>
-      <view
+      <view v-else style="text-align:center;margin-top: 50rpx;">
+        <button
+          type="primary"
+          size="mini"
+          open-type="getUserInfo"
+          @getuserinfo="getUserInfo"
+          @tap="getLoginCode"
+        >请登录</button>
+      </view>
+      <!-- <view
         style="background:#e86453;height:200rpx;border-radius:20rpx 20rpx 0 0;margin:24rpx 20rpx;padding:20rpx 15rpx 20rpx 45rpx;color:#fff;font-size:26rpx"
       >
         <view style="display:flex;justify-content:space-between;align-items:center">
@@ -59,9 +68,9 @@
             <text style="margin-left:10rpx;">¥ 0.00</text>
           </text>
         </view>
-      </view>
+      </view>-->
     </view>
-    <view style="padding:0 40rpx;">
+    <!-- <view style="padding:0 40rpx;">
       <swiper
         style="text-align:center;height:200rpx"
         indicator-dots="true"
@@ -76,8 +85,8 @@
           </swiper-item>
         </block>
       </swiper>
-    </view>
-    <view
+    </view>-->
+    <!-- <view
       style="margin:30rpx 40rpx;padding:10rpx 20rpx;background:#fff;border-radius:25rpx;display:flex;"
     >
       <view style="margin:20rpx 0;text-align:center;margin-right:27rpx;" @tap="moveToOrder">
@@ -92,7 +101,7 @@
         <image src="/static/images/question.png" style="width:60rpx;height:60rpx;" />
         <view style="color:#555;font-size:26rpx">常见问题</view>
       </view>
-    </view>
+    </view>-->
     <!-- <view style="margin:30rpx 40rpx;padding:10rpx 20rpx;background:#fff;border-radius:25rpx">
       <text style="font-weight:bold">常用功能</text>
       <view style="margin:20rpx 0;display:flex;align-items:center">
@@ -105,17 +114,61 @@
   </view>
 </template>
 <script>
+import { post } from '@/utils/http'
 export default {
   name: 'Me',
   data() {
     return {
+      isLogin: false,
+      loginCode: '',
       personalBanner: [
         'http://img3.imgtn.bdimg.com/it/u=219617380,3771697655&fm=26&gp=0.jpg',
         'http://img1.imgtn.bdimg.com/it/u=162228925,3147880140&fm=26&gp=0.jpg'
       ]
     }
   },
+  onShow() {
+    const res = wx.getStorageSync('token')
+    this.isLogin = !!res
+  },
   methods: {
+    // 获取用户登录
+    async getUserInfo(e) {
+      if (e.mp.detail.userInfo) {
+        try {
+          const result = await post('api/v1/login/wx', {
+            'code': this.loginCode,
+            'encrypted_data': e.mp.detail.encryptedData,
+            'iv': e.mp.detail.iv,
+            'parentId': -1
+          })
+          this.isLogin = true
+          wx.setStorageSync('token', result.token)
+          wx.setStorageSync('time', result.expMillis)
+        } catch (e) {
+          console.log(e)
+        } finally {
+
+        }
+      } else {
+        console.log('error')
+      }
+    },
+    // 获取loginCode
+    getLoginCode() {
+      const _this = this
+      wx.login({
+        success(res) {
+          if (res.code) {
+            _this.loginCode = res.code
+            // 发起网络请求
+            console.log(res.code)
+          } else {
+            console.log('登录失败！' + res.errMsg)
+          }
+        }
+      })
+    },
     moveToIncome() {
       const url = '../income/main'
       wx.navigateTo({
@@ -124,7 +177,7 @@ export default {
     },
     // 提现
     onWithdrawal() {
-
+      console.log(123)
     },
     // 我的订单
     moveToOrder() {
