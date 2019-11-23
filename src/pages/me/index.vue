@@ -19,10 +19,12 @@
             style="padding:9rpx;background:#FFE4B5;position:absolute;top:24px;border-radius:25rpx;font-size:23rpx;border:2rpx solid #FFA500;color:#FFA500"
           >金币666</text>
         </view>
-        <view style="margin-left:auto">
-          <text
-            style="margin-left:auto;line-height:50px;padding:8rpx;font-size:25rpx;background:#e86453;border-radius:10rpx;color:#fff"
-          >🧱赚更多</text>
+        <view style="display:flex;align-items:center;margin-left:auto">
+          <view
+            style="display:flex;align-items:center;height:30rpx;line-height:50px;padding:8rpx;font-size:25rpx;background:#e86453;border-radius:10rpx;color:#fff"
+          >
+            <text class="iconfont iconjinbi1"></text>赚更多
+          </view>
         </view>
       </view>
       <view
@@ -137,5 +139,8 @@ export default {
 <style lang="scss">
 page {
   background: #f6f5f4;
+}
+.iconjinbi1 {
+  color: #ffff00;
 }
 </style>

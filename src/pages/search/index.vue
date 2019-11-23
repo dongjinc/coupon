@@ -113,6 +113,7 @@ export default {
   watch: {
     'formObj.sortType': {
       handler(newVal) {
+        this.formObj.page = 1
         this.getSearchList(true)
       }
     }
@@ -123,15 +124,27 @@ export default {
       if (!this.searchHistoryList.includes(this.searchValue)) {
         wx.setStorage({ key: 'search', data: [this.searchValue, ...this.searchHistoryList] })
       }
-      this.getSearchList()
+      this.formObj.page = 1
+      this.getSearchList(true)
     },
     // 搜索数据
     async getSearchList(isSort) {
+      if (isSort) {
+        wx.showLoading({
+          title: '加载中...'
+        })
+      }
       try {
         const result = await get('api/v1/goods/search', { ...this.formObj, keyword: this.searchValue })
         if (isSort) this.searchListItem = result
         else this.searchListItem.push(...result)
-      } catch (e) { console.log(e) }
+      } catch (e) {
+        console.log(e)
+      } finally {
+        if (isSort) {
+          wx.hideLoading()
+        }
+      }
     },
     changeType(val) {
       this.$set(this.formObj, 'sortType', val)

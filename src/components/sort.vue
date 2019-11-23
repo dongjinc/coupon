@@ -20,7 +20,7 @@
               ? 'activeClass'
               : 'notActiveItem',
             'iconfont',
-            'iconx'
+            'iconsanjiaoxing'
           ]"
           style="color:#eee;font-size:18rpx;"
         ></i>
@@ -31,7 +31,7 @@
               ? 'activeClass'
               : 'notActiveItem',
             'iconfont',
-            'iconx'
+            'iconsanjiaoxing-xia'
           ]"
         ></i>
       </view>
@@ -49,7 +49,7 @@
               ? 'activeClass'
               : 'notActiveItem',
             'iconfont',
-            'iconx'
+            'iconsanjiaoxing'
           ]"
           style="color:#eee;font-size:18rpx;"
         ></i>
@@ -60,7 +60,7 @@
               ? 'activeClass'
               : 'notActiveItem',
             'iconfont',
-            'iconx'
+            'iconsanjiaoxing-xia'
           ]"
         ></i>
       </view>
@@ -127,5 +127,11 @@ export default {
 }
 .notActiveItem {
   color: #eee !important;
+}
+.iconsanjiaoxing {
+  margin-top: 2rpx;
+}
+.iconsanjiaoxing-xia {
+  margin-top: -4rpx;
 }
 </style>

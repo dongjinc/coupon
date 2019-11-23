@@ -151,7 +151,7 @@
     <!-- 分享以及立刻购买 -->
     <view class="share-container font-25" :class="[isIponeX?'is-iphone-x':'']">
       <view class="share-purchase-commodity bg-left">
-        <view class="font-31">分享商品</view>
+        <button open-type="share">分享商品</button>
         <!-- <view>
           <text class="iconfont iconjinbi font-25"></text>拿奖励
         </view>-->
@@ -200,6 +200,12 @@ export default {
       wx.stopPullDownRefresh() // 停止下拉刷新
     }, 1500)
   },
+  // 分享
+  onShareAppMessage() {
+    return {
+      title: this.goodsItem.goodsName
+    }
+  },
   methods: {
     // 详情页
     async getGoodDetail() {
@@ -229,6 +235,13 @@ export default {
     },
     // 返回
     back() {
+      /* eslint-disable no-undef */
+      const routerList = getCurrentPages()
+      if (routerList.length === 1) {
+        wx.reLaunch({
+          url: '/pages/index/main'
+        })
+      }
       wx.navigateBack()
     },
     imageHeight(e) {
@@ -549,6 +562,18 @@ page {
     }
     .bg-left {
       background: #eaa59e;
+      button {
+        width: 100%;
+        color: #fff;
+        font-size: 31rpx;
+        background: transparent;
+        ::after {
+          border: none !important;
+        }
+      }
+      button::after {
+        border: none !important;
+      }
     }
     .bg-right {
       background: #d44f38;
