@@ -1,14 +1,14 @@
 {
-  "navigationBarBackgroundColor": "#e84443",
-  "backgroundTextStyle": "dark",
+  "navigationBarTitleText": "相似商品",
+  "navigationBarBackgroundColor": "#dc6364",
   "navigationBarTextStyle": "white",
+  "backgroundColor": "#f6f5f4",
   "usingComponents": {
     "van-button": "/static/vant/button/index",
     "van-search": "/static/vant/search/index",
     "van-tab": "/static/vant/tab/index",
     "van-tabs": "/static/vant/tabs/index",
-    "van-image": "/static/vant/image/index"
+    "van-sticky": "/static/vant/sticky/index"
   },
-  "navigationBarTitleText": "惠得多",
   "enablePullDownRefresh": true
 }

@@ -6,7 +6,8 @@
     "pages/search/main",
     "pages/detail/main",
     "pages/income/main",
-    "pages/order/main"
+    "pages/order/main",
+    "pages/similar/main"
   ],
   "window": {
     "backgroundTextStyle": "light",

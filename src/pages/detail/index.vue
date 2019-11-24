@@ -52,7 +52,7 @@
     <view class="similar-commodity">
       <view class="similar-title">
         <view>相似商品</view>
-        <view class="all-similar">
+        <view class="all-similar" @tap="moveToSimilar">
           <text>查看全部</text>
           <text class="iconfont iconyou"></text>
         </view>
@@ -65,7 +65,7 @@
           class="more-commodity-item"
           @tap="moveToDetail(item)"
         >
-          <image :src="item.goodsThumbnailUrl" />
+          <image lazy-load="true" :src="item.goodsThumbnailUrl" />
           <view class="post-coupon">
             <text v-if="item.couponDiscount !== '0'">券后</text>
             <text>¥</text>
@@ -111,7 +111,7 @@
       <view class="commodity-shop">
         <view class="commodity-shop-top">
           <image
-            :lazy-load="true"
+            lazy-load="true"
             src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1573834603444&di=6f0b79cf28303fb69de7d3afc3c4f84e&imgtype=0&src=http%3A%2F%2Fwx1.sinaimg.cn%2Flarge%2Fac18b792ly1ftczwflpczj20dm0dmgq2.jpg"
           />
           <view class="commodity-shop-top-left">
@@ -145,13 +145,18 @@
     <!-- 详情 -->
     <view class="similar-commodity">
       <view class="similar-title">商品详情</view>
-      <view style="margin:10px 0;font-size:30rpx;text-indent:30px;">{{goodsItem.goodsDesc}}</view>
+      <view class="similar-content">{{goodsItem.goodsDesc}}</view>
       <view
         class="commodity-details"
         v-for="(item, index) in goodsItem.goodsDescImageUrls"
         :key="index"
       >
-        <image :src="item" :style="{height: swiperHeight,width:'100%'}" @tap="viewImage(item)" />
+        <image
+          lazy-load="true"
+          :src="item"
+          :style="{height: swiperHeight,width:'100%'}"
+          @tap="viewImage(item)"
+        />
       </view>
     </view>
     <!-- 分享以及立刻购买 -->
@@ -171,7 +176,7 @@
 </template>
 <script>
 import { get } from '@/utils/http'
-
+let timerId = 0
 export default {
   name: 'detail',
   data() {
@@ -240,6 +245,11 @@ export default {
       const url = `../detail/main?id=${item.goodsId}`
       wx.navigateTo({ url })
     },
+    // 移动相似商品页
+    moveToSimilar() {
+      const url = `../similar/main`
+      wx.navigateTo({ url })
+    },
     // 返回
     back() {
       /* eslint-disable no-undef */
@@ -254,13 +264,16 @@ export default {
     imageHeight(e) {
       // rpx与px单位之间的换算 : 750/windowWidth = 屏幕的高度（rpx）/windowHeight
       // https://www.jb51.net/article/138776.htm 计算swiper图片
-      const winWid = wx.getSystemInfoSync().windowWidth
-      const winInfo = wx.getSystemInfoSync()
-      this.topBack =
-        750 / winWid * 1 * (winInfo.model === 'iPhone X' ? 55 : 28) + 'rpx'
-      const imagw = e.target.width
-      const imagh = e.target.height
-      this.swiperHeight = winWid * imagh / imagw + 'px'
+      clearTimeout(timerId)
+      timerId = setTimeout(() => {
+        const winWid = wx.getSystemInfoSync().windowWidth
+        const winInfo = wx.getSystemInfoSync()
+        this.topBack =
+          750 / winWid * 1 * (winInfo.model === 'iPhone X' ? 55 : 28) + 'rpx'
+        const imagw = e.target.width
+        const imagh = e.target.height
+        this.swiperHeight = winWid * imagh / imagw + 'px'
+      }, 400)
     },
     async toPddWeApp() {
       try {
@@ -413,6 +426,11 @@ page {
         align-items: center;
         color: #91918f;
       }
+    }
+    .similar-content {
+      margin: 10px 0;
+      font-size: 30rpx;
+      text-indent: 30px;
     }
     /** 评论列表 */
     .comment-container {
