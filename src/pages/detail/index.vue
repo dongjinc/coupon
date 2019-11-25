@@ -10,6 +10,7 @@
           <image
             lazy-load="true"
             @load="imageHeight"
+            @tap="viewImage(item)"
             :style="{height: swiperHeight,width:'100%'}"
             :src="item"
           />
@@ -172,13 +173,38 @@
         <view>省{{goodsItem.commission}}元</view>
       </view>
     </view>
+    <van-popup
+      :show="similarPopup"
+      closeable
+      round
+      close-icon="close"
+      position="bottom"
+      custom-style="height: 85%"
+      @touchmove.stop.prevent
+      @close="similarPopup = false"
+    >
+      <view style="padding-top:15px;text-align:center">相似商品</view>
+      <scroll-view
+        scroll-y="true"
+        style="margin-top:10px;height: 77vh"
+        @touchmove.stop.prevent
+        @scrolltolower="moreLoad"
+      >
+        <view v-for="(item, index) in similarList" :key="index" @tap="moveTo">
+          <indexList :item="item"></indexList>
+        </view>
+      </scroll-view>
+      <view style="height:40px"></view>
+    </van-popup>
   </view>
 </template>
 <script>
 import { get } from '@/utils/http'
+import indexList from '@/components/index-list'
 let timerId = 0
 export default {
   name: 'detail',
+  components: { indexList },
   data() {
     return {
       swiperHeight: '375px',
@@ -186,7 +212,9 @@ export default {
       // 详情内容
       goodsItem: {},
       currentPageId: '',
-      isIponeX: wx.getSystemInfoSync().model === 'iPhone X'
+      isIponeX: wx.getSystemInfoSync().model === 'iPhone X',
+      similarPopup: false,
+      similarList: []
     }
   },
   onLoad() {
@@ -197,10 +225,12 @@ export default {
     const list = getCurrentPages()
     this.currentPageId = list[list.length - 1].options.id
     if (!list[list.length - 1].data.goodsItem) {
+      this.similarPopup = false
       await this.getGoodDetail()
       list[list.length - 1].data.goodsItem = this.goodsItem
     } else {
       this.goodsItem = list[list.length - 1].data.goodsItem
+      this.similarPopup = !!list[list.length - 1].data.goodsItem
     }
   },
   // 下拉刷新
@@ -245,10 +275,19 @@ export default {
       const url = `../detail/main?id=${item.goodsId}`
       wx.navigateTo({ url })
     },
-    // 移动相似商品页
-    moveToSimilar() {
-      const url = `../similar/main`
+    moveTo() {
+      const url = `../detail/main`
       wx.navigateTo({ url })
+    },
+    moreLoad() {
+      console.log('more')
+    },
+    // 移动相似商品页
+    async moveToSimilar() {
+      this.similarPopup = true
+      const result = await get('api/v1/goods/optList', { optId: this.currentPageId, page: 1 })
+      this.similarList = result
+      console.log(this.similarList)
     },
     // 返回
     back() {
@@ -273,7 +312,7 @@ export default {
         const imagw = e.target.width
         const imagh = e.target.height
         this.swiperHeight = winWid * imagh / imagw + 'px'
-      }, 400)
+      }, 30)
     },
     async toPddWeApp() {
       try {
@@ -606,6 +645,11 @@ page {
   }
   .is-iphone-x {
     padding-bottom: 25rpx;
+  }
+  // 弹出窗口
+  .van-icon-close {
+    position: fixed;
+    right: 4%;
   }
 }
 </style>
