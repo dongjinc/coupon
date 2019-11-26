@@ -181,7 +181,7 @@
       position="bottom"
       custom-style="height: 85%"
       @touchmove.stop.prevent
-      @close="similarPopup = false"
+      @close="hideSimilarPopup"
     >
       <view style="padding-top:15px;text-align:center">相似商品</view>
       <scroll-view
@@ -190,11 +190,16 @@
         @touchmove.stop.prevent
         @scrolltolower="moreLoad"
       >
-        <view v-for="(item, index) in similarList" :key="index" @tap="moveTo">
-          <indexList :item="item"></indexList>
+        <view v-if="similarList.length !== 0">
+          <view v-for="(item, index) in similarList" :key="index" @tap="moveToDetail(item)">
+            <indexList :item="item"></indexList>
+          </view>
+        </view>
+        <view v-else style="text-align:center;height:100%">
+          <image src="/static/images/no-data.png" style="width:150px;height:130px;margin-top:40%" />
+          <view>暂无数据</view>
         </view>
       </scroll-view>
-      <view style="height:40px"></view>
     </van-popup>
   </view>
 </template>
@@ -214,7 +219,10 @@ export default {
       currentPageId: '',
       isIponeX: wx.getSystemInfoSync().model === 'iPhone X',
       similarPopup: false,
-      similarList: []
+      similarList: [],
+      similarObj: {
+        page: 1
+      }
     }
   },
   onLoad() {
@@ -230,7 +238,7 @@ export default {
       list[list.length - 1].data.goodsItem = this.goodsItem
     } else {
       this.goodsItem = list[list.length - 1].data.goodsItem
-      this.similarPopup = !!list[list.length - 1].data.goodsItem
+      this.similarPopup = !!list[list.length - 1].data.showSimilar
     }
   },
   // 下拉刷新
@@ -280,14 +288,37 @@ export default {
       wx.navigateTo({ url })
     },
     moreLoad() {
-      console.log('more')
+      this.similarObj.page++
+      this.getSimilarList(true)
     },
     // 移动相似商品页
     async moveToSimilar() {
+      // 优化
+      /* eslint-disable no-undef */
+      const list = getCurrentPages()
+      list[list.length - 1].data.showSimilar = true
+      await this.getSimilarList()
       this.similarPopup = true
-      const result = await get('api/v1/goods/optList', { optId: this.currentPageId, page: 1 })
-      this.similarList = result
-      console.log(this.similarList)
+    },
+    // 隐藏相似商品页
+    hideSimilarPopup() {
+      this.similarPopup = false
+      /* eslint-disable no-undef */
+      const list = getCurrentPages()
+      list[list.length - 1].data.showSimilar = false
+    },
+    // 获取相似商品页
+    async getSimilarList(isMore) {
+      try {
+        const result = await get('api/v1/goods/optList', { optId: this.currentPageId, page: this.similarObj.page })
+        if (isMore) {
+          this.similarList.push(...result)
+        } else {
+          this.similarList = result
+        }
+      } catch (e) {
+        console.log(e)
+      }
     },
     // 返回
     back() {
