@@ -179,11 +179,12 @@
       round
       close-icon="close"
       position="bottom"
+      class="similar-container"
       custom-style="height: 85%"
       @touchmove.stop.prevent
       @close="hideSimilarPopup"
     >
-      <view style="padding-top:15px;text-align:center">相似商品</view>
+      <view class="similar-title">相似商品</view>
       <scroll-view
         scroll-y="true"
         style="margin-top:10px;height: 77vh"
@@ -195,8 +196,8 @@
             <indexList :item="item"></indexList>
           </view>
         </view>
-        <view v-else style="text-align:center;height:100%">
-          <image src="/static/images/no-data.png" style="width:150px;height:130px;margin-top:40%" />
+        <view v-else class="not-data">
+          <image src="/static/images/no-data.png" />
           <view>暂无数据</view>
         </view>
       </scroll-view>
@@ -204,9 +205,9 @@
   </view>
 </template>
 <script>
+/* eslint-disable no-undef */
 import { get } from '@/utils/http'
 import indexList from '@/components/index-list'
-let timerId = 0
 export default {
   name: 'detail',
   components: { indexList },
@@ -227,6 +228,10 @@ export default {
   },
   onLoad() {
     this.goodsItem = {}
+    const { windowWidth, model } = wx.getSystemInfoSync()
+    this.topBack =
+      750 / windowWidth * 1 * (model === 'iPhone X' ? 55 : 28) + 'rpx'
+    this.swiperHeight = windowWidth * 800 / 800 + 'px'
   },
   async onShow() {
     /* eslint-disable no-undef */
@@ -237,8 +242,12 @@ export default {
       await this.getGoodDetail()
       list[list.length - 1].data.goodsItem = this.goodsItem
     } else {
+      // 商品详情
       this.goodsItem = list[list.length - 1].data.goodsItem
+      // 相似弹出框
       this.similarPopup = !!list[list.length - 1].data.showSimilar
+      // 相似商品列表
+      this.similarList = list[list.length - 1].data.similarList
     }
   },
   // 下拉刷新
@@ -283,10 +292,7 @@ export default {
       const url = `../detail/main?id=${item.goodsId}`
       wx.navigateTo({ url })
     },
-    moveTo() {
-      const url = `../detail/main`
-      wx.navigateTo({ url })
-    },
+    // 相似商品页
     moreLoad() {
       this.similarObj.page++
       this.getSimilarList(true)
@@ -299,6 +305,7 @@ export default {
       list[list.length - 1].data.showSimilar = true
       await this.getSimilarList()
       this.similarPopup = true
+      list[list.length - 1].data.similarList = this.similarList
     },
     // 隐藏相似商品页
     hideSimilarPopup() {
@@ -334,16 +341,6 @@ export default {
     imageHeight(e) {
       // rpx与px单位之间的换算 : 750/windowWidth = 屏幕的高度（rpx）/windowHeight
       // https://www.jb51.net/article/138776.htm 计算swiper图片
-      clearTimeout(timerId)
-      timerId = setTimeout(() => {
-        const winWid = wx.getSystemInfoSync().windowWidth
-        const winInfo = wx.getSystemInfoSync()
-        this.topBack =
-          750 / winWid * 1 * (winInfo.model === 'iPhone X' ? 55 : 28) + 'rpx'
-        const imagw = e.target.width
-        const imagh = e.target.height
-        this.swiperHeight = winWid * imagh / imagw + 'px'
-      }, 30)
     },
     async toPddWeApp() {
       try {
@@ -402,6 +399,7 @@ page {
     image {
       width: 27px;
       height: 27px;
+      opacity: 0.7;
     }
   }
   .commodity-container {
@@ -672,6 +670,26 @@ page {
     }
     .bg-right {
       background: #d44f38;
+    }
+  }
+  .similar-container {
+    .similar-title {
+      padding-top: 15px;
+      text-align: center;
+    }
+    .not-data {
+      height: 100%;
+      text-align: center;
+      image {
+        margin-top: 40%;
+        width: 150px;
+        height: 130px;
+      }
+      :last-child {
+        margin-top: 30rpx;
+        font-size: 30rpx;
+        color: #555555;
+      }
     }
   }
   .is-iphone-x {
