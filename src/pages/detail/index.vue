@@ -247,7 +247,7 @@ export default {
       // 相似弹出框
       this.similarPopup = !!list[list.length - 1].data.showSimilar
       // 相似商品列表
-      this.similarList = list[list.length - 1].data.similarList
+      this.similarList = list[list.length - 1].data.similarList || []
     }
   },
   // 下拉刷新
