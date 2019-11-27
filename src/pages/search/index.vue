@@ -9,7 +9,9 @@
         clearable
         :value="searchValue"
         @change="searchValue = $event.mp.detail"
+        @focus="searchListItem = []"
         @clear="searchListItem = []"
+        @search="searchItem"
         placeholder="请输入搜索的商品"
       >
         <view slot="action" @tap="onSearch" style="color:white">搜索</view>
@@ -120,12 +122,17 @@ export default {
   },
   methods: {
     async onSearch() {
-      if (this.searchValue === '') return wx.showToast({ title: '请输入要搜索的商品!', icon: 'none', duration: 1500 })
-      if (!this.searchHistoryList.includes(this.searchValue)) {
-        wx.setStorage({ key: 'search', data: [this.searchValue, ...this.searchHistoryList] })
+      const searchVal = this.searchValue
+      if (searchVal === '') return wx.showToast({ title: '请输入要搜索的商品!', icon: 'none', duration: 1500 })
+      if (!this.searchHistoryList.includes(searchVal)) {
+        wx.setStorage({ key: 'search', data: [searchVal, ...this.searchHistoryList] })
       }
       this.formObj.page = 1
       this.getSearchList(true)
+    },
+    searchItem(e) {
+      this.searchValue = e.mp.detail
+      this.onSearch()
     },
     // 搜索数据
     async getSearchList(isSort) {

@@ -15,17 +15,17 @@
             普通会员
             <view class="iconfont iconyou" style="font-size:21rpx;margin-left:10rpx"></view>
           </view>
-          <!-- <text
+          <text
             style="padding:9rpx;background:#FFE4B5;position:absolute;top:24px;border-radius:25rpx;font-size:23rpx;border:2rpx solid #FFA500;color:#FFA500"
-          >金币666</text>-->
+          >金币666</text>
         </view>
-        <!-- <view style="display:flex;align-items:center;margin-left:auto">
+        <view style="display:flex;align-items:center;margin-left:auto">
           <view
             style="display:flex;align-items:center;height:30rpx;line-height:50px;padding:8rpx;font-size:25rpx;background:#e86453;border-radius:10rpx;color:#fff"
           >
             <text class="iconfont iconjinbi1"></text>赚更多
           </view>
-        </view>-->
+        </view>
       </view>
       <view v-else style="text-align:center;margin-top: 50rpx;">
         <button
@@ -36,7 +36,7 @@
           @tap="getLoginCode"
         >请登录</button>
       </view>
-      <!-- <view
+      <view
         style="background:#e86453;height:200rpx;border-radius:20rpx 20rpx 0 0;margin:24rpx 20rpx;padding:20rpx 15rpx 20rpx 45rpx;color:#fff;font-size:26rpx"
       >
         <view style="display:flex;justify-content:space-between;align-items:center">
@@ -68,9 +68,9 @@
             <text style="margin-left:10rpx;">¥ 0.00</text>
           </text>
         </view>
-      </view>-->
+      </view>
     </view>
-    <!-- <view style="padding:0 40rpx;">
+    <view style="padding:0 40rpx;">
       <swiper
         style="text-align:center;height:200rpx"
         indicator-dots="true"
@@ -85,8 +85,8 @@
           </swiper-item>
         </block>
       </swiper>
-    </view>-->
-    <!-- <view
+    </view>
+    <view
       style="margin:30rpx 40rpx;padding:10rpx 20rpx;background:#fff;border-radius:25rpx;display:flex;"
     >
       <view style="margin:20rpx 0;text-align:center;margin-right:27rpx;" @tap="moveToOrder">
@@ -101,7 +101,7 @@
         <image src="/static/images/question.png" style="width:60rpx;height:60rpx;" />
         <view style="color:#555;font-size:26rpx">常见问题</view>
       </view>
-    </view>-->
+    </view>
     <!-- <view style="margin:30rpx 40rpx;padding:10rpx 20rpx;background:#fff;border-radius:25rpx">
       <text style="font-weight:bold">常用功能</text>
       <view style="margin:20rpx 0;display:flex;align-items:center">

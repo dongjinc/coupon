@@ -181,16 +181,19 @@
       position="bottom"
       class="similar-container"
       custom-style="height: 85%"
-      @touchmove.stop.prevent
       @close="hideSimilarPopup"
     >
       <view class="similar-title">相似商品</view>
       <scroll-view
         scroll-y="true"
         style="margin-top:10px;height: 77vh"
+        scroll-into-view="demo1"
+        :scroll-top="similarTop"
         @touchmove.stop.prevent
         @scrolltolower="moreLoad"
+        @scroll="similarScroll"
       >
+        <view id="demo1"></view>
         <view v-if="similarList.length !== 0">
           <view v-for="(item, index) in similarList" :key="index" @tap="moveToDetail(item)">
             <indexList :item="item"></indexList>
@@ -223,7 +226,9 @@ export default {
       similarList: [],
       similarObj: {
         page: 1
-      }
+      },
+      similarTop: 0,
+      recordsTop: 0
     }
   },
   onLoad() {
@@ -248,6 +253,9 @@ export default {
       this.similarPopup = !!list[list.length - 1].data.showSimilar
       // 相似商品列表
       this.similarList = list[list.length - 1].data.similarList || []
+      // 相似商品分页
+      this.$set(this.similarObj, 'page', list[list.length - 1].data.similarPage || 1)
+      this.similarTop = this.recordsTop = list[list.length - 1].data.recordsTop || 0
     }
   },
   // 下拉刷新
@@ -289,6 +297,7 @@ export default {
     // 移动详情页
     moveToDetail(item) {
       // todo 优化
+      this.similarTop = this.recordsTop
       const url = `../detail/main?id=${item.goodsId}`
       wx.navigateTo({ url })
     },
@@ -300,12 +309,20 @@ export default {
     // 移动相似商品页
     async moveToSimilar() {
       // 优化
+      this.similarObj.page = 1
       /* eslint-disable no-undef */
       const list = getCurrentPages()
       list[list.length - 1].data.showSimilar = true
       await this.getSimilarList()
       this.similarPopup = true
       list[list.length - 1].data.similarList = this.similarList
+      list[list.length - 1].data.similarPage = this.similarObj.page
+      this.$nextTick(() => {
+        setTimeout(() => {
+          this.similarTop = '0px'
+          console.log(12)
+        }, 100)
+      })
     },
     // 隐藏相似商品页
     hideSimilarPopup() {
@@ -313,11 +330,20 @@ export default {
       /* eslint-disable no-undef */
       const list = getCurrentPages()
       list[list.length - 1].data.showSimilar = false
+      setTimeout(() => {
+        this.similarTop = 0
+      }, 500)
+    },
+    similarScroll(e) {
+      /* eslint-disable no-undef */
+      const list = getCurrentPages()
+      list[list.length - 1].data.recordsTop = e.mp.detail.scrollTop + 'px'
+      this.recordsTop = e.mp.detail.scrollTop + 'px'
     },
     // 获取相似商品页
     async getSimilarList(isMore) {
       try {
-        const result = await get('api/v1/goods/optList', { optId: this.currentPageId, page: this.similarObj.page })
+        const result = await get('api/v1/goods/optList', { optId: this.goodsItem.optId, page: this.similarObj.page })
         if (isMore) {
           this.similarList.push(...result)
         } else {
