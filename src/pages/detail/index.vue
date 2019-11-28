@@ -126,7 +126,7 @@
             </view>-->
           </view>
         </view>
-        <view class="commodity-shop-bottom">进入店铺</view>
+        <view class="commodity-shop-bottom" @tap="moveToShop">进入店铺</view>
       </view>
       <view class="shop-comment">
         <text>
@@ -187,17 +187,46 @@
       <scroll-view
         scroll-y="true"
         style="margin-top:10px;height: 77vh"
-        scroll-into-view="demo1"
         :scroll-top="similarTop"
         @touchmove.stop.prevent
         @scrolltolower="moreLoad"
         @scroll="similarScroll"
       >
-        <view id="demo1"></view>
         <view v-if="similarList.length !== 0">
           <view v-for="(item, index) in similarList" :key="index" @tap="moveToDetail(item)">
             <indexList :item="item"></indexList>
           </view>
+        </view>
+        <view v-else class="not-data">
+          <image src="/static/images/no-data.png" />
+          <view>暂无数据</view>
+        </view>
+      </scroll-view>
+    </van-popup>
+    <van-popup
+      :show="shopPopup"
+      closeable
+      round
+      close-icon="close"
+      position="bottom"
+      class="similar-container"
+      custom-style="height: 85%"
+      @close="hideShopPopup"
+    >
+      <view class="similar-title">店铺商品</view>
+      <scroll-view
+        scroll-y="true"
+        style="margin-top:10px;height: 77vh"
+        :scroll-top="similarTop"
+        @touchmove.stop.prevent
+        @scrolltolower="moreShopLoad"
+        @scroll="similarScroll"
+      >
+        <view v-if="shopItemList.length !== 0">
+          <view v-for="(item, index) in shopItemList" :key="index" @tap="moveToDetail(item)">
+            <indexList :item="item"></indexList>
+          </view>
+          <view class="bottom-tips">----我是有底线的----</view>
         </view>
         <view v-else class="not-data">
           <image src="/static/images/no-data.png" />
@@ -228,7 +257,12 @@ export default {
         page: 1
       },
       similarTop: 0,
-      recordsTop: 0
+      recordsTop: 0,
+      shopPopup: false,
+      shopItemList: [],
+      shopObj: {
+        page: 1
+      }
     }
   },
   onLoad() {
@@ -244,6 +278,7 @@ export default {
     this.currentPageId = list[list.length - 1].options.id
     if (!list[list.length - 1].data.goodsItem) {
       this.similarPopup = false
+      this.shopPopup = false
       await this.getGoodDetail()
       list[list.length - 1].data.goodsItem = this.goodsItem
     } else {
@@ -256,7 +291,21 @@ export default {
       // 相似商品分页
       this.$set(this.similarObj, 'page', list[list.length - 1].data.similarPage || 1)
       this.similarTop = this.recordsTop = list[list.length - 1].data.recordsTop || 0
+      // 商铺弹出框
+      this.shopPopup = !!list[list.length - 1].data.showShop
+      // 商品分页
+      this.$set(this.shopObj, 'page', list[list.length - 1].data.shopPage || 1)
     }
+  },
+  onHide() {
+    /* eslint-disable no-undef */
+    const list = getCurrentPages()
+    list[list.length - 1].data.showSimilar = this.similarPopup
+    list[list.length - 1].data.similarList = this.similarList
+    list[list.length - 1].data.similarPage = this.similarObj.page
+    list[list.length - 1].data.recordsTop = this.recordsTop
+    list[list.length - 1].data.showShop = this.shopPopup
+    list[list.length - 1].data.shopPage = this.shopObj.page
   },
   // 下拉刷新
   onPullDownRefresh() {
@@ -310,34 +359,23 @@ export default {
     async moveToSimilar() {
       // 优化
       this.similarObj.page = 1
-      /* eslint-disable no-undef */
-      const list = getCurrentPages()
-      list[list.length - 1].data.showSimilar = true
       await this.getSimilarList()
       this.similarPopup = true
-      list[list.length - 1].data.similarList = this.similarList
-      list[list.length - 1].data.similarPage = this.similarObj.page
       this.$nextTick(() => {
         setTimeout(() => {
           this.similarTop = '0px'
-          console.log(12)
         }, 100)
       })
     },
     // 隐藏相似商品页
     hideSimilarPopup() {
       this.similarPopup = false
-      /* eslint-disable no-undef */
-      const list = getCurrentPages()
-      list[list.length - 1].data.showSimilar = false
       setTimeout(() => {
         this.similarTop = 0
       }, 500)
     },
+    // 点击相似时 回到第一条数据位置
     similarScroll(e) {
-      /* eslint-disable no-undef */
-      const list = getCurrentPages()
-      list[list.length - 1].data.recordsTop = e.mp.detail.scrollTop + 'px'
       this.recordsTop = e.mp.detail.scrollTop + 'px'
     },
     // 获取相似商品页
@@ -352,6 +390,42 @@ export default {
       } catch (e) {
         console.log(e)
       }
+    },
+    // 店铺
+    async moveToShop() {
+      this.shopObj.page = 1
+      await this.getShopItemList(false)
+      this.shopPopup = true
+      this.$nextTick(() => {
+        setTimeout(() => {
+          this.similarTop = '0px'
+        }, 100)
+      })
+    },
+    // 获取店铺商品页
+    async getShopItemList(isMore) {
+      try {
+        const result = await get('api/v1/goods/mallList', { mallId: this.goodsItem.mallId, page: this.shopObj.page })
+        if (isMore) {
+          this.shopItemList.push(...result)
+        } else {
+          this.shopItemList = result
+        }
+      } catch (e) {
+        console.log(e)
+      }
+    },
+    // 关闭店铺
+    hideShopPopup() {
+      this.shopPopup = false
+      setTimeout(() => {
+        this.similarTop = 0
+      }, 500)
+    },
+    // 更多店铺商品
+    moreShopLoad() {
+      this.shopObj.page++
+      this.getShopItemList(true)
     },
     // 返回
     back() {
@@ -716,6 +790,15 @@ page {
         font-size: 30rpx;
         color: #555555;
       }
+    }
+    .van-icon-close {
+      font-size: 45rpx;
+    }
+    .bottom-tips {
+      margin-top: 15rpx;
+      font-size: 20rpx;
+      text-align: center;
+      color: #666;
     }
   }
   .is-iphone-x {

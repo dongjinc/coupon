@@ -1,6 +1,6 @@
 <template>
   <view>
-    <view class="search-input">
+    <view class="search-input" style="display:flex;flex-direction:column">
       <van-search
         style="flex:1"
         :focus="true"
@@ -16,11 +16,11 @@
       >
         <view slot="action" @tap="onSearch" style="color:white">搜索</view>
       </van-search>
+      <view v-if="searchListItem.length !== 0">
+        <sort @sortType="changeType" :sortType="formObj.sortType"></sort>
+      </view>
     </view>
     <view v-if="searchListItem.length !== 0" class="search-container">
-      <van-sticky offset-top="50" style="width:100%!important">
-        <sort @sortType="changeType" :sortType="formObj.sortType"></sort>
-      </van-sticky>
       <view
         v-for="(item, index) in searchListItem"
         :key="index"
@@ -202,7 +202,7 @@ page {
   background: #dc6364;
 }
 .search-container {
-  margin-top: 50px;
+  margin-top: 90px;
   .item-container {
     border-bottom: 5rpx solid #eee;
   }
