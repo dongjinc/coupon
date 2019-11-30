@@ -7,7 +7,7 @@
     "pages/detail/main",
     "pages/income/main",
     "pages/order/main",
-    "pages/similar/main"
+    "pages/withdrawal/main"
   ],
   "window": {
     "backgroundTextStyle": "light",

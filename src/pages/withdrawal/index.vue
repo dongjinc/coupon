@@ -1,0 +1,23 @@
+<template>
+  <view>
+    <view
+      style="display:flex;justify-content:space-between;margin:0 32rpx;padding:35rpx;box-sizing:border-box;height:210rpx;border-radius:15rpx;background:linear-gradient(90deg, #EE799F, #F08080 );margin-top:30rpx;color:#fff;box-shadow:0 20rpx 60rpx #FFC0CB"
+    >
+      <view style="display:flex;flex-direction:column;flex: 1;">
+        <text style="font-size:28rpx;">当前余额(元)</text>
+        <view>
+          <text>¥</text>
+          <text style="font-size:56rpx;line-height:95rpx;">122.33</text>
+        </view>
+      </view>
+      <view
+        style="width:130rpx;height:40rpx;border-radius:25rpx;border:1px solid #fff;padding:8rpx;font-size:26rpx;line-height:40rpx;text-align:center"
+      >余额明细</view>
+    </view>
+  </view>
+</template>
+<script>
+export default {
+  name: 'withdrawal'
+}
+</script>

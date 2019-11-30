@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "余额",
+  "navigationBarBackgroundColor": "#dc6364",
+  "navigationBarTextStyle": "white",
+  "backgroundColor": "#f6f5f4",
+  "enablePullDownRefresh": true
+}
