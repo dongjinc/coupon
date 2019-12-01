@@ -240,6 +240,7 @@
 /* eslint-disable no-undef */
 import { get } from '@/utils/http'
 import indexList from '@/components/index-list'
+import { moveTo } from '@/utils/common'
 export default {
   name: 'detail',
   components: { indexList },
@@ -345,10 +346,8 @@ export default {
     },
     // 移动详情页
     moveToDetail(item) {
-      // todo 优化
       this.similarTop = this.recordsTop
-      const url = `../detail/main?id=${item.goodsId}`
-      wx.navigateTo({ url })
+      moveTo('../detail/main', { id: item.goodsId })
     },
     // 相似商品页
     moreLoad() {

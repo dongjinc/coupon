@@ -81,6 +81,7 @@
 import bannerSwiper from '@/components/banner-swiper'
 import indexList from '@/components/index-list'
 import { PageBase } from '@/utils/http'
+import { moveTo } from '@/utils/common'
 const classArray = [0, 8182, 6398, 8583, 239, 18637]
 export default {
   components: { bannerSwiper, indexList },
@@ -148,14 +149,6 @@ export default {
     onChange(e) {
       this.tabActive = e.mp.detail.index
     },
-    bindViewTap() {
-      const url = '../logs/main'
-      if (mpvuePlatform === 'wx') {
-        wx.switchTab({ url })
-      } else {
-        wx.navigateTo({ url })
-      }
-    },
     // 移动到搜索页
     moveToSearch() {
       const url = '../search/main'
@@ -163,9 +156,7 @@ export default {
     },
     // 移动详情页
     moveToDetail(item) {
-      // todo 优化
-      const url = `../detail/main?id=${item.goodsId}`
-      wx.navigateTo({ url })
+      moveTo('../detail/main', { id: item.goodsId })
     }
   }
 }

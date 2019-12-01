@@ -67,6 +67,7 @@
 <script>
 import { get } from '@/utils/http'
 import { formatTime } from '@/utils'
+import { moveTo } from '@/utils/common'
 export default {
   name: 'Order',
   data() {
@@ -123,9 +124,7 @@ export default {
     },
     // 移动详情页
     moveToDetail(item) {
-      // todo 优化
-      const url = `../detail/main?id=${item.goodsId}`
-      wx.navigateTo({ url })
+      moveTo('../detail/main', { id: item.goodsId })
     },
     // 复制Api
     copyOrderItem(item) {

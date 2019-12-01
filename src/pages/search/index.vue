@@ -63,6 +63,7 @@
 import indexList from '@/components/index-list'
 import sort from '@/components/sort'
 import { get } from '@/utils/http'
+import { moveTo } from '@/utils/common'
 export default {
   name: 'search',
   components: { indexList, sort },
@@ -177,9 +178,7 @@ export default {
     },
     // 移动详情页
     moveToDetail(item) {
-      // todo 优化
-      const url = `../detail/main?id=${item.goodsId}`
-      wx.navigateTo({ url })
+      moveTo('../detail/main', { id: item.goodsId })
     }
   }
 }

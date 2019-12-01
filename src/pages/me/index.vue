@@ -101,6 +101,7 @@
 </template>
 <script>
 import { get, post } from '@/utils/http'
+import { moveTo } from '@/utils/common'
 export default {
   name: 'Me',
   data() {
@@ -188,24 +189,15 @@ export default {
       })
     },
     moveToIncome() {
-      const url = '../income/main'
-      wx.navigateTo({
-        url
-      })
+      moveTo('../income/main')
     },
     // 提现
     moveToWithdrawal() {
-      const url = '../withdrawal/main'
-      wx.navigateTo({
-        url
-      })
+      moveTo('../withdrawal/main')
     },
     // 我的订单
     moveToOrder() {
-      const url = '../order/main'
-      wx.navigateTo({
-        url
-      })
+      moveTo('../order/main')
     }
   }
 }
