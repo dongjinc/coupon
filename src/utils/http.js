@@ -29,7 +29,7 @@ const request = (method, url) => {
  *  method GET
  */
 const gets = request('GET', global.node_uri)
-export const get = function (api, param = {}) {
+export const get = function (api, param) {
   if (!param) return gets(api)
   return gets(api + serialize(param))
 }

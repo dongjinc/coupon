@@ -1,11 +1,17 @@
 <template>
   <view class="order-container">
-    <view class="order-cash">
+    <!-- <view class="order-cash">
       <text>累计已返现 0.00元</text>
       <text style="border-left:1rpx solid #eee">累计待返现 0.00元</text>
+    </view>-->
+    <view class="order-cash">
+      <text>累计已返现 {{memberMoney.cumulativeMoney}}元</text>
+      <text
+        style="border-left:1rpx solid #eee"
+      >累计待返现 {{memberMoney.soonMoney === '0'?'0.00': memberMoney.soonMoney}}元</text>
     </view>
     <van-notice-bar left-icon="volume-o" speed="30" text="本月确认收货的订单次月25日返现到账，无效订单(售后等异常行为)除外。" />
-    <van-tabs swipeable animated sticky>
+    <!-- <van-tabs swipeable animated sticky>
       <van-tab title="全部">
         <view v-for="item in 7" :key="item" class="order-list">
           <view class="order-list-top">
@@ -30,12 +36,111 @@
       <van-tab title="待返现">内容 2</van-tab>
       <van-tab title="已返现">内容 3</van-tab>
       <van-tab title="无效订单">内容 4</van-tab>
-    </van-tabs>
+    </van-tabs>-->
+    <view
+      v-for="(item, index) in orderList"
+      :key="index"
+      class="order-list"
+      @tap="moveToDetail(item)"
+    >
+      <view class="order-list-top">
+        <text>订单: {{item.orderSn}}</text>
+        <text style="color: #ee7600;padding:10rpx 15rpx;" @tap.stop="copyOrderItem(item)">复制</text>
+      </view>
+      <view class="order-list-center">
+        <image :src="item.goodsThumbnailUrl" />
+        <view class="order-list-center-title">
+          <text>{{item.goodsName}}</text>
+          <text style="color:	#BEBEBE;font-size:24rpx">下单时间: {{item.orderCreateTime}}</text>
+        </view>
+      </view>
+      <view class="order-list-down">
+        <text style="background:#FFE4E1;color:#EE5C42;">订单金额 ¥ 19.8</text>
+        <text
+          v-if="item.grantFlag !==null"
+          style="background:#F0F8FF;color:#87CEFF;"
+        >{{item.grantFlag?'已返现':'待返现'}} ¥ {{item.memberAmountStr}}</text>
+      </view>
+    </view>
   </view>
 </template>
 <script>
+import { get } from '@/utils/http'
+import { formatTime } from '@/utils'
 export default {
-  name: 'Order'
+  name: 'Order',
+  data() {
+    return {
+      orderObj: {
+        page: 1
+      },
+      memberMoney: {},
+      orderList: []
+    }
+  },
+  onLoad() {
+    this.orderObj.page = 1
+    this.getMemberMoney()
+    this.getOrderList()
+  },
+  onReachBottom() {
+    // 到底部触发刷新
+    this.orderObj.page++
+    this.getOrderList(true)
+  },
+  // 下拉刷新
+  onPullDownRefresh() {
+    wx.showNavigationBarLoading()
+    setTimeout(function () {
+      // complete
+      wx.hideNavigationBarLoading() // 完成停止加载
+      wx.stopPullDownRefresh() // 停止下拉刷新
+    }, 1500)
+  },
+  methods: {
+    // 获取头部返现
+    async getMemberMoney() {
+      try {
+        const result = await get('api/v1/member/accountInfo')
+        this.memberMoney = result
+      } catch (e) {
+        console.log(e)
+      }
+    },
+    // 获取订单列表
+    async getOrderList(isMore) {
+      const result = await get('api/v1/ddk/order/list', { ...this.orderObj })
+      result.forEach(item => {
+        if (item.orderCreateTime) {
+          item.orderCreateTime = formatTime(new Date(item.orderCreateTime * 1000))
+        }
+      })
+      if (isMore) {
+        this.orderList.push(...result)
+      } else {
+        this.orderList = result
+      }
+    },
+    // 移动详情页
+    moveToDetail(item) {
+      // todo 优化
+      const url = `../detail/main?id=${item.goodsId}`
+      wx.navigateTo({ url })
+    },
+    // 复制Api
+    copyOrderItem(item) {
+      wx.setClipboardData({
+        data: item.orderSn,
+        success(res) {
+          // wx.getClipboardData({
+          //   success(res) {
+          //     console.log(res)
+          //   }
+          // })
+        }
+      })
+    }
+  }
 }
 </script>
 <style lang="scss">
@@ -62,7 +167,7 @@ page {
   .order-list {
     display: flex;
     flex-direction: column;
-    margin: 10rpx 30rpx 0 30rpx;
+    margin: 10rpx 20rpx 0 20rpx;
     padding: 20rpx 10rpx;
     font-size: 26rpx;
     background: #fff;
@@ -70,6 +175,7 @@ page {
     &-top {
       display: flex;
       justify-content: space-between;
+      align-items: center;
       :nth-child(1) {
         color: #6e6e6e;
       }

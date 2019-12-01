@@ -1,91 +1,84 @@
 <template>
-  <view class="me-container">
-    <!-- 头部 -->
-    <view class="me-header">
-      <!-- 个人 -->
-      <view class="person-wrap" v-if="isLogin">
-        <image
-          src="https://ss0.bdstatic.com/94oJfD_bAAcT8t7mm9GUKT-xh_/timg?image&quality=100&size=b4000_4000&sec=1573316656&di=e6346dfae80b451c19ccf8e6253ae28a&src=http://downhdlogo.yy.com/hdlogo/640640/630/630/71/1000710067/u1000710067JGb2l8C.png"
-        />
-        <view class="member-content">
-          <view class="member-name">
-            普通会员
-            <view class="iconfont iconyou"></view>
+  <view>
+    <view class="me-container" v-if="isLogin">
+      <!-- 头部 -->
+      <view class="me-header">
+        <!-- 个人 -->
+        <view class="person-wrap">
+          <image :src="meInfo.avatarUrl" />
+          <view class="member-content">
+            <view class="member-name">
+              {{meInfo.nickName}}
+              <view class="iconfont iconyou"></view>
+            </view>
+            <!-- <text class="gold">金币666</text> -->
           </view>
-          <text class="gold">金币666</text>
-        </view>
-        <view class="earn-more">
-          <view class="more-content">
-            <text class="iconfont iconjinbi1"></text>赚更多
-          </view>
-        </view>
-      </view>
-      <view class="not-logged" v-else>
-        <button
-          type="primary"
-          size="mini"
-          open-type="getUserInfo"
-          @getuserinfo="getUserInfo"
-          @tap="getLoginCode"
-        >请登录</button>
-      </view>
-      <view class="income-wrap">
-        <view class="income-content">
-          <view class="income-content-left" @tap="moveToWithdrawal">
-            <text>可提现余额</text>
-            <view>
-              ¥
-              <text style="font-size:58rpx;">0.00</text>
+          <view class="earn-more">
+            <view class="more-content">
+              <text class="iconfont iconjinbi1"></text>赚更多
             </view>
           </view>
-          <view class="income-content-right" @tap="moveToIncome">
-            <view>我的收入</view>
-            <view class="iconfont iconyou"></view>
+        </view>
+
+        <view class="income-wrap">
+          <view class="income-content">
+            <view class="income-content-left" @tap="moveToWithdrawal">
+              <text>可提现余额</text>
+              <view>
+                ¥
+                <text style="font-size:58rpx;">{{meInfo.money}}</text>
+              </view>
+            </view>
+            <view class="income-content-right" @tap="moveToIncome">
+              <view>我的收入</view>
+              <view class="iconfont iconyou"></view>
+            </view>
+          </view>
+          <view class="account-content">
+            <text>
+              即将到账
+              <text
+                class="account-content-border"
+              >¥ {{meInfo.soonMoney === '0'? '0.00': meInfo.soonMoney}}</text>
+            </text>
+            <text>|</text>
+            <text>
+              累计到账
+              <text class="account-content-border">¥ {{meInfo.cumulativeMoney}}</text>
+            </text>
           </view>
         </view>
-        <view class="account-content">
-          <text>
-            即将到账
-            <text class="account-content-border">¥ 100.00</text>
-          </text>
-          <text>|</text>
-          <text>
-            累计到账
-            <text class="account-content-border">¥ 0.00</text>
-          </text>
+      </view>
+      <view class="swiper-wrap">
+        <swiper
+          indicator-dots="true"
+          autoplay="true"
+          interval="5000"
+          duration="1000"
+          indicator-active-color="#fff"
+        >
+          <block v-for="(item, index) in personalBanner" :key="index">
+            <swiper-item>
+              <image :src="item" />
+            </swiper-item>
+          </block>
+        </swiper>
+      </view>
+      <view class="common-fun-wrap">
+        <view class="me-item" @tap="moveToOrder">
+          <image src="/static/images/order.png" />
+          <view>我的订单</view>
+        </view>
+        <view class="me-item">
+          <image src="/static/images/footer.png" />
+          <view>浏览记录</view>
+        </view>
+        <view class="me-item">
+          <image src="/static/images/question.png" />
+          <view>常见问题</view>
         </view>
       </view>
-    </view>
-    <view class="swiper-wrap">
-      <swiper
-        indicator-dots="true"
-        autoplay="true"
-        interval="5000"
-        duration="1000"
-        indicator-active-color="#fff"
-      >
-        <block v-for="(item, index) in personalBanner" :key="index">
-          <swiper-item>
-            <image :src="item" />
-          </swiper-item>
-        </block>
-      </swiper>
-    </view>
-    <view class="common-fun-wrap">
-      <view class="me-item" @tap="moveToOrder">
-        <image src="/static/images/order.png" />
-        <view>我的订单</view>
-      </view>
-      <view class="me-item">
-        <image src="/static/images/footer.png" />
-        <view>浏览记录</view>
-      </view>
-      <view class="me-item">
-        <image src="/static/images/question.png" />
-        <view>常见问题</view>
-      </view>
-    </view>
-    <!-- <view style="margin:30rpx 40rpx;padding:10rpx 20rpx;background:#fff;border-radius:25rpx">
+      <!-- <view style="margin:30rpx 40rpx;padding:10rpx 20rpx;background:#fff;border-radius:25rpx">
       <text style="font-weight:bold">常用功能</text>
       <view style="margin:20rpx 0;display:flex;align-items:center">
         <image src="/static/images/order.png" style="width:60rpx;height:60rpx;margin-right:15rpx" />
@@ -93,11 +86,21 @@
         <image src="/static/images/footer.png" style="width:60rpx;height:60rpx;margin-right:15rpx" />
         <text style="color:#555;font-size:28rpx">浏览</text>
       </view>
-    </view>-->
+      </view>-->
+    </view>
+    <view class="not-logged" v-else>
+      <button
+        type="primary"
+        size="mini"
+        open-type="getUserInfo"
+        @getuserinfo="getUserInfo"
+        @tap="getLoginCode"
+      >请登录</button>
+    </view>
   </view>
 </template>
 <script>
-import { post } from '@/utils/http'
+import { get, post } from '@/utils/http'
 export default {
   name: 'Me',
   data() {
@@ -107,16 +110,28 @@ export default {
       personalBanner: [
         'http://img3.imgtn.bdimg.com/it/u=219617380,3771697655&fm=26&gp=0.jpg',
         'http://img1.imgtn.bdimg.com/it/u=162228925,3147880140&fm=26&gp=0.jpg'
-      ]
+      ],
+      meInfo: {}
     }
   },
   onShow() {
     const res = wx.getStorageSync('token')
+    if (res && !this.meInfo.nickName) this.login()
     this.isLogin = !!res
+  },
+  // 下拉刷新
+  onPullDownRefresh() {
+    wx.showNavigationBarLoading()
+    setTimeout(function () {
+      // complete
+      wx.hideNavigationBarLoading() // 完成停止加载
+      wx.stopPullDownRefresh() // 停止下拉刷新
+    }, 1500)
   },
   methods: {
     // 获取用户登录
     async getUserInfo(e) {
+      const _this = this
       wx.showLoading({
         title: '加载中...'
       })
@@ -129,8 +144,15 @@ export default {
             'parentId': -1
           })
           this.isLogin = true
-          wx.setStorageSync('token', result.token)
           wx.setStorageSync('time', result.expMillis)
+          // 设置token 成功后调用获取个人信息的接口
+          wx.setStorage({
+            data: result.token,
+            key: 'token',
+            success(res) {
+              _this.login()
+            }
+          })
         } catch (e) {
           console.log(e)
         } finally {
@@ -138,6 +160,16 @@ export default {
         }
       } else {
         console.log('error')
+      }
+    },
+    // 获取个人信息
+    async login() {
+      try {
+        const meInfo = await get('api/v1/member/getMemberInfo')
+        const meFund = await get('api/v1/member/accountInfo')
+        this.meInfo = { ...meInfo, ...meFund }
+      } catch (e) {
+        console.log(e)
       }
     },
     // 获取loginCode
@@ -195,6 +227,7 @@ page {
       border-radius: 50%;
     }
     .member-content {
+      width: 300rpx;
       position: relative;
       display: flex;
       flex-direction: column;
@@ -236,10 +269,6 @@ page {
         color: #fff;
       }
     }
-  }
-  .not-logged {
-    margin-top: 50rpx;
-    text-align: center;
   }
   .income-wrap {
     background: #e86453;
@@ -314,5 +343,9 @@ page {
       font-size: 26rpx;
     }
   }
+}
+.not-logged {
+  margin-top: 50rpx;
+  text-align: center;
 }
 </style>
