@@ -356,7 +356,6 @@ export default {
     },
     // 移动相似商品页
     async moveToSimilar() {
-      // 优化
       this.similarObj.page = 1
       await this.getSimilarList()
       this.similarPopup = true

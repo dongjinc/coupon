@@ -30,7 +30,8 @@
               </view>
             </view>
             <view class="income-content-right" @tap="moveToIncome">
-              <view>我的收入</view>
+              <!-- <view>我的收入</view> -->
+              <view>立即提现</view>
               <view class="iconfont iconyou"></view>
             </view>
           </view>
@@ -51,15 +52,17 @@
       </view>
       <view class="swiper-wrap">
         <swiper
+          class="slideshow"
           indicator-dots="true"
           autoplay="true"
           interval="5000"
           duration="1000"
+          circular="true"
           indicator-active-color="#fff"
         >
           <block v-for="(item, index) in personalBanner" :key="index">
             <swiper-item>
-              <image :src="item" />
+              <image :src="item.imageUrl" @click="moveToBdd(item)" />
             </swiper-item>
           </block>
         </swiper>
@@ -68,6 +71,10 @@
         <view class="me-item" @tap="moveToOrder">
           <image src="/static/images/order.png" />
           <view>我的订单</view>
+        </view>
+        <view class="me-item">
+          <image src="/static/images/customer.png" />
+          <view>联系客服</view>
         </view>
         <view class="me-item">
           <image src="/static/images/footer.png" />
@@ -102,18 +109,19 @@
 <script>
 import { get, post } from '@/utils/http'
 import { moveTo } from '@/utils/common'
+import store from '../../store'
 export default {
   name: 'Me',
   data() {
     return {
       isLogin: false,
       loginCode: '',
-      personalBanner: [
-        'http://img3.imgtn.bdimg.com/it/u=219617380,3771697655&fm=26&gp=0.jpg',
-        'http://img1.imgtn.bdimg.com/it/u=162228925,3147880140&fm=26&gp=0.jpg'
-      ],
+      personalBanner: [],
       meInfo: {}
     }
+  },
+  onLoad() {
+    this.personalBanner = store.state.bannerObj.personalCenterBanner
   },
   onShow() {
     const res = wx.getStorageSync('token')
@@ -188,12 +196,44 @@ export default {
         }
       })
     },
+    /** banner type */
+    moveToBdd(item) {
+      const obj = {
+        40: this.moveToPdd(item)
+      }
+      console.log(obj[item.type])
+    },
+    /** 跳转type */
+    async moveToPdd(item) {
+      try {
+        const result = await get(item.value)
+        wx.navigateToMiniProgram({
+          appId: result.appId,
+          path: result.pagePath,
+          success(res) {
+            // 打开成功
+          }
+        })
+      } catch (e) {
+      } finally {
+        wx.hideLoading()
+      }
+    },
+    /** 我的收入 */
     moveToIncome() {
-      moveTo('../income/main')
+      wx.showToast({
+        title: '可提现额需大于1元',
+        icon: 'none'
+      })
+      // moveTo('../income/main')
     },
     // 提现
     moveToWithdrawal() {
-      moveTo('../withdrawal/main')
+      wx.showToast({
+        title: '可提现额需大于1元',
+        icon: 'none'
+      })
+      // moveTo('../withdrawal/main')
     },
     // 我的订单
     moveToOrder() {
@@ -208,6 +248,14 @@ page {
 }
 .iconjinbi1 {
   color: #ffff00;
+}
+.slideshow {
+  margin: 0 auto;
+  width: 95%;
+  height: 274rpx;
+  border-radius: 20rpx;
+  overflow: hidden;
+  transform: translateY(0);
 }
 .me-header {
   .person-wrap {
@@ -267,7 +315,7 @@ page {
     height: 200rpx;
     border-radius: 20rpx 20rpx 0 0;
     margin: 24rpx 20rpx;
-    padding: 20rpx 15rpx 20rpx 45rpx;
+    padding: 20rpx;
     color: #fff;
     font-size: 26rpx;
     .income-content {
@@ -310,7 +358,6 @@ page {
   }
   ._swiper-item {
     height: 200rpx;
-    border-radius: 25rpx;
     image {
       width: 100%;
       height: 200rpx;
@@ -324,7 +371,7 @@ page {
   background: #fff;
   border-radius: 25rpx;
   .me-item {
-    margin: 20rpx 27rpx 0 0;
+    margin: 20rpx 40rpx 0 0;
     text-align: center;
     image {
       width: 60rpx;

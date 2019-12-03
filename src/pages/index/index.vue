@@ -8,6 +8,23 @@
         @click="moveToSearch"
         readonly
       />
+      <view>
+        <swiper
+          class="slideshow"
+          :indicator-dots="indicatorDots"
+          :autoplay="autoplay"
+          :interval="interval"
+          :duration="duration"
+          circular="true"
+          indicator-active-color="#fff"
+        >
+          <block v-for="(item, index) in bannerList" :key="index">
+            <swiper-item style="display:flex;" @click="moveToBdd(item)">
+              <image :src="item.imageUrl" style="margin:0 auto;max-height:100%;width:100%" />
+            </swiper-item>
+          </block>
+        </swiper>
+      </view>
       <!-- <bannerSwiper :imgUrls="imgUrls"></bannerSwiper> -->
     </view>
     <view class="tabs-container">
@@ -80,8 +97,9 @@
 <script>
 import bannerSwiper from '@/components/banner-swiper'
 import indexList from '@/components/index-list'
-import { PageBase } from '@/utils/http'
+import { PageBase, get } from '@/utils/http'
 import { moveTo } from '@/utils/common'
+import store from '../../store'
 const classArray = [0, 8182, 6398, 8583, 239, 18637]
 export default {
   components: { bannerSwiper, indexList },
@@ -91,11 +109,11 @@ export default {
       tabActive: 0,
       topList: [[], [], [], [], [], []],
       pageList: [],
-      imgUrls: [
-        'https://mishi-image.oss-cn-hangzhou.aliyuncs.com/yry/wxapp/test/goodslist/menu-gulaorou.png',
-        'https://mishi-image.oss-cn-hangzhou.aliyuncs.com/yry/wxapp/test/goodslist/menu-heniu.png',
-        'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1572167835009&di=9a7b805520cad4b7bdbc49bb8a45066d&imgtype=0&src=http%3A%2F%2Fimg.zcool.cn%2Fcommunity%2F037094356e1859e32f875520f774466.jpg'
-      ]
+      bannerList: [],
+      indicatorDots: true,
+      autoplay: true,
+      interval: 4000,
+      duration: 1000
     }
   },
   watch: {
@@ -115,6 +133,7 @@ export default {
       new PageBase('api/v1/goods/catList')
     ]
     this.getTopList()
+    this.getBannerList()
   },
   onReachBottom() {
     // 到底部触发刷新
@@ -130,6 +149,39 @@ export default {
     }, 1500)
   },
   methods: {
+    /** 获取banner */
+    async getBannerList() {
+      try {
+        const result = await get('api/v1/index/banner')
+        this.bannerList = result.indexBanner
+        store.commit('setBanner', result)
+      } catch (e) {
+        console.log(e)
+      }
+    },
+    /** banner type */
+    moveToBdd(item) {
+      const obj = {
+        40: this.moveToPdd(item)
+      }
+      console.log(obj[item.type])
+    },
+    /** 跳转type */
+    async moveToPdd(item) {
+      try {
+        const result = await get(item.value)
+        wx.navigateToMiniProgram({
+          appId: result.appId,
+          path: result.pagePath,
+          success(res) {
+            // 打开成功
+          }
+        })
+      } catch (e) {
+      } finally {
+        wx.hideLoading()
+      }
+    },
     // 获取列表
     async getTopList(loading = true) {
       if (loading) wx.showLoading({ title: '加载中...' })
@@ -164,6 +216,14 @@ export default {
 <style lang="scss">
 page {
   background: #f6f5f4;
+}
+.slideshow {
+  margin: 0 auto;
+  width: 95%;
+  height: 274rpx;
+  border-radius: 20rpx;
+  overflow: hidden;
+  transform: translateY(0);
 }
 .header-container {
   background-image: linear-gradient(180deg, #eb3e47, #ffffff);

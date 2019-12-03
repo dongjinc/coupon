@@ -9,8 +9,8 @@
         clearable
         :value="searchValue"
         @change="searchValue = $event.mp.detail"
-        @focus="searchListItem = []"
-        @clear="searchListItem = []"
+        @focus="searchListItem = [];getSearchStorge()"
+        @clear="searchListItem = [];getSearchStorge"
         @search="searchItem"
         placeholder="请输入搜索的商品"
       >
@@ -72,24 +72,19 @@ export default {
       searchValue: '',
       searchListItem: [],
       searchHistoryList: [],
-      searchExploreList: ['红富士苹果', '每日坚果', '卫生纸', '曲奇饼干', 'iphone 11'],
+      searchExploreList: [],
       formObj: {
         page: 1,
         sortType: 0
       }
     }
   },
-  onLoad(param) { },
-  onShow() {
-    // 获取storage里面的值
-    try {
-      const res = wx.getStorageSync('search')
-      if (res) {
-        this.searchHistoryList = res
-      }
-    } catch (e) { console.log(e) }
-    /* eslint-disable no-undef */
+  onLoad(param) {
+    /** 探索发现 */
+    this.getHotSearchList()
+    this.getSearchStorge()
   },
+  onShow() { },
   onReachBottom() {
     // 到底部触发刷新
     this.formObj.page++
@@ -122,6 +117,23 @@ export default {
     }
   },
   methods: {
+    /** 记录搜索内容 */
+    async getSearchStorge() {
+      // 获取storage里面的值
+      try {
+        const res = await wx.getStorageSync('search')
+        if (res) {
+          this.searchHistoryList = res
+        }
+      } catch (e) { console.log(e) }
+    },
+    /** 获取探索发现列表 */
+    async getHotSearchList() {
+      try {
+        const result = await get('api/v1/goods/hotSearch')
+        this.searchExploreList = result.hotSearch
+      } catch (e) { console.log(e) }
+    },
     async onSearch() {
       const searchVal = this.searchValue
       if (searchVal === '') return wx.showToast({ title: '请输入要搜索的商品!', icon: 'none', duration: 1500 })
