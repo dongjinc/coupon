@@ -104,6 +104,27 @@
         @tap="getLoginCode"
       >请登录</button>
     </view>
+    <van-dialog
+      :width="230"
+      use-slot
+      :show="showDialog"
+      :show-confirm-button="false"
+      :show-cancel-button="false"
+      confirm-button-open-type="getUserInfo"
+      @close="onClose"
+      @getuserinfo="getUserInfo"
+    >
+      <view>
+        <view style="background:linear-gradient(90deg, #EE799F, #F08080 );height:180rpx"></view>
+        <view style="height:150rpx;"></view>
+        <view style="position:absolute;top:37%;width:100%;text-align:center">
+          <image src="/static/images/auth.png" style="height:128rpx;width:80%" />
+        </view>
+        <view style="position:absolute;bottom:20rpx;width:100%;text-align:center">
+          <button size="mini" @tap="onClose">授权登录</button>
+        </view>
+      </view>
+    </van-dialog>
   </view>
 </template>
 <script>
@@ -117,13 +138,15 @@ export default {
       isLogin: false,
       loginCode: '',
       personalBanner: [],
-      meInfo: {}
+      meInfo: {},
+      showDialog: false
     }
   },
   onLoad() {
     this.personalBanner = store.state.bannerObj.personalCenterBanner
   },
   onShow() {
+    this.showDialog = true
     const res = wx.getStorageSync('token')
     if (res && !this.meInfo.nickName) this.login()
     this.isLogin = !!res
@@ -138,6 +161,10 @@ export default {
     }, 1500)
   },
   methods: {
+    onClose() {
+      console.log(123)
+      this.showDialog = false
+    },
     // 获取用户登录
     async getUserInfo(e) {
       const _this = this
@@ -256,6 +283,9 @@ page {
   border-radius: 20rpx;
   overflow: hidden;
   transform: translateY(0);
+}
+button::after {
+  border: 0;
 }
 .me-header {
   .person-wrap {
