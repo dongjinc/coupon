@@ -141,6 +141,7 @@ export default {
   }
 }
 .auth-dialog {
+  overflow: hidden;
   ._button {
     color: #fff;
     width: 50%;

@@ -14,9 +14,9 @@
             <!-- <text class="gold">金币666</text> -->
           </view>
           <view class="earn-more">
-            <view class="more-content">
+            <!-- <view class="more-content">
               <text class="iconfont iconjinbi1"></text>赚更多
-            </view>
+            </view>-->
           </view>
         </view>
 
@@ -72,18 +72,23 @@
           <image src="/static/images/order.png" />
           <view>我的订单</view>
         </view>
-        <view class="me-item">
+        <view class="me-item" style="position:relative">
           <image src="/static/images/customer.png" />
           <view>联系客服</view>
+          <button
+            open-type="contact"
+            style="position: absolute;left: 0;top: 0;height: 109rpx;opacity: 0;"
+            size="mini"
+          >授权登录</button>
         </view>
-        <view class="me-item">
+        <!-- <view class="me-item">
           <image src="/static/images/footer.png" />
           <view>浏览记录</view>
         </view>
         <view class="me-item">
           <image src="/static/images/question.png" />
           <view>常见问题</view>
-        </view>
+        </view>-->
       </view>
       <!-- <view style="margin:30rpx 40rpx;padding:10rpx 20rpx;background:#fff;border-radius:25rpx">
       <text style="font-weight:bold">常用功能</text>
