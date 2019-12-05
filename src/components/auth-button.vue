@@ -10,7 +10,7 @@
     @close="$emit('update:showDialog', false)"
     @getuserinfo="getUserInfo"
   >
-    <view>
+    <view class="auth-dialog">
       <view style="background:linear-gradient(90deg, #EE799F, #F08080 );height:180rpx"></view>
       <view style="height:150rpx;"></view>
       <view class="animate">
@@ -18,6 +18,9 @@
       </view>
       <view style="position:absolute;top:37%;width:100%;text-align:center">
         <image src="/static/images/auth.png" style="height:128rpx;width:80%" />
+      </view>
+      <view style="position:absolute;top:130rpx;width:100%;text-align:center;z-index:800;opacity:0">
+        <button size="mini" open-type="getUserInfo" @getuserinfo="getUserInfo" @tap="getLoginCode">1</button>
       </view>
       <view style="position:absolute;bottom:20rpx;width:100%;text-align:center">
         <button
@@ -96,6 +99,8 @@ export default {
           wx.hideLoading()
         }
       } else {
+        wx.hideLoading()
+        wx.showToast({ title: '授权失败!', icon: 'none' })
         console.log('error')
       }
     },
@@ -133,6 +138,16 @@ export default {
   }
   100% {
     top: -5rpx;
+  }
+}
+.auth-dialog {
+  ._button {
+    color: #fff;
+    width: 50%;
+    height: 70rpx;
+    line-height: 70rpx;
+    font-size: 32rpx;
+    background: #71c671;
   }
 }
 </style>
