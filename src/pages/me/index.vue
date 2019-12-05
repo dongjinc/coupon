@@ -104,35 +104,19 @@
         @tap="getLoginCode"
       >请登录</button>
     </view>
-    <van-dialog
-      :width="230"
-      use-slot
-      :show="showDialog"
-      :show-confirm-button="false"
-      :show-cancel-button="false"
-      confirm-button-open-type="getUserInfo"
-      @close="onClose"
-      @getuserinfo="getUserInfo"
-    >
-      <view>
-        <view style="background:linear-gradient(90deg, #EE799F, #F08080 );height:180rpx"></view>
-        <view style="height:150rpx;"></view>
-        <view style="position:absolute;top:37%;width:100%;text-align:center">
-          <image src="/static/images/auth.png" style="height:128rpx;width:80%" />
-        </view>
-        <view style="position:absolute;bottom:20rpx;width:100%;text-align:center">
-          <button size="mini" @tap="onClose">授权登录</button>
-        </view>
-      </view>
-    </van-dialog>
+    <authButton :showDialog.sync="showDialog" :meInfo.sync="meInfo" :isLogin.sync="isLogin"></authButton>
   </view>
 </template>
 <script>
-import { get, post } from '@/utils/http'
+import { get } from '@/utils/http'
 import { moveTo } from '@/utils/common'
+import authButton from '@/components/auth-button'
 import store from '../../store'
 export default {
   name: 'Me',
+  components: {
+    authButton
+  },
   data() {
     return {
       isLogin: false,
@@ -146,8 +130,9 @@ export default {
     this.personalBanner = store.state.bannerObj.personalCenterBanner
   },
   onShow() {
-    this.showDialog = true
     const res = wx.getStorageSync('token')
+    console.log(res)
+    if (!res) this.showDialog = true
     if (res && !this.meInfo.nickName) this.login()
     this.isLogin = !!res
   },
@@ -162,41 +147,7 @@ export default {
   },
   methods: {
     onClose() {
-      console.log(123)
       this.showDialog = false
-    },
-    // 获取用户登录
-    async getUserInfo(e) {
-      const _this = this
-      wx.showLoading({
-        title: '加载中...'
-      })
-      if (e.mp.detail.userInfo) {
-        try {
-          const result = await post('api/v1/login/wx', {
-            'code': this.loginCode,
-            'encrypted_data': e.mp.detail.encryptedData,
-            'iv': e.mp.detail.iv,
-            'parentId': -1
-          })
-          this.isLogin = true
-          wx.setStorageSync('time', result.expMillis)
-          // 设置token 成功后调用获取个人信息的接口
-          wx.setStorage({
-            data: result.token,
-            key: 'token',
-            success(res) {
-              _this.login()
-            }
-          })
-        } catch (e) {
-          console.log(e)
-        } finally {
-          wx.hideLoading()
-        }
-      } else {
-        console.log('error')
-      }
     },
     // 获取个人信息
     async login() {
@@ -207,21 +158,6 @@ export default {
       } catch (e) {
         console.log(e)
       }
-    },
-    // 获取loginCode
-    getLoginCode() {
-      const _this = this
-      wx.login({
-        success(res) {
-          if (res.code) {
-            _this.loginCode = res.code
-            // 发起网络请求
-            console.log(res.code)
-          } else {
-            console.log('登录失败！' + res.errMsg)
-          }
-        }
-      })
     },
     /** banner type */
     moveToBdd(item) {

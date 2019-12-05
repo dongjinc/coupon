@@ -4,11 +4,11 @@ import { global } from './global.js'
  * @param {*} url
  */
 const request = (method, url) => {
-  return function (api, param = {}) {
+  return function (api, param = {}, token) {
     return new Promise((resolve, reject) => {
       wx.request({
         url: url + '/' + api,
-        header: global.header,
+        header: { ...global.header, token: wx.getStorageSync('token') },
         method: method,
         data: param,
         success(res) {
