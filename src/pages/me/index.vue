@@ -95,15 +95,6 @@
       </view>
       </view>-->
     </view>
-    <view class="not-logged" v-else>
-      <button
-        type="primary"
-        size="mini"
-        open-type="getUserInfo"
-        @getuserinfo="getUserInfo"
-        @tap="getLoginCode"
-      >请登录</button>
-    </view>
     <authButton :showDialog.sync="showDialog" :meInfo.sync="meInfo" :isLogin.sync="isLogin"></authButton>
   </view>
 </template>

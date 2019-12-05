@@ -91,6 +91,7 @@
         </van-tab>
       </van-tabs>
     </view>
+    <authButton :showDialog.sync="showDialog" :isOverlay="true"></authButton>
   </view>
 </template>
 
@@ -100,9 +101,10 @@ import indexList from '@/components/index-list'
 import { PageBase, get } from '@/utils/http'
 import { moveTo } from '@/utils/common'
 import store from '../../store'
+import authButton from '@/components/auth-button'
 const classArray = [0, 8182, 6398, 8583, 239, 18637]
 export default {
-  components: { bannerSwiper, indexList },
+  components: { bannerSwiper, indexList, authButton },
   data() {
     return {
       searchValue: '',
@@ -113,7 +115,8 @@ export default {
       indicatorDots: true,
       autoplay: true,
       interval: 4000,
-      duration: 1000
+      duration: 1000,
+      showDialog: false
     }
   },
   watch: {
@@ -178,6 +181,9 @@ export default {
           }
         })
       } catch (e) {
+        if (e.code === 100) {
+          this.showDialog = true
+        }
       } finally {
         wx.hideLoading()
       }

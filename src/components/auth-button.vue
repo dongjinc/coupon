@@ -3,10 +3,11 @@
     :width="230"
     use-slot
     :show="showDialog"
+    :closeOnClickOverlay="isOverlay"
     :show-confirm-button="false"
     :show-cancel-button="false"
     confirm-button-open-type="getUserInfo"
-    @close="onClose"
+    @close="$emit('update:showDialog', false)"
     @getuserinfo="getUserInfo"
   >
     <view>
@@ -35,6 +36,10 @@ export default {
   name: 'authButton',
   props: {
     showDialog: {
+      type: Boolean,
+      default: false
+    },
+    isOverlay: {
       type: Boolean,
       default: false
     }
@@ -102,6 +107,7 @@ export default {
         this.$emit('update:meInfo', { ...meInfo, ...meFund })
         this.$emit('update:isLogin', true)
         this.$emit('update:showDialog', false)
+        wx.showToast({ title: '授权登录成功！' })
       } catch (e) {
         console.log(e)
       }

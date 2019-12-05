@@ -234,6 +234,7 @@
         </view>
       </scroll-view>
     </van-popup>
+    <authButton :showDialog.sync="showDialog" :isOverlay="true"></authButton>
   </view>
 </template>
 <script>
@@ -241,9 +242,10 @@
 import { get } from '@/utils/http'
 import indexList from '@/components/index-list'
 import { moveTo } from '@/utils/common'
+import authButton from '@/components/auth-button'
 export default {
   name: 'detail',
-  components: { indexList },
+  components: { indexList, authButton },
   data() {
     return {
       swiperHeight: '375px',
@@ -263,7 +265,8 @@ export default {
       shopItemList: [],
       shopObj: {
         page: 1
-      }
+      },
+      showDialog: false
     }
   },
   onLoad() {
@@ -454,6 +457,9 @@ export default {
           }
         })
       } catch (e) {
+        if (e.code === 100) {
+          this.showDialog = true
+        }
       } finally {
         wx.hideLoading()
       }

@@ -6,7 +6,8 @@
     "van-search": "/static/vant/search/index",
     "van-tab": "/static/vant/tab/index",
     "van-tabs": "/static/vant/tabs/index",
-    "van-popup": "/static/vant/popup/index"
+    "van-popup": "/static/vant/popup/index",
+    "van-dialog": "/static/vant/dialog/index"
   },
   "navigationStyle": "custom",
   "enablePullDownRefresh": true
