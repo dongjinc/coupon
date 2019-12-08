@@ -33,7 +33,8 @@
   color:#fff;
   text-align: center;
   height: 90rpx;
-  line-height: 90rpx;
+  font-size: 15px;
+  line-height: 87rpx!important;
   padding: 0 10rpx;
   box-sizing: border-box;
   transition: color 0.3s ease-in-out;
@@ -42,18 +43,15 @@
   font-size:15px;
   color: #ff4158!important;
 }
+
+.tabs__item--cur .tabs__item-child{
+border-bottom: 2px solid red;
+}
+
 .tabs__item-child {
   display: inline-block;
 }
-.tabs__line {
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  background-color: #3F82FD;
-  height: 4rpx;
-  width: 0rpx;
-  display: inline-block;
-}
+.
 .tabs__line.transition {
   transition: width 0.3s, transform 0.3s;
 }
