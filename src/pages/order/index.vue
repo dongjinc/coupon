@@ -4,12 +4,10 @@
       <text>累计已返现 0.00元</text>
       <text style="border-left:1rpx solid #eee">累计待返现 0.00元</text>
     </view>-->
-    <view class="order-cash">
-      <text>累计已返现 {{memberMoney.cumulativeMoney}}元</text>
-      <text
-        style="border-left:1rpx solid #eee"
-      >累计待返现 {{memberMoney.soonMoney === '0'?'0.00': memberMoney.soonMoney}}元</text>
-    </view>
+    <!-- <view class="order-cash">
+      <text>即将到账 {{memberMoney.soonMoney}}元</text>
+      <text style="border-left:1rpx solid #eee">累计到账 {{memberMoney.cumulativeMoney}}元</text>
+    </view>-->
     <van-notice-bar left-icon="volume-o" speed="30" text="本月确认收货的订单次月25日返现到账，无效订单(售后等异常行为)除外。" />
     <!-- <van-tabs swipeable animated sticky>
       <van-tab title="全部">
@@ -55,7 +53,7 @@
         </view>
       </view>
       <view class="order-list-down">
-        <text style="background:#FFE4E1;color:#EE5C42;">订单金额 ¥ 19.8</text>
+        <text style="background:#FFE4E1;color:#EE5C42;">订单金额 ¥ {{item.orderAmountStr}}</text>
         <text
           v-if="item.grantFlag !==null"
           style="background:#F0F8FF;color:#87CEFF;"
@@ -67,7 +65,7 @@
 <script>
 import { get } from '@/utils/http'
 import { formatTime } from '@/utils'
-import { moveTo } from '@/utils/common'
+import { moveTo, zeroDeal } from '@/utils/common'
 export default {
   name: 'Order',
   data() {
@@ -103,7 +101,7 @@ export default {
     async getMemberMoney() {
       try {
         const result = await get('api/v1/member/accountInfo')
-        this.memberMoney = result
+        this.memberMoney = zeroDeal(result)
       } catch (e) {
         console.log(e)
       }

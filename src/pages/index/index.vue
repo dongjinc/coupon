@@ -28,7 +28,7 @@
       <!-- <bannerSwiper :imgUrls="imgUrls"></bannerSwiper> -->
     </view>
     <view class="tabs-container">
-      <van-tabs animated sticky :active="tabActive" swipeable line-height="0px" @change="onChange">
+      <van-tabs animated sticky :active="tabActive" line-height="0px" @change="onChange">
         <van-tab title="精选">
           <view
             v-for="item in topList[0]"
@@ -40,6 +40,7 @@
           </view>
         </van-tab>
         <van-tab title="水果">
+          <view v-if="topList[1].length === 0" style="height:100vh"></view>
           <view
             v-for="item in topList[1]"
             :key="item"
@@ -50,6 +51,7 @@
           </view>
         </van-tab>
         <van-tab title="零食">
+          <view v-if="topList[2].length === 0" style="height:100vh"></view>
           <view
             v-for="item in topList[2]"
             :key="item"
@@ -60,6 +62,7 @@
           </view>
         </van-tab>
         <van-tab title="内衣">
+          <view v-if="topList[3].length === 0" style="height:100vh"></view>
           <view
             v-for="item in topList[3]"
             :key="item"
@@ -70,6 +73,7 @@
           </view>
         </van-tab>
         <van-tab title="男装">
+          <view v-if="topList[4].length === 0" style="height:100vh"></view>
           <view
             v-for="item in topList[4]"
             :key="item"
@@ -80,6 +84,7 @@
           </view>
         </van-tab>
         <van-tab title="美妆">
+          <view v-if="topList[5].length === 0" style="height:100vh"></view>
           <view
             v-for="item in topList[5]"
             :key="item"

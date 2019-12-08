@@ -38,9 +38,7 @@
           <view class="account-content">
             <text>
               即将到账
-              <text
-                class="account-content-border"
-              >¥ {{meInfo.soonMoney === '0'? '0.00': meInfo.soonMoney}}</text>
+              <text class="account-content-border">¥ {{meInfo.soonMoney}}</text>
             </text>
             <text>|</text>
             <text>
@@ -105,7 +103,7 @@
 </template>
 <script>
 import { get } from '@/utils/http'
-import { moveTo } from '@/utils/common'
+import { moveTo, zeroDeal } from '@/utils/common'
 import authButton from '@/components/auth-button'
 import store from '../../store'
 export default {
@@ -127,7 +125,6 @@ export default {
   },
   onShow() {
     const res = wx.getStorageSync('token')
-    console.log(res)
     if (!res) this.showDialog = true
     if (res && !this.meInfo.nickName) this.login()
     this.isLogin = !!res
@@ -150,7 +147,8 @@ export default {
       try {
         const meInfo = await get('api/v1/member/getMemberInfo')
         const meFund = await get('api/v1/member/accountInfo')
-        this.meInfo = { ...meInfo, ...meFund }
+
+        this.meInfo = { ...meInfo, ...zeroDeal(meFund) }
       } catch (e) {
         console.log(e)
       }

@@ -8,7 +8,8 @@
     "van-tab": "/static/vant/tab/index",
     "van-tabs": "/static/vant/tabs/index",
     "van-image": "/static/vant/image/index",
-    "van-dialog": "/static/vant/dialog/index"
+    "van-dialog": "/static/vant/dialog/index",
+    "tab": "/static/wxp/tab/index"
   },
   "navigationBarTitleText": "惠得多",
   "enablePullDownRefresh": true

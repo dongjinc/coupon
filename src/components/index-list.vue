@@ -55,6 +55,7 @@ export default {
     .right-title {
       margin-top: 10rpx;
       font-size: 27rpx;
+      word-break: break-all;
       display: -webkit-box;
       -webkit-box-orient: vertical;
       -webkit-line-clamp: 2;

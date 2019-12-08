@@ -208,7 +208,7 @@ page {
 .search-input {
   position: fixed;
   display: flex;
-  top: 0;
+  top: -2rpx;
   width: 100%;
   background: #dc6364;
 }
