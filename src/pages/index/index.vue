@@ -8,6 +8,14 @@
         @click="moveToSearch"
         readonly
       />
+      <tab
+        :currentTab="currentDot"
+        :menuList="tabData1"
+        :count="6"
+        :tabScroll="4"
+        @clickMenu="changeDot"
+      ></tab>
+      <!-- <tab :tab-data="tabData1" :size="80" scroll @change="changeDot"></tab> -->
       <!-- <view>
         <swiper
           class="slideshow"
@@ -27,8 +35,34 @@
       </view>-->
       <!-- <bannerSwiper :imgUrls="imgUrls"></bannerSwiper> -->
     </view>
+    <swiper :current="currentDot" :indicator-dots="false" @animationfinish="swipeChange">
+      <swiper-item v-for="item in categoryData" :key="item">
+        <!-- <view>{{item}}</view> -->
+        <scroll
+          :requesting="item.requesting"
+          :end="item.end"
+          :empty-show="item.emptyShow"
+          :list-count="item.listData.length"
+          :has-top="true"
+          :refresh-size="60"
+          @refresh="refresh"
+          @more="more"
+        >
+          <view class="cells">
+            <view
+              v-for="(child, childIndex) in item.listData"
+              :key="childIndex"
+              @tap="moveToDetail(child)"
+              style="background:#fff"
+            >
+              <indexList :item="child"></indexList>
+            </view>
+          </view>
+        </scroll>
+      </swiper-item>
+    </swiper>
     <view class="tabs-container">
-      <van-tabs animated sticky :active="tabActive" line-height="0px" @change="onChange">
+      <!-- <van-tabs animated sticky :active="tabActive" line-height="0px" @change="onChange">
         <van-tab title="精选">
           <view
             v-for="item in topList[0]"
@@ -94,7 +128,7 @@
             <indexList :item="item"></indexList>
           </view>
         </van-tab>
-      </van-tabs>
+      </van-tabs>-->
     </view>
     <authButton :showDialog.sync="showDialog" :isOverlay="true"></authButton>
   </view>
@@ -107,6 +141,7 @@ import { PageBase, get } from '@/utils/http'
 import { moveTo } from '@/utils/common'
 import store from '../../store'
 import authButton from '@/components/auth-button'
+let pageStart = 0
 const classArray = [0, 8182, 6398, 8583, 239, 18637]
 export default {
   components: { bannerSwiper, indexList, authButton },
@@ -121,7 +156,90 @@ export default {
       autoplay: true,
       interval: 4000,
       duration: 1000,
-      showDialog: false
+      showDialog: false,
+      // tabData1: ['精选', '水果', '零食', '内衣', '男装', '美妆'],
+      tabData1: [{
+        name: '精选'
+      }, {
+        name: '水果'
+      }, {
+        name: '零食'
+      }, {
+        name: '内衣'
+      }, {
+        name: '男装'
+      }, {
+        name: '美妆'
+      }, {
+        name: '美妆'
+      }],
+      currentDot: 0,
+      categoryData: [
+        {
+          name: '推荐',
+          requesting: false,
+          end: false,
+          emptyShow: false,
+          page: pageStart,
+          listData: []
+        },
+        {
+          name: '精选集锦',
+          requesting: false,
+          end: false,
+          emptyShow: false,
+          page: pageStart,
+          listData: []
+        },
+        {
+          name: '最新体验',
+          requesting: false,
+          end: false,
+          emptyShow: false,
+          page: pageStart,
+          listData: []
+        },
+        {
+          name: '资料',
+          requesting: false,
+          end: false,
+          emptyShow: false,
+          page: pageStart,
+          listData: []
+        },
+        {
+          name: '版本',
+          requesting: false,
+          end: false,
+          emptyShow: false,
+          page: pageStart,
+          listData: []
+        },
+        {
+          name: '攻略',
+          requesting: false,
+          end: false,
+          emptyShow: false,
+          page: pageStart,
+          listData: []
+        },
+        {
+          name: '排行',
+          requesting: false,
+          end: false,
+          emptyShow: false,
+          page: pageStart,
+          listData: []
+        },
+        {
+          name: '热门',
+          requesting: false,
+          end: false,
+          emptyShow: false,
+          page: pageStart,
+          listData: []
+        }
+      ]
     }
   },
   watch: {
@@ -140,8 +258,9 @@ export default {
       new PageBase('api/v1/goods/catList'),
       new PageBase('api/v1/goods/catList')
     ]
-    this.getTopList()
+    // this.getTopList()
     this.getBannerList()
+    this.getList('refresh', pageStart)
   },
   onReachBottom() {
     // 到底部触发刷新
@@ -158,8 +277,55 @@ export default {
   },
   methods: {
     changeDot(e) {
-      this.$set(this.currentDot, 'index', e.mp.detail.index)
-      console.log(this.currentDot.index)
+      this.currentDot = e.mp.detail.current
+      this.loadData()
+    },
+    async getList(type, currentPage) {
+      let currentCur = this.currentDot
+      let pageData = this.getCurrentData(currentCur)
+      pageData.requesting = true
+      // this.setCurrentData(currentCur, pageData);
+      wx.showNavigationBarLoading()
+      // 模拟异步获取数据场景
+      const result = await this.pageList[this.currentDot].next(
+        classArray[this.currentDot]
+      )
+
+      pageData.requesting = false
+      wx.hideNavigationBarLoading()
+      if (type === 'refresh') {
+        this.categoryData[this.currentDot].listData = result
+        pageData.end = false
+      } else {
+        this.categoryData[this.currentDot].listData.push(...result)
+        pageData.end = false
+      }
+      // this.setCurrentData(currentCur, pageData)
+    },
+    // 刷新数据
+    refresh() {
+      this.pageList[this.currentDot].reset()
+      this.getList('refresh', pageStart)
+    },
+    // 加载更多
+    more() {
+      this.getList('more', this.getCurrentData(this.currentDot).page)
+    },
+    // 获取当前激活页面的数据
+    getCurrentData(currentCur) {
+      return this.categoryData[currentCur]
+    },
+    // 判断是否为加载新的页面,如果是去加载数据
+    loadData() {
+      let pageData = this.getCurrentData(this.currentDot)
+      if (pageData.listData.length === 0) {
+        this.getList('refresh', pageStart)
+      }
+    },
+    // 页面滑动切换事件
+    swipeChange(e) {
+      this.currentDot = e.mp.detail.current
+      this.loadData()
     },
     /** 获取banner */
     async getBannerList() {
@@ -232,6 +398,53 @@ export default {
 page {
   background: #f6f5f4;
 }
+swiper {
+  height: 100vh;
+}
+
+.cells {
+  background: #ffffff;
+  margin-top: 20rpx;
+}
+
+.cell {
+  display: flex;
+  padding: 20rpx;
+}
+.cell:not(:last-child) {
+  border-bottom: 1rpx solid #ebedf0;
+}
+.cell__hd {
+  font-size: 0;
+}
+.cell__hd image {
+  width: 160rpx;
+  height: 160rpx;
+  margin-right: 20rpx;
+  border-radius: 12rpx;
+}
+.cell__bd {
+  flex: 1;
+}
+.cell__bd .name {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  word-break: break-all;
+  font-size: 28rpx;
+  margin-bottom: 12rpx;
+}
+.cell__bd .des {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  word-break: break-all;
+  color: #666666;
+  font-size: 24rpx;
+}
+
 .slideshow {
   margin: 0 auto;
   width: 95%;
@@ -241,6 +454,11 @@ page {
   transform: translateY(0);
 }
 .header-container {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  z-index: 99;
   background-image: linear-gradient(180deg, #eb3e47, #eee);
   padding-top: 10rpx;
   .van-search__content {

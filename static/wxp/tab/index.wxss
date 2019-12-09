@@ -23,7 +23,7 @@
   flex: initial !important;
   text-align: initial !important;
   display: inline-block !important;
-  padding: 0 30rpx;
+  padding: 0 45rpx;
 }
 .tabs--scroll .tabs__item-child {
   display: block !important;
@@ -41,6 +41,7 @@
 }
 .tabs__item--cur {
   font-size:15px;
+  font-weight:bold;
   color: #ff4158!important;
 }
 
@@ -50,6 +51,7 @@ border-bottom: 2px solid red;
 
 .tabs__item-child {
   display: inline-block;
+  height:75rpx;
 }
 .
 .tabs__line.transition {

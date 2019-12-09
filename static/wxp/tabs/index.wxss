@@ -1,0 +1,35 @@
+.container{
+ width: 100%;
+ height: 79rpx;
+}
+.tab{
+ width: 100%;
+ height: 79rpx;
+ z-index: 100;
+ white-space: nowrap;
+ box-sizing: border-box;
+ overflow: hidden;
+ line-height: 78rpx;
+}
+.tab-item{
+ font-family: SourceHanSansCN-Normal;
+ display: inline-block;
+ width: 25%;
+ font-size: 30rpx;
+ color: #fff;
+}
+
+.item{
+ width:fit-content;
+ font-family: SourceHanSansCN-Normal;
+ margin: auto;
+ font-size: 30rpx;
+ color: #fff;
+ height: 70rpx;
+ transition: color 0.3s ease-in-out;
+}
+
+.active{
+ color: #ff4158;
+  border-bottom: 5rpx solid #ff4158;
+}

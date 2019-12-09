@@ -9,9 +9,10 @@
     "van-tabs": "/static/vant/tabs/index",
     "van-image": "/static/vant/image/index",
     "van-dialog": "/static/vant/dialog/index",
-    "tab": "/static/wxp/tab/index",
+    "tab": "/static/wxp/tabs/index",
     "scroll": "/static/wxp/scroll/index"
   },
   "navigationBarTitleText": "藤蔓生活",
+  "navigationStyle": "custom",
   "enablePullDownRefresh": true
 }
