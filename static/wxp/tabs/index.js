@@ -4,7 +4,11 @@ Component({
    */
   properties: {
     menuList: Array,
-    currentTab: Number,
+    currentTab: {
+      type: Number,
+      value: 0,
+      observer: 'currentTabChange'
+    },
     windowWidth: Number,
     tabScroll: Number,
     count: Number
@@ -21,6 +25,14 @@ Component({
    * 组件的方法列表
    */
   methods: {
+    currentTabChange(newVal) {
+      var res = wx.getSystemInfoSync()
+      this.properties.windowWidth = res.windowWidth
+      var tabWidth = this.properties.windowWidth / this.properties.count
+      this.setData({
+        tabScroll: (newVal - this.properties.count / 2) * tabWidth
+      })
+    },
     clickMenu: function (event) {
       var res = wx.getSystemInfoSync()
       this.properties.windowWidth = res.windowWidth
@@ -37,7 +49,7 @@ Component({
         })
         this.triggerEvent('clickMenu', { current: event.currentTarget.dataset.current }, {})
       }
-    },
+    }
 
   }
 })

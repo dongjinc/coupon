@@ -15,7 +15,6 @@
 .scroll__refresh {
   height: 80rpx;
   position: relative;
-  margin-top:56px;
 }
 .scroll__refresh--hidden {
   visibility: hidden;

@@ -1,13 +1,13 @@
 <view>
 	<view id="success"
 		  class="success {{successShow ? 'success--show' : ''}} {{successTran ? 'success--tran' : ''}}"
-		  style="top: 105px;color: {{color}}">
+		  style="top: {{iphoneTop}}px!important;color: {{color}}">
 		<view class="info">刷新成功</view>
 	</view>
 	<movable-area class="movable-area">
 		<movable-view
 				class="scroll"
-				style="height: calc(100vh + 40rpx + {{refreshSize}}rpx)"
+				style="height: calc(100vh + 70rpx + {{refreshSize}}rpx)"
 				bind:change="change"
 				bind:touchend="touchend"
 				direction="vertical"
@@ -15,16 +15,16 @@
 				y='{{move}}'>
 			<scroll-view
 					class="scroll__view"
-					style="padding-bottom: {{bottomSize}}rpx;padding-top: {{ hasTop ? refreshSize : 0}}rpx;"
+					style="padding-bottom: {{bottomSize}}rpx;padding-top: {{ hasTop ? refreshSize : 0}}px;"
 					scroll-y="{{refreshStatus == 1}}"
 					bindscroll="scroll"
 					scroll-top="{{scrollTop}}"
           enable-back-to-top="{{enableBackToTop}}"
-					lower-threshold="{{120}}rpx"
+					lower-threshold="{{160}}rpx"
 					bindscrolltolower="more">
 				<view id="refresh"
 					  class="scroll__refresh {{successShow ? 'scroll__refresh--hidden' : ''}}"
-					  style="height: {{refreshSize}}rpx;padding: 20rpx 0;">
+					  style="height: {{refreshSize}}rpx;">
 					<view class="scroll__loading">
 						<view wx:if="{{refreshStatus == 1 || refreshStatus == 2}}" class="{{refreshStatus == 2 ? 'rotate' : ''}} arrow"></view>
 						<view wx:if="{{refreshStatus == 3}}" class="loading">
@@ -42,7 +42,7 @@
 							<view class="loading__item"></view>
 						</view>
 						<view class="text" wx:if="{{refreshStatus == 1}}">下拉刷新</view>
-						<view class="text" wx:elif="{{refreshStatus == 2}}">松开更新</view>
+						<view class="text"  wx:elif="{{refreshStatus == 2}}">松开更新</view>
 						<view class="text" wx:elif="{{refreshStatus == 3}}">加载中...</view>
 					</view>
 				</view>

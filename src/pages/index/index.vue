@@ -1,18 +1,22 @@
 <template>
   <view>
     <view class="header-container">
-      <van-search
-        background="null"
-        :value="searchValue"
-        placeholder="搜索需要的商品"
-        @click="moveToSearch"
-        readonly
-      />
+      <view :style="{marginTop: searchTop}">
+        <van-search
+          background="null"
+          :value="searchValue"
+          placeholder="搜索需要的商品"
+          @click="moveToSearch"
+          readonly
+          :custom-class="['search-index']"
+        />
+      </view>
       <tab
         :currentTab="currentDot"
         :menuList="tabData1"
-        :count="6"
-        :tabScroll="4"
+        :count="5"
+        :tabScroll="80"
+        windowWidth="100"
         @clickMenu="changeDot"
       ></tab>
       <!-- <tab :tab-data="tabData1" :size="80" scroll @change="changeDot"></tab> -->
@@ -44,7 +48,8 @@
           :empty-show="item.emptyShow"
           :list-count="item.listData.length"
           :has-top="true"
-          :refresh-size="60"
+          :iphone-top="sucessViewTop"
+          :refresh-size="loadingRefresh"
           @refresh="refresh"
           @more="more"
         >
@@ -170,8 +175,6 @@ export default {
         name: '男装'
       }, {
         name: '美妆'
-      }, {
-        name: '美妆'
       }],
       currentDot: 0,
       categoryData: [
@@ -239,7 +242,11 @@ export default {
           page: pageStart,
           listData: []
         }
-      ]
+      ],
+      isIphoneX: false,
+      searchTop: '22px',
+      sucessViewTop: 0,
+      loadingRefresh: 0
     }
   },
   watch: {
@@ -247,6 +254,23 @@ export default {
       if (!this.pageList[this.tabActive].currentPage) {
         this.getTopList()
       }
+    }
+  },
+  async onLoad() {
+    const iphoneInfo = await wx.getSystemInfoSync()
+    const iphoneRect = await wx.getMenuButtonBoundingClientRect()
+    const query = wx.createSelectorQuery()
+    query.select('.header-container').boundingClientRect()
+    query.exec(res => {
+      this.sucessViewTop = res[0].height + (iphoneInfo.model === 'iPhone X' ? 10 : -10)
+      this.loadingRefresh = res[0].height + (iphoneInfo.model === 'iPhone X' ? 0 : -20)
+    })
+    if (iphoneInfo.model === 'iphone X') {
+
+    } else {
+      this.searchTop = iphoneRect.top - 16 + 'px'
+      console.log(this.sucessViewTop)
+      console.log(this.searchTop, iphoneRect.top)
     }
   },
   mounted() {
@@ -324,7 +348,8 @@ export default {
     },
     // 页面滑动切换事件
     swipeChange(e) {
-      this.currentDot = e.mp.detail.current
+      /** todo */
+      this.currentDot = e.mp.detail.current === 6 ? 0 : e.mp.detail.current
       this.loadData()
     },
     /** 获取banner */
@@ -401,7 +426,9 @@ page {
 swiper {
   height: 100vh;
 }
-
+.movable-area {
+  margin-top: 100px;
+}
 .cells {
   background: #ffffff;
   margin-top: 20rpx;
@@ -463,6 +490,9 @@ swiper {
   padding-top: 10rpx;
   .van-search__content {
     border-radius: 16px !important;
+  }
+  .search-index {
+    width: 77%;
   }
 }
 .tabs-container {
