@@ -9,18 +9,18 @@
         clearable
         :value="searchValue"
         @change="searchValue = $event.mp.detail"
-        @focus="searchListItem = [];getSearchStorge()"
-        @clear="searchListItem = [];getSearchStorge"
+        @focus="searching=false;getSearchStorge()"
+        @clear="searching = false;getSearchStorge"
         @search="searchItem"
         placeholder="请输入搜索的商品"
       >
         <view slot="action" @tap="onSearch" style="color:white">搜索</view>
       </van-search>
-      <view v-if="searchListItem.length !== 0">
+      <view v-if="searchListItem.length !== 0 && searching">
         <sort @sortType="changeType" :sortType="formObj.sortType"></sort>
       </view>
     </view>
-    <view v-if="searchListItem.length !== 0" class="search-container">
+    <view v-if="searchListItem.length !== 0 && searching" class="search-container">
       <view
         v-for="(item, index) in searchListItem"
         :key="index"
@@ -31,19 +31,11 @@
       </view>
       <!-- 最近搜索 -->
     </view>
-    <view v-else class="history-container" style="margin-top:60px">
-      <view class="history-container-title">
-        <text class="iconfont iconjiaoji"></text>
-        <text>最近搜索</text>
-        <text class="iconfont iconshanchu" @tap="delSearchHis"></text>
-      </view>
-      <view class="history-container-item">
-        <view
-          v-for="(item, index) in searchHistoryList"
-          :key="index"
-          @tap="clickSearch(item)"
-        >{{item}}</view>
-      </view>
+    <view v-if="searching && searchListItem.length === 0" class="not-data">
+      <image src="/static/images/no-data.png" />
+      <view>暂无数据</view>
+    </view>
+    <view v-if="!searching" class="history-container" style="margin-top:60px">
       <view class="history-container-title">
         <text class="iconfont icontansuo"></text>
         <text>探索发现</text>
@@ -53,6 +45,18 @@
           v-for="(item, index) in searchExploreList"
           :key="index"
           @tap="clickSearch(item)"
+        >{{item}}</view>
+      </view>
+      <view class="history-container-title">
+        <text class="iconfont iconjiaoji"></text>
+        <text>最近搜索</text>
+        <text class="iconfont iconshanchu" @tap="delSearchHis"></text>
+      </view>
+      <view class="history-container-item">
+        <view
+          v-for="(item, index) in searchHistoryList"
+          :key="index"
+          @tap="clickSearch(item, index)"
         >{{item}}</view>
       </view>
     </view>
@@ -73,6 +77,7 @@ export default {
       searchListItem: [],
       searchHistoryList: [],
       searchExploreList: [],
+      searching: false,
       formObj: {
         page: 1,
         sortType: 0
@@ -123,7 +128,7 @@ export default {
       try {
         const res = await wx.getStorageSync('search')
         if (res) {
-          this.searchHistoryList = res
+          this.searchHistoryList = res.map(item => item.length > 11 ? item.substr(0, 10) + '...' : item)
         }
       } catch (e) { console.log(e) }
     },
@@ -136,12 +141,15 @@ export default {
     },
     async onSearch() {
       const searchVal = this.searchValue
+      this.searching = false
+      const storageSearch = wx.getStorageSync('search')
       if (searchVal === '') return wx.showToast({ title: '请输入要搜索的商品!', icon: 'none', duration: 1500 })
-      if (!this.searchHistoryList.includes(searchVal)) {
-        wx.setStorage({ key: 'search', data: [searchVal, ...this.searchHistoryList] })
+      if (!storageSearch.includes(searchVal)) {
+        wx.setStorage({ key: 'search', data: [searchVal, ...storageSearch] })
       }
       this.formObj.page = 1
-      this.getSearchList(true)
+      await this.getSearchList(true)
+      this.searching = true
     },
     searchItem(e) {
       this.searchValue = e.mp.detail
@@ -159,7 +167,11 @@ export default {
         if (isSort) this.searchListItem = result
         else this.searchListItem.push(...result)
       } catch (e) {
-        console.log(e)
+        wx.showToast({
+          title: '未搜到结果!',
+          icon: 'none'
+        })
+        isSort = false
       } finally {
         if (isSort) {
           wx.hideLoading()
@@ -184,8 +196,9 @@ export default {
       })
     },
     // 点击搜索
-    clickSearch(item) {
-      this.searchValue = item
+    async clickSearch(item, index) {
+      const storageSearch = wx.getStorageSync('search')
+      this.searchValue = storageSearch[index] || item
       this.onSearch()
     },
     // 移动详情页
@@ -210,7 +223,7 @@ page {
   display: flex;
   top: -2rpx;
   width: 100%;
-  background: #dc6364;
+  background: #3b7642;
 }
 .search-container {
   margin-top: 90px;
@@ -244,6 +257,20 @@ page {
       color: #363636;
       border-radius: 30rpx;
     }
+  }
+}
+.not-data {
+  height: 100%;
+  text-align: center;
+  image {
+    margin-top: 40%;
+    width: 150px;
+    height: 130px;
+  }
+  :last-child {
+    margin-top: 30rpx;
+    font-size: 30rpx;
+    color: #555555;
   }
 }
 </style>

@@ -20,27 +20,11 @@
         @clickMenu="changeDot"
       ></tab>
       <!-- <tab :tab-data="tabData1" :size="80" scroll @change="changeDot"></tab> -->
-      <!-- <view>
-        <swiper
-          class="slideshow"
-          :indicator-dots="indicatorDots"
-          :autoplay="autoplay"
-          :interval="interval"
-          :duration="duration"
-          circular="true"
-          indicator-active-color="#fff"
-        >
-          <block v-for="(item, index) in bannerList" :key="index">
-            <swiper-item style="display:flex;" @click="moveToBdd(item)">
-              <image :src="item.imageUrl" style="margin:0 auto;max-height:100%;width:100%" />
-            </swiper-item>
-          </block>
-        </swiper>
-      </view>-->
+
       <!-- <bannerSwiper :imgUrls="imgUrls"></bannerSwiper> -->
     </view>
     <swiper :current="currentDot" :indicator-dots="false" @animationfinish="swipeChange">
-      <swiper-item v-for="item in categoryData" :key="item">
+      <swiper-item v-for="(item, index) in categoryData" :key="item">
         <!-- <view>{{item}}</view> -->
         <scroll
           :requesting="item.requesting"
@@ -54,6 +38,22 @@
           @more="more"
         >
           <view class="cells">
+            <swiper
+              class="slideshow"
+              v-if="index === 0"
+              :indicator-dots="indicatorDots"
+              :autoplay="autoplay"
+              :interval="interval"
+              :duration="duration"
+              circular="true"
+              indicator-active-color="#fff"
+            >
+              <block v-for="(items, indexs) in bannerList" :key="indexs">
+                <swiper-item style="display:flex;" @click="moveToBdd(items)">
+                  <image :src="items.imageUrl" style="margin:0 auto;max-height:100%;width:100%" />
+                </swiper-item>
+              </block>
+            </swiper>
             <view
               v-for="(child, childIndex) in item.listData"
               :key="childIndex"
@@ -262,15 +262,12 @@ export default {
     const query = wx.createSelectorQuery()
     query.select('.header-container').boundingClientRect()
     query.exec(res => {
-      this.sucessViewTop = res[0].height + (iphoneInfo.model === 'iPhone X' ? 10 : -10)
-      this.loadingRefresh = res[0].height + (iphoneInfo.model === 'iPhone X' ? 0 : -20)
+      this.sucessViewTop = res[0].height + (iphoneInfo.model.search('iPhone X') !== -1 ? 10 : -13)
+      this.loadingRefresh = res[0].height + (iphoneInfo.model.search('iPhone X') !== -1 ? 10 : -20)
     })
     if (iphoneInfo.model === 'iphone X') {
-
     } else {
       this.searchTop = iphoneRect.top - 16 + 'px'
-      console.log(this.sucessViewTop)
-      console.log(this.searchTop, iphoneRect.top)
     }
   },
   mounted() {
@@ -486,7 +483,8 @@ swiper {
   top: 0;
   width: 100%;
   z-index: 99;
-  background-image: linear-gradient(180deg, #eb3e47, #eee);
+  // background-image: linear-gradient(180deg, #90ee90, #fff);
+  background: #3b7642;
   padding-top: 10rpx;
   .van-search__content {
     border-radius: 16px !important;

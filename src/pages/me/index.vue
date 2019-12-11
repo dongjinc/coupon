@@ -125,9 +125,9 @@ export default {
   },
   onShow() {
     const res = wx.getStorageSync('token')
-    if (!res) this.showDialog = true
     if (res && !this.meInfo.nickName) this.login()
     this.isLogin = !!res
+    this.showDialog = !res
   },
   // 下拉刷新
   onPullDownRefresh() {
@@ -271,7 +271,7 @@ button::after {
     }
   }
   .income-wrap {
-    background: #e86453;
+    background: #6cbf6f;
     height: 200rpx;
     border-radius: 20rpx 20rpx 0 0;
     margin: 24rpx 20rpx;

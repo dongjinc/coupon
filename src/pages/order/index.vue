@@ -60,6 +60,10 @@
         >{{item.grantFlag?'已返现':'待返现'}} ¥ {{item.memberAmountStr}}</text>
       </view>
     </view>
+    <view v-if="orderList.length === 0" class="not-data">
+      <image src="/static/images/no-data.png" />
+      <view>暂无数据</view>
+    </view>
   </view>
 </template>
 <script>
@@ -205,6 +209,20 @@ page {
         margin: 0 8rpx;
       }
     }
+  }
+}
+.not-data {
+  height: 100%;
+  text-align: center;
+  image {
+    margin-top: 40%;
+    width: 150px;
+    height: 130px;
+  }
+  :last-child {
+    margin-top: 30rpx;
+    font-size: 30rpx;
+    color: #555555;
   }
 }
 </style>
