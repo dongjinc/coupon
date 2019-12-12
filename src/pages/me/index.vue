@@ -3,14 +3,14 @@
     <view class="me-container" v-if="isLogin">
       <!-- 头部 -->
       <view class="me-header">
+        <view
+          style="height: 148px;background: #39b54a;border-radius: 0 0 60px 60px;position: absolute;width: 100%;z-index: -1;"
+        ></view>
         <!-- 个人 -->
         <view class="person-wrap">
           <image :src="meInfo.avatarUrl" />
           <view class="member-content">
-            <view class="member-name">
-              {{meInfo.nickName}}
-              <view class="iconfont iconyou"></view>
-            </view>
+            <view class="member-name">{{meInfo.nickName}}</view>
             <!-- <text class="gold">金币666</text> -->
           </view>
           <view class="earn-more">
@@ -203,6 +203,7 @@ export default {
 page {
   background: #f6f5f4;
 }
+
 .iconjinbi1 {
   color: #ffff00;
 }
@@ -218,6 +219,8 @@ button::after {
   border: 0;
 }
 .me-header {
+  // background-image: linear-gradient(180deg, #39b54a, #8dc63f);
+  // border-radius: 0 0 90px 90px;
   .person-wrap {
     display: flex;
     padding: 40rpx 20rpx 0 20rpx;
@@ -231,12 +234,13 @@ button::after {
       position: relative;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
+      justify-content: center;
       margin-left: 15rpx;
       font-size: 26rpx;
       .member-name {
         display: flex;
         align-items: center;
+        color: #fff;
         .iconyou {
           margin-left: 10rpx;
           font-size: 21rpx;
@@ -292,7 +296,7 @@ button::after {
         align-items: center;
         padding: 12rpx;
         background: #fff;
-        color: #e86453;
+        color: #eb6961;
         border-radius: 25rpx;
         .iconyou {
           font-size: 21rpx;

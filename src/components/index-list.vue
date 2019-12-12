@@ -86,7 +86,8 @@ export default {
       height: 60rpx;
       line-height: 60rpx;
       .post-coupon {
-        color: #cd4939;
+        // color: #ee827c;
+        color: #eb6961;
         font-size: 27rpx;
         font-weight: bold;
         :nth-child(2) {
@@ -97,7 +98,8 @@ export default {
         }
       }
       .save-money {
-        background: #cd4939;
+        // background-image: linear-gradient(90deg, #88ada6, #8dc63f);
+        background: #8dc63f;
         width: 38%;
         font-size: 29rpx;
         color: #fff;

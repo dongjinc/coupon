@@ -483,8 +483,8 @@ swiper {
   top: 0;
   width: 100%;
   z-index: 99;
-  // background-image: linear-gradient(180deg, #90ee90, #fff);
-  background: #3b7642;
+  background-image: linear-gradient(90deg, #39b54a, #8dc63f);
+  // background: #3b7642;
   padding-top: 10rpx;
   .van-search__content {
     border-radius: 16px !important;

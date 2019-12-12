@@ -30,6 +30,6 @@
 }
 
 .active{
- color: #ff4158;
-  border-bottom: 5rpx solid #ff4158;
+ color: #90EE90;
+  border-bottom: 5rpx solid #90EE90;
 }

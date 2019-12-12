@@ -238,7 +238,6 @@
   </view>
 </template>
 <script>
-/* eslint-disable no-undef */
 import { get } from '@/utils/http'
 import indexList from '@/components/index-list'
 import { moveTo } from '@/utils/common'
@@ -279,6 +278,10 @@ export default {
   async onShow() {
     /* eslint-disable no-undef */
     const list = getCurrentPages()
+    if (list.length > 6 && list[list.length - 5].route === 'pages/detail/main') {
+      // wx.navigateBack(-4)
+      console.log(list, this.route)
+    }
     this.currentPageId = list[list.length - 1].options.id
     if (!list[list.length - 1].data.goodsItem) {
       this.similarPopup = false
@@ -349,7 +352,16 @@ export default {
     },
     // 移动详情页
     moveToDetail(item) {
+      /* eslint-disable no-undef */
+      const list = getCurrentPages()
       this.similarTop = this.recordsTop
+      if (list.length > 6 && list[list.length - 5].route === 'pages/detail/main') {
+        wx.redirectTo({
+          url: '../detail/main?id=' + item.goodsId
+        })
+        return false
+      }
+
       moveTo('../detail/main', { id: item.goodsId })
     },
     // 相似商品页
