@@ -1,5 +1,13 @@
 <script>
+import store from './store'
 export default {
+  onLaunch() {
+    wx.getSystemInfo({
+      success: res => {
+        store.commit('setSysInfo', res)
+      }
+    })
+  },
   created() {
     // 调用API从本地缓存中获取数据
     /*

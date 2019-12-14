@@ -242,6 +242,7 @@ import { get } from '@/utils/http'
 import indexList from '@/components/index-list'
 import { moveTo } from '@/utils/common'
 import authButton from '@/components/auth-button'
+import store from '@/store'
 export default {
   name: 'detail',
   components: { indexList, authButton },
@@ -252,7 +253,7 @@ export default {
       // 详情内容
       goodsItem: {},
       currentPageId: '',
-      isIponeX: wx.getSystemInfoSync().model === 'iPhone X',
+      isIponeX: wx.getSystemInfoSync().model.search('iPhone X') !== -1,
       similarPopup: false,
       similarList: [],
       similarObj: {
@@ -268,11 +269,13 @@ export default {
       showDialog: false
     }
   },
-  onLoad() {
+  async onLoad() {
     this.goodsItem = {}
-    const { windowWidth, model } = wx.getSystemInfoSync()
+    const { windowWidth, model } = store.state.systemInfo
+    const iphoneRect = await wx.getMenuButtonBoundingClientRect()
+    console.log(iphoneRect)
     this.topBack =
-      750 / windowWidth * 1 * (model === 'iPhone X' ? 55 : 28) + 'rpx'
+      750 / windowWidth * 1 * (model.search('iPhone X') !== -1 ? 50 : 26) + 'rpx'
     this.swiperHeight = windowWidth * 800 / 800 + 'px'
   },
   async onShow() {
@@ -372,8 +375,8 @@ export default {
     // 移动相似商品页
     async moveToSimilar() {
       this.similarObj.page = 1
+      this.shopPopup = true
       await this.getSimilarList()
-      this.similarPopup = true
       this.$nextTick(() => {
         setTimeout(() => {
           this.similarTop = '0px'
@@ -407,8 +410,8 @@ export default {
     // 店铺
     async moveToShop() {
       this.shopObj.page = 1
-      await this.getShopItemList(false)
       this.shopPopup = true
+      await this.getShopItemList(false)
       this.$nextTick(() => {
         setTimeout(() => {
           this.similarTop = '0px'

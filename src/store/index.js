@@ -4,11 +4,15 @@ Vue.use(Vuex)
 
 const store = new Vuex.Store({
   state: {
-    bannerObj: {}
+    bannerObj: {},
+    systemInfo: {}
   },
   mutations: {
     setBanner: (state, data) => {
       state.bannerObj = data
+    },
+    setSysInfo: (state, data) => {
+      state.systemInfo = data
     }
   }
 })

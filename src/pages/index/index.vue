@@ -257,7 +257,7 @@ export default {
     }
   },
   async onLoad() {
-    const iphoneInfo = await wx.getSystemInfoSync()
+    const iphoneInfo = store.state.systemInfo
     const iphoneRect = await wx.getMenuButtonBoundingClientRect()
     const query = wx.createSelectorQuery()
     query.select('.header-container').boundingClientRect()
