@@ -36,7 +36,7 @@ export const get = function (api, param) {
 // get方法处理
 const serialize = function (obj, ary = []) {
   for (let p in obj) {
-    if (obj.hasOwnProperty(p) && obj[p]) {
+    if (obj.hasOwnProperty(p) && (obj[p] || obj[p] === 0)) {
       ary.push(`${encodeURIComponent(p)}=${encodeURIComponent(obj[p])}`)
     }
   }
@@ -54,13 +54,14 @@ export class PageBase {
   constructor(api) {
     this.pageApi = api
   }
-  getPageList = async function (catId) {
-    const result = await get(this.pageApi, { page: this.currentPage, catId })
+  /** 首页List */
+  getPageList = async function (param) {
+    const result = await get(this.pageApi, { page: this.currentPage, ...param })
     return result
   }
-  next(catId) {
+  next(param) {
     this.currentPage++
-    return this.getPageList(catId)
+    return this.getPageList(param)
   }
   reset() {
     this.currentPage = 0

@@ -1,7 +1,11 @@
 <script>
 import store from './store'
+import { get } from '@/utils/http'
 export default {
-  onLaunch() {
+  async onLaunch() {
+    get('/wx/v2').then(res => {
+      console.log(res)
+    })
     wx.getSystemInfo({
       success: res => {
         store.commit('setSysInfo', res)

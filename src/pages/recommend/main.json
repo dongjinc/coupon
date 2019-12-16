@@ -1,0 +1,15 @@
+{
+  "navigationBarTitleText": "每日必推",
+  "navigationBarBackgroundColor": "#39b54a",
+  "navigationBarTextStyle": "white",
+  "usingComponents": {
+    "van-button": "/static/vant/button/index",
+    "van-search": "/static/vant/search/index",
+    "van-tab": "/static/vant/tab/index",
+    "van-tabs": "/static/vant/tabs/index",
+    "van-image": "/static/vant/image/index",
+    "van-dialog": "/static/vant/dialog/index",
+    "tab": "/static/wxp/tabs/index",
+    "scroll": "/static/wxp/scroll/index"
+  }
+}

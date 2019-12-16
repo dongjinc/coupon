@@ -1,9 +1,10 @@
 {
   "pages": [
     "pages/index/main",
-    "pages/me/main",
-    "pages/counter/main",
+    "pages/recommend/main",
     "pages/search/main",
+    "pages/special/main",
+    "pages/me/main",
     "pages/detail/main",
     "pages/income/main",
     "pages/order/main",
@@ -28,8 +29,20 @@
         "selectedIconPath": "static/tabs/home-active.png"
       },
       {
+        "text": "1块9包邮",
+        "pagePath": "pages/recommend/main",
+        "iconPath": "static/tabs/search.png",
+        "selectedIconPath": "static/tabs/search-active.png"
+      },
+      {
         "text": "搜索",
         "pagePath": "pages/search/main",
+        "iconPath": "static/tabs/search.png",
+        "selectedIconPath": "static/tabs/search-active.png"
+      },
+      {
+        "text": "专题",
+        "pagePath": "pages/special/main",
         "iconPath": "static/tabs/search.png",
         "selectedIconPath": "static/tabs/search-active.png"
       },
