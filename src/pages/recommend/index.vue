@@ -297,7 +297,7 @@ swiper {
   top: 0;
   width: 100%;
   z-index: 99;
-  background: #39b54a;
+  background: #d55251;
   padding-top: 10rpx;
   .van-search__content {
     border-radius: 16px !important;

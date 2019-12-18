@@ -4,7 +4,7 @@
       <!-- 头部 -->
       <view class="me-header">
         <view
-          style="height: 148px;background: #39b54a;border-radius: 0 0 60px 60px;position: absolute;width: 100%;z-index: -1;"
+          style="height: 148px;;background: #d55251;border-radius: 0 0 60px 60px;position: absolute;width: 100%;z-index: -1;"
         ></view>
         <!-- 个人 -->
         <view class="person-wrap">
@@ -275,7 +275,8 @@ button::after {
     }
   }
   .income-wrap {
-    background: #6cbf6f;
+    box-shadow: 10rpx 10rpx 50rpx #333;
+    background: #d55251;
     height: 200rpx;
     border-radius: 20rpx 20rpx 0 0;
     margin: 24rpx 20rpx;

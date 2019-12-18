@@ -36,5 +36,8 @@
       "singleQuote": true,
       "semi": false
     }
+  },
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
   }
 }

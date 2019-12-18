@@ -66,75 +66,6 @@
         </scroll>
       </swiper-item>
     </swiper>
-    <view class="tabs-container">
-      <!-- <van-tabs animated sticky :active="tabActive" line-height="0px" @change="onChange">
-        <van-tab title="精选">
-          <view
-            v-for="item in topList[0]"
-            :key="item"
-            @tap="moveToDetail(item)"
-            style="background:#fff"
-          >
-            <indexList :item="item"></indexList>
-          </view>
-        </van-tab>
-        <van-tab title="水果">
-          <view v-if="topList[1].length === 0" style="height:100vh"></view>
-          <view
-            v-for="item in topList[1]"
-            :key="item"
-            @tap="moveToDetail(item)"
-            style="background:#fff"
-          >
-            <indexList :item="item"></indexList>
-          </view>
-        </van-tab>
-        <van-tab title="零食">
-          <view v-if="topList[2].length === 0" style="height:100vh"></view>
-          <view
-            v-for="item in topList[2]"
-            :key="item"
-            @tap="moveToDetail(item)"
-            style="background:#fff"
-          >
-            <indexList :item="item"></indexList>
-          </view>
-        </van-tab>
-        <van-tab title="内衣">
-          <view v-if="topList[3].length === 0" style="height:100vh"></view>
-          <view
-            v-for="item in topList[3]"
-            :key="item"
-            @tap="moveToDetail(item)"
-            style="background:#fff"
-          >
-            <indexList :item="item"></indexList>
-          </view>
-        </van-tab>
-        <van-tab title="男装">
-          <view v-if="topList[4].length === 0" style="height:100vh"></view>
-          <view
-            v-for="item in topList[4]"
-            :key="item"
-            @tap="moveToDetail(item)"
-            style="background:#fff"
-          >
-            <indexList :item="item"></indexList>
-          </view>
-        </van-tab>
-        <van-tab title="美妆">
-          <view v-if="topList[5].length === 0" style="height:100vh"></view>
-          <view
-            v-for="item in topList[5]"
-            :key="item"
-            @tap="moveToDetail(item)"
-            style="background:#fff"
-          >
-            <indexList :item="item"></indexList>
-          </view>
-        </van-tab>
-      </van-tabs>-->
-    </view>
     <authButton :showDialog.sync="showDialog" :isOverlay="true"></authButton>
   </view>
 </template>
@@ -153,8 +84,6 @@ export default {
   data() {
     return {
       searchValue: '',
-      tabActive: 0,
-      topList: [[], [], [], [], [], []],
       pageList: [],
       bannerList: [],
       indicatorDots: true,
@@ -162,7 +91,6 @@ export default {
       interval: 4000,
       duration: 1000,
       showDialog: false,
-      // tabData1: ['精选', '水果', '零食', '内衣', '男装', '美妆'],
       tabData1: [{
         name: '精选'
       }, {
@@ -179,7 +107,7 @@ export default {
       currentDot: 0,
       categoryData: [
         {
-          name: '推荐',
+          name: '精选',
           requesting: false,
           end: false,
           emptyShow: false,
@@ -187,7 +115,7 @@ export default {
           listData: []
         },
         {
-          name: '精选集锦',
+          name: '水果',
           requesting: false,
           end: false,
           emptyShow: false,
@@ -195,7 +123,7 @@ export default {
           listData: []
         },
         {
-          name: '最新体验',
+          name: '零食',
           requesting: false,
           end: false,
           emptyShow: false,
@@ -203,7 +131,7 @@ export default {
           listData: []
         },
         {
-          name: '资料',
+          name: '内衣',
           requesting: false,
           end: false,
           emptyShow: false,
@@ -211,7 +139,7 @@ export default {
           listData: []
         },
         {
-          name: '版本',
+          name: '男装',
           requesting: false,
           end: false,
           emptyShow: false,
@@ -219,23 +147,7 @@ export default {
           listData: []
         },
         {
-          name: '攻略',
-          requesting: false,
-          end: false,
-          emptyShow: false,
-          page: pageStart,
-          listData: []
-        },
-        {
-          name: '排行',
-          requesting: false,
-          end: false,
-          emptyShow: false,
-          page: pageStart,
-          listData: []
-        },
-        {
-          name: '热门',
+          name: '美妆',
           requesting: false,
           end: false,
           emptyShow: false,
@@ -243,17 +155,9 @@ export default {
           listData: []
         }
       ],
-      isIphoneX: false,
       searchTop: '22px',
       sucessViewTop: 0,
       loadingRefresh: 0
-    }
-  },
-  watch: {
-    tabActive(val) {
-      if (!this.pageList[this.tabActive].currentPage) {
-        this.getTopList()
-      }
     }
   },
   async onLoad() {
@@ -344,9 +248,12 @@ export default {
       }
     },
     // 页面滑动切换事件
-    swipeChange(e) {
+    async swipeChange(e) {
+      // this.categoryData[this.currentDot].listData = []
+      // this.pageList[this.currentDot].reset()
+      console.log(this.categoryData[this.currentDot])
       /** todo */
-      this.currentDot = e.mp.detail.current === 6 ? 0 : e.mp.detail.current
+      this.currentDot = e.mp.detail.current >= 6 ? 0 : e.mp.detail.current
       this.loadData()
     },
     /** 获取banner */
@@ -384,25 +291,6 @@ export default {
       } finally {
         wx.hideLoading()
       }
-    },
-    // 获取列表
-    // async getTopList(loading = true) {
-    //   if (loading) wx.showLoading({ title: '加载中...' })
-    //   try {
-    //     const result = await this.pageList[this.tabActive].next(
-    //       classArray[this.tabActive]
-    //     )
-    //     this.topList[this.tabActive].push(...result)
-    //   } catch (e) {
-    //   } finally {
-    //     if (loading) {
-    //       wx.hideLoading()
-    //     }
-    //   }
-    // },
-    // 切换tab
-    onChange(e) {
-      this.tabActive = e.mp.detail.index
     },
     // 移动到搜索页
     moveToSearch() {
@@ -483,7 +371,7 @@ swiper {
   top: 0;
   width: 100%;
   z-index: 99;
-  background-image: linear-gradient(90deg, #39b54a, #8dc63f);
+  background-image: linear-gradient(90deg, #d55251, #ef7a82);
   // background: #3b7642;
   padding-top: 10rpx;
   .van-search__content {

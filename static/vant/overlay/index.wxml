@@ -3,6 +3,6 @@
   custom-class="van-overlay"
   custom-style="z-index: {{ zIndex }}; {{ customStyle }}"
   duration="{{ duration }}"
-  bind:tap="onClick"
+  bind:touchstart="onClick"
   catch:touchmove="noop"
 />

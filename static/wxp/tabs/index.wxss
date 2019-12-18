@@ -30,6 +30,7 @@
 }
 
 .active{
- color: #90EE90;
-  border-bottom: 5rpx solid #90EE90;
+ color: #fff;
+ font-weight:bold;
+  border-bottom: 5rpx solid #fff;
 }

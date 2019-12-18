@@ -6,6 +6,10 @@ Component({
       value: false,
       observer: 'requestingEnd'
     },
+    moreing: {
+      type: Boolean,
+      value: false
+    },
     // 加载完毕
     end: {
       type: Boolean,
@@ -95,8 +99,8 @@ Component({
       })
     },
     /**
-		 * movable-view 滚动监听
-		 */
+     * movable-view 滚动监听
+     */
     change(e) {
       let refreshStatus = this.data.refreshStatus,
         diff = e.detail.y
@@ -114,8 +118,8 @@ Component({
       }
     },
     /**
-		 * movable-view 触摸结束事件
-		 */
+     * movable-view 触摸结束事件
+     */
     touchend() {
       let refreshStatus = this.data.refreshStatus
 
@@ -136,8 +140,8 @@ Component({
       }
     },
     /**
-		 * 加载更多
-		 */
+     * 加载更多
+     */
     more() {
       if (!this.properties.end) {
         this.setData({
@@ -147,8 +151,8 @@ Component({
       }
     },
     /**
-		 * 监听 requesting 字段变化, 来处理下拉刷新对应的状态变化
-		 */
+     * 监听 requesting 字段变化, 来处理下拉刷新对应的状态变化
+     */
     requestingEnd(newVal, oldVal) {
       if (this.data.mode === 'more') return
 
@@ -184,8 +188,8 @@ Component({
       }
     },
     /**
-		 * 监听下拉刷新高度变化, 如果改变重新初始化参数, 最小高度80rpx
-		 */
+     * 监听下拉刷新高度变化, 如果改变重新初始化参数, 最小高度80rpx
+     */
     refreshChange(newVal, oldVal) {
       if (newVal <= 80) {
         this.setData({
@@ -196,8 +200,8 @@ Component({
       setTimeout(() => this.init(), 10)
     },
     /**
-		 * 初始化scroll组件参数, 动态获取 下拉刷新区域 和 success 的高度
-		 */
+     * 初始化scroll组件参数, 动态获取 下拉刷新区域 和 success 的高度
+     */
     init() {
       let { windowWidth } = wx.getSystemInfoSync()
       let successHeight = (windowWidth || 375) / 750 * 70

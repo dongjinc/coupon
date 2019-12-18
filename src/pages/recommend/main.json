@@ -1,6 +1,6 @@
 {
   "navigationBarTitleText": "每日必推",
-  "navigationBarBackgroundColor": "#39b54a",
+  "navigationBarBackgroundColor": "#d55251",
   "navigationBarTextStyle": "white",
   "usingComponents": {
     "van-button": "/static/vant/button/index",

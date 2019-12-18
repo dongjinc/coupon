@@ -19,7 +19,7 @@
   "tabBar": {
     "color": "#999",
     "backgroundColor": "#fafafa",
-    "selectedColor": "#39b54a",
+    "selectedColor": "#d55251",
     "borderStyle": "white",
     "list": [
       {
@@ -29,20 +29,14 @@
         "selectedIconPath": "static/tabs/home-active.png"
       },
       {
-        "text": "1块9包邮",
+        "text": "9块9包邮",
         "pagePath": "pages/recommend/main",
-        "iconPath": "static/tabs/search.png",
-        "selectedIconPath": "static/tabs/search-active.png"
+        "iconPath": "static/tabs/shipping.png",
+        "selectedIconPath": "static/tabs/shipping-active.png"
       },
       {
         "text": "搜索",
         "pagePath": "pages/search/main",
-        "iconPath": "static/tabs/search.png",
-        "selectedIconPath": "static/tabs/search-active.png"
-      },
-      {
-        "text": "专题",
-        "pagePath": "pages/special/main",
         "iconPath": "static/tabs/search.png",
         "selectedIconPath": "static/tabs/search-active.png"
       },

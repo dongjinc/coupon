@@ -223,7 +223,7 @@ page {
   display: flex;
   top: -2rpx;
   width: 100%;
-  background: #39b54a;
+  background: #d55251;
 }
 .search-container {
   margin-top: 90px;

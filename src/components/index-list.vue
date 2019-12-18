@@ -99,7 +99,7 @@ export default {
       }
       .save-money {
         // background-image: linear-gradient(90deg, #88ada6, #8dc63f);
-        background: #8dc63f;
+        background: #d55251;
         width: 38%;
         font-size: 29rpx;
         color: #fff;
