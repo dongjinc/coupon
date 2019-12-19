@@ -59,7 +59,8 @@
         </view>
       </view>
       <!-- 更多商品 -->
-      <view class="more-commodity">
+      <!-- <view class="more-commodity"> -->
+      <scroll-view scroll-x style="white-space:nowrap;height:200rpx;margin-top:10rpx;">
         <view
           v-for="(item, index) in goodsItem.recommend"
           :key="index"
@@ -73,7 +74,8 @@
             <text style="font-size:25rpx">{{item.couponPrice}}</text>
           </view>
         </view>
-      </view>
+      </scroll-view>
+      <!-- </view> -->
     </view>
 
     <!-- <view class="similar-commodity">
@@ -732,7 +734,7 @@ page {
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
       &-item {
-        display: flex;
+        display: inline-block;
         flex-shrink: 0;
         flex-direction: column;
         align-items: center;
@@ -748,6 +750,7 @@ page {
           font-size: 18rpx;
           font-weight: bold;
           color: #be5041;
+          text-align: center;
           :nth-child(2) {
             margin: 0 1rpx;
           }

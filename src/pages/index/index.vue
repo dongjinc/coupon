@@ -4,7 +4,6 @@
       <view :style="{marginTop: searchTop}">
         <van-search
           background="null"
-          :value="searchValue"
           placeholder="搜索需要的商品"
           @click="moveToSearch"
           readonly
@@ -13,7 +12,7 @@
       </view>
       <tab
         :currentTab="currentDot"
-        :menuList="tabData1"
+        :menuList="tabList"
         :count="5"
         :tabScroll="80"
         windowWidth="100"
@@ -23,9 +22,13 @@
 
       <!-- <bannerSwiper :imgUrls="imgUrls"></bannerSwiper> -->
     </view>
-    <swiper :current="currentDot" :indicator-dots="false" @animationfinish="swipeChange">
+    <swiper
+      :current="currentDot"
+      :indicator-dots="false"
+      @change="swipeChanges"
+      @animationfinish="swipeChange"
+    >
       <swiper-item v-for="(item, index) in categoryData" :key="item">
-        <!-- <view>{{item}}</view> -->
         <scroll
           :requesting="item.requesting"
           :end="item.end"
@@ -41,10 +44,10 @@
             <swiper
               class="slideshow"
               v-if="index === 0"
-              :indicator-dots="indicatorDots"
-              :autoplay="autoplay"
-              :interval="interval"
-              :duration="duration"
+              :indicator-dots="true"
+              :autoplay="true"
+              :interval="5000"
+              :duration="2500"
               circular="true"
               indicator-active-color="#fff"
             >
@@ -60,7 +63,30 @@
               @tap="moveToDetail(child)"
               style="background:#fff"
             >
-              <indexList :item="child"></indexList>
+              <view class="item-container">
+                <image :src="child.goodsThumbnailUrl" lazy-load="true" />
+                <view class="item-right-container">
+                  <view class="right-title">{{ child.goodsName }}</view>
+                  <view class="right-sales">销量{{ child.salesTip }}</view>
+                  <view v-if="child.couponDiscount !== '0'">
+                    <text class="right-coupon coupon-cash">{{ child.couponDiscount }}元券</text>
+                    <!-- <text class="right-return-cash coupon-cash"></text> -->
+                  </view>
+                  <view class="right-bottom-container">
+                    <view class="post-coupon">
+                      <text v-if="child.couponDiscount !== '0'">券后</text>
+                      <text>¥</text>
+                      <text class="post-coupon-price">{{ child.couponPrice }}</text>
+                    </view>
+                    <view class="save-money">
+                      <text class="iconfont iconfenxiang"></text>
+                      <text>省</text>
+                      <text>¥</text>
+                      <text>{{ child.commission }}</text>
+                    </view>
+                  </view>
+                </view>
+              </view>
             </view>
           </view>
         </scroll>
@@ -83,15 +109,9 @@ export default {
   components: { bannerSwiper, indexList, authButton },
   data() {
     return {
-      searchValue: '',
-      pageList: [],
       bannerList: [],
-      indicatorDots: true,
-      autoplay: true,
-      interval: 4000,
-      duration: 1000,
       showDialog: false,
-      tabData1: [{
+      tabList: [{
         name: '精选'
       }, {
         name: '水果'
@@ -160,6 +180,11 @@ export default {
       loadingRefresh: 0
     }
   },
+  watch: {
+    currentDot(newVal, oldVal) {
+      this.oldCurrentDot = oldVal
+    }
+  },
   async onLoad() {
     const iphoneInfo = store.state.systemInfo
     const iphoneRect = await wx.getMenuButtonBoundingClientRect()
@@ -203,7 +228,6 @@ export default {
   methods: {
     changeDot(e) {
       this.currentDot = e.mp.detail.current
-      this.loadData()
     },
     async getList(type, currentPage) {
       let currentCur = this.currentDot
@@ -215,7 +239,6 @@ export default {
       const result = await this.pageList[this.currentDot].next(
         { catId: classArray[this.currentDot] }
       )
-
       pageData.requesting = false
       wx.hideNavigationBarLoading()
       if (type === 'refresh') {
@@ -223,9 +246,12 @@ export default {
         pageData.end = false
       } else {
         this.categoryData[this.currentDot].listData.push(...result)
-        pageData.end = false
+        pageData.end = this.pageList[this.currentDot].currentPage === 18
       }
-      // this.setCurrentData(currentCur, pageData)
+      if (this.oldCurrentDot === 0 || this.oldCurrentDot) {
+        this.categoryData[this.oldCurrentDot].listData = []
+        this.pageList[this.oldCurrentDot].reset()
+      }
     },
     // 刷新数据
     refresh() {
@@ -241,17 +267,14 @@ export default {
       return this.categoryData[currentCur]
     },
     // 判断是否为加载新的页面,如果是去加载数据
-    loadData() {
+    async loadData() {
       let pageData = this.getCurrentData(this.currentDot)
       if (pageData.listData.length === 0) {
-        this.getList('refresh', pageStart)
+        await this.getList('refresh', pageStart)
       }
     },
     // 页面滑动切换事件
     async swipeChange(e) {
-      // this.categoryData[this.currentDot].listData = []
-      // this.pageList[this.currentDot].reset()
-      console.log(this.categoryData[this.currentDot])
       /** todo */
       this.currentDot = e.mp.detail.current >= 6 ? 0 : e.mp.detail.current
       this.loadData()

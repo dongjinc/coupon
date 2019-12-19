@@ -1,10 +1,14 @@
 <script>
 import store from './store'
-import { get } from '@/utils/http'
+import { post } from '@/utils/http'
 export default {
   async onLaunch() {
-    get('/wx/v2').then(res => {
-      console.log(res)
+    const _this = this
+    wx.getStorage({
+      key: 'token',
+      fail(res) {
+        _this.getLoginAnony()
+      }
     })
     wx.getSystemInfo({
       success: res => {
@@ -38,6 +42,29 @@ export default {
   },
   log() {
     console.log(`log at:${Date.now()}`)
+  },
+  methods: {
+    getLoginAnony() {
+      wx.login({
+        success(res) {
+          if (res.code) {
+            post('api/v1/login/weChat', { code: res.code }).then(res => {
+              wx.setStorage({
+                data: res.token,
+                key: 'token',
+                success(res) {
+                  console.log(res)
+                  // this.login()
+                }
+              })
+            })
+            // 发起网络请求
+          } else {
+            console.log('登录失败！' + res.errMsg)
+          }
+        }
+      })
+    }
   }
 }
 </script>

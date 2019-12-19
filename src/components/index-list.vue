@@ -32,6 +32,14 @@ export default {
       type: Object,
       default: () => { }
     }
+  },
+  watch: {
+    item: {
+      handler(newVal) {
+        console.log(newVal, 888)
+      },
+      deep: true
+    }
   }
 }
 </script>

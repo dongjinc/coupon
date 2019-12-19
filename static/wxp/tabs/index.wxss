@@ -24,7 +24,7 @@
  font-family: SourceHanSansCN-Normal;
  margin: auto;
  font-size: 30rpx;
- color: #fff;
+ color: #EEE9E9;
  height: 70rpx;
  transition: color 0.3s ease-in-out;
 }

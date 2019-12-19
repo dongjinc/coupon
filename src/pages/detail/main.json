@@ -1,5 +1,5 @@
 {
-  "navigationBarBackgroundColor": "#39b54a",
+  "navigationBarBackgroundColor": "#d55251",
   "backgroundTextStyle": "dark",
   "usingComponents": {
     "van-button": "/static/vant/button/index",

@@ -60,6 +60,7 @@ export default {
       wx.login({
         success(res) {
           if (res.code) {
+            console.log(res.code)
             _this.loginCode = res.code
             // 发起网络请求
           } else {

@@ -8,9 +8,9 @@
         ></view>
         <!-- 个人 -->
         <view class="person-wrap">
-          <image :src="meInfo.avatarUrl" />
+          <image :src="meInfo.avatarUrl || '/static/images/anonymous.png'" />
           <view class="member-content">
-            <view class="member-name">{{meInfo.nickName}}</view>
+            <view class="member-name">{{meInfo.nickName || '匿名访客'}}</view>
             <!-- <text class="gold">金币666</text> -->
           </view>
           <view class="earn-more">
@@ -278,7 +278,7 @@ button::after {
     box-shadow: 10rpx 10rpx 50rpx #333;
     background: #d55251;
     height: 200rpx;
-    border-radius: 20rpx 20rpx 0 0;
+    border-radius: 20rpx 20rpx 10rpx 10rpx;
     margin: 24rpx 20rpx;
     padding: 20rpx;
     color: #fff;
