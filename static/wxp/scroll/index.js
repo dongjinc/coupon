@@ -43,7 +43,7 @@ Component({
     // 下拉刷新的高度
     refreshSize: {
       type: Number,
-      value: 90,
+      value: 93,
       observer: 'refreshChange'
     },
     // 底部高度
@@ -60,10 +60,6 @@ Component({
     enableBackToTop: {
       type: Boolean,
       value: false
-    },
-    iphoneTop: {
-      type: Number,
-      value: 0
     }
   },
   data: {
@@ -78,7 +74,20 @@ Component({
     timer: null,
     /* 渲染数据 */
     scrollTop: 0,
-    overOnePage: false
+    overOnePage: false,
+    movableTop: 0,
+    successTop: 0
+  },
+  attached() {
+    const _this = this
+    wx.getSystemInfo({
+      success(res) {
+        _this.setData({
+          movableTop: res.statusBarHeight - 8,
+          successTop: res.statusBarHeight + 86.1
+        })
+      }
+    })
   },
   methods: {
     /**
@@ -191,9 +200,9 @@ Component({
      * 监听下拉刷新高度变化, 如果改变重新初始化参数, 最小高度80rpx
      */
     refreshChange(newVal, oldVal) {
-      if (newVal <= 80) {
+      if (newVal <= 95) {
         this.setData({
-          refreshSize: 80
+          refreshSize: 95
         })
       }
       // 异步加载数据时候, 延迟执行 init 方法, 防止基础库 2.7.1 版本及以下无法正确获取 dom 信息

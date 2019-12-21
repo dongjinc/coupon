@@ -4,6 +4,7 @@ import { post } from '@/utils/http'
 export default {
   async onLaunch() {
     const _this = this
+    /** 获取感知登录判断 是否存在token */
     wx.getStorage({
       key: 'token',
       fail(res) {

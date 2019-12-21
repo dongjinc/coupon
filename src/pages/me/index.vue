@@ -114,7 +114,6 @@ export default {
   data() {
     return {
       isLogin: false,
-      loginCode: '',
       personalBanner: [],
       meInfo: {},
       showDialog: false

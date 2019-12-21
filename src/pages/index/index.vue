@@ -35,28 +35,71 @@
           :empty-show="item.emptyShow"
           :list-count="item.listData.length"
           :has-top="true"
-          :iphone-top="sucessViewTop"
-          :refresh-size="loadingRefresh"
           @refresh="refresh"
           @more="more"
         >
           <view class="cells">
-            <swiper
-              class="slideshow"
-              v-if="index === 0"
-              :indicator-dots="true"
-              :autoplay="true"
-              :interval="5000"
-              :duration="2500"
-              circular="true"
-              indicator-active-color="#fff"
-            >
-              <block v-for="(items, indexs) in bannerList" :key="indexs">
-                <swiper-item style="display:flex;" @click="moveToBdd(items)">
-                  <image :src="items.imageUrl" style="margin:0 auto;max-height:100%;width:100%" />
-                </swiper-item>
-              </block>
-            </swiper>
+            <view style="position:relative">
+              <swiper
+                class="slideshow"
+                v-if="index === 0"
+                :indicator-dots="false"
+                :autoplay="true"
+                :interval="5000"
+                :duration="2500"
+                circular="true"
+                indicator-active-color="#fff"
+                @change="bannerChange"
+              >
+                <block v-for="(items, indexs) in bannerList" :key="indexs">
+                  <swiper-item style="display:flex;" @click="moveToBdd(items)">
+                    <image :src="items.imageUrl" style="margin:0 auto;max-height:100%;width:100%" />
+                  </swiper-item>
+                </block>
+              </swiper>
+              <view
+                style="position:absolute;bottom:10rpx;display:flex;justify-content:space-between;width:75rpx;right:50rpx"
+              >
+                <view
+                  style="width:16rpx;height:16rpx;background:#fff;border-radius:10rpx;transition:all .3s"
+                  v-for="(item, indexd) in 3"
+                  :key="indexd"
+                  :class="[indexd === bannerDot? 'banner-active': '']"
+                ></view>
+              </view>
+            </view>
+            <view v-if="index === 0" style="padding: 20rpx 16rpx">
+              <view style="display:flex;font-size:28rpx;">
+                <view style="width:10rpx;height:44rpx;background:#d55251;margin-right:8rpx;"></view>
+                <text>推荐专题</text>
+              </view>
+              <view
+                style="height:440rpx;border-radius:10rpx;overflow:hidden;margin-top:10rpx;box-shadow: 0 0 60rpx rgba(213,82,81, .5)"
+              >
+                <image
+                  style="width:100%;height:70%"
+                  src="http://t16img.yangkeduo.com/pdd_oms/2019-12-12/e94bc17cd9416e4c9f557ad3ee69bd36.png"
+                />
+                <view
+                  style="display:flex;justify-content:space-between;padding:0 15rpx;margin: 15rpx 0 20rpx"
+                >
+                  <!-- <view
+                    v-for="item in 6"
+                    :key="item"
+                    style="width:15%;background:#eee;height:100rpx;"
+                  >1</view>-->
+                </view>
+                <view
+                  style="display:flex;justify-content:space-between;padding:0 15rpx;line-height:60rpx;"
+                >
+                  <text style="font-size: 29rpx;">12.12全民幸福日</text>
+                  <view
+                    style="height:60rpx;background:#d55251;width:150rpx;text-align:center;font-size:28rpx;border-radius:5rpx;color:#fff"
+                  >分享专题</view>
+                </view>
+              </view>
+            </view>
+
             <view
               v-for="(child, childIndex) in item.listData"
               :key="childIndex"
@@ -176,8 +219,7 @@ export default {
         }
       ],
       searchTop: '22px',
-      sucessViewTop: 0,
-      loadingRefresh: 0
+      bannerDot: 0
     }
   },
   watch: {
@@ -188,16 +230,7 @@ export default {
   async onLoad() {
     const iphoneInfo = store.state.systemInfo
     const iphoneRect = await wx.getMenuButtonBoundingClientRect()
-    const query = wx.createSelectorQuery()
-    query.select('.header-container').boundingClientRect()
-    query.exec(res => {
-      this.sucessViewTop = res[0].height + (iphoneInfo.model.search('iPhone X') !== -1 ? 10 : -13)
-      this.loadingRefresh = res[0].height + (iphoneInfo.model.search('iPhone X') !== -1 ? 10 : -20)
-    })
-    if (iphoneInfo.model === 'iphone X') {
-    } else {
-      this.searchTop = iphoneRect.top - 16 + 'px'
-    }
+    if (iphoneInfo.model !== 'iphone X') { this.searchTop = iphoneRect.top - 11 + 'px' }
   },
   mounted() {
     this.pageList = [
@@ -273,6 +306,10 @@ export default {
         await this.getList('refresh', pageStart)
       }
     },
+    // banner
+    bannerChange(e) {
+      this.bannerDot = e.mp.detail.current
+    },
     // 页面滑动切换事件
     async swipeChange(e) {
       /** todo */
@@ -334,8 +371,9 @@ page {
 swiper {
   height: 100vh;
 }
-.movable-area {
-  margin-top: 100px;
+.banner-active {
+  width: 26rpx !important;
+  background: #d55251 !important;
 }
 .cells {
   background: #ffffff;
@@ -382,9 +420,9 @@ swiper {
 
 .slideshow {
   margin: 0 auto;
-  width: 95%;
+  width: 99%;
   height: 274rpx;
-  border-radius: 20rpx;
+  // border-radius: 20rpx;
   overflow: hidden;
   transform: translateY(0);
 }
@@ -396,7 +434,6 @@ swiper {
   z-index: 99;
   background-image: linear-gradient(90deg, #d55251, #ef7a82);
   // background: #3b7642;
-  padding-top: 10rpx;
   .van-search__content {
     border-radius: 16px !important;
   }

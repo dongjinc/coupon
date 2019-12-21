@@ -1,10 +1,10 @@
 <view>
 	<view id="success"
 		  class="success {{successShow ? 'success--show' : ''}} {{successTran ? 'success--tran' : ''}}"
-		  style="top: {{iphoneTop}}px!important;color: {{color}}">
+		  style="top: {{successTop}}px!important;color: {{color}}">
 		<view class="info">刷新成功</view>
 	</view>
-	<movable-area class="movable-area">
+	<movable-area class="movable-area" style="margin-top:{{movableTop}}px">
 		<movable-view
 				class="scroll"
 				style="height: calc(100vh + 20rpx + {{refreshSize}}rpx)"
@@ -20,7 +20,7 @@
 					bindscroll="scroll"
 					scroll-top="{{scrollTop}}"
           enable-back-to-top="{{enableBackToTop}}"
-					lower-threshold="2000"
+					lower-threshold="1500"
 					bindscrolltolower="more">
 				<view id="refresh"
 					  class="scroll__refresh {{successShow ? 'scroll__refresh--hidden' : ''}}"
