@@ -92,7 +92,7 @@ export default {
   data() {
     return {
       activeItem: '综合',
-      saleNum: 0,
+      saleNum: 1,
       sumPopup: false
     }
   },
@@ -108,7 +108,7 @@ export default {
     onActive(name) {
       this.saleNum++
       if (this.saleNum === 3) this.saleNum = 1
-      if (this.activeItem !== name && this.activeItem) this.saleNum = 1
+      if (this.activeItem !== name && this.activeItem) this.saleNum = 2
       const num = this.saleNum % 2 ? 1 : 0
       this.$emit('sortType', sortTypeObj[name] - num < 0 ? 0 : sortTypeObj[name] - num)
     },

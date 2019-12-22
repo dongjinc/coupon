@@ -8,7 +8,8 @@
     "pages/detail/main",
     "pages/income/main",
     "pages/order/main",
-    "pages/withdrawal/main"
+    "pages/withdrawal/main",
+    "pages/system/main"
   ],
   "window": {
     "backgroundTextStyle": "light",

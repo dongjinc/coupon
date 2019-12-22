@@ -13,10 +13,20 @@
             <view class="member-name">{{meInfo.nickName || '匿名访客'}}</view>
             <!-- <text class="gold">金币666</text> -->
           </view>
-          <view class="earn-more">
-            <!-- <view class="more-content">
-              <text class="iconfont iconjinbi1"></text>赚更多
-            </view>-->
+          <view class="earn-more" v-if="!meInfo.nickName">
+            <view class="more-content">
+              <!-- <text class="iconfont iconjinbi1"></text>升级VIP -->
+              <van-button
+                round
+                color="#e86453"
+                type="primary"
+                icon="iconjinbi1"
+                size="small"
+                open-type="getUserInfo"
+                @getuserinfo="getUserInfo"
+                @tap="getLoginCode"
+              >升级VIP</van-button>
+            </view>
           </view>
         </view>
 
@@ -66,10 +76,26 @@
         </swiper>
       </view>
       <view class="common-fun-wrap">
-        <view class="me-item" @tap="moveToOrder">
-          <image src="/static/images/order.png" />
-          <view>我的订单</view>
+        <view class="me-item" style="position:relative" v-if="!meInfo.nickName">
+          <image src="/static/images/vip.png" />
+          <view>升级VIP</view>
+          <button
+            style="position: absolute;left: 0;top: 0;height: 109rpx;opacity: 0;"
+            size="mini"
+            open-type="getUserInfo"
+            @getuserinfo="getUserInfo"
+            @tap="getLoginCode"
+          >授权登录</button>
         </view>
+        <view class="me-item" @tap="moveToSystem">
+          <image src="/static/images/system.png" />
+          <view>会员制度</view>
+        </view>
+        <view class="me-item" @tap="moveToOrder">
+          <image src="/static/images/friends.png" />
+          <view>我的好友</view>
+        </view>
+
         <view class="me-item" style="position:relative">
           <image src="/static/images/customer.png" />
           <view>联系客服</view>
@@ -78,6 +104,10 @@
             style="position: absolute;left: 0;top: 0;height: 109rpx;opacity: 0;"
             size="mini"
           >授权登录</button>
+        </view>
+        <view class="me-item" @tap="moveToOrder">
+          <image src="/static/images/order.png" />
+          <view>我的订单</view>
         </view>
         <!-- <view class="me-item">
           <image src="/static/images/footer.png" />
@@ -102,7 +132,7 @@
   </view>
 </template>
 <script>
-import { get } from '@/utils/http'
+import { get, post } from '@/utils/http'
 import { moveTo, zeroDeal } from '@/utils/common'
 import authButton from '@/components/auth-button'
 import store from '../../store'
@@ -120,13 +150,17 @@ export default {
     }
   },
   onLoad() {
-    this.personalBanner = store.state.bannerObj.personalCenterBanner
-  },
-  onShow() {
     const res = wx.getStorageSync('token')
     if (res && !this.meInfo.nickName) this.login()
     this.isLogin = !!res
     this.showDialog = !res
+    this.personalBanner = store.state.bannerObj.personalCenterBanner
+  },
+  onShow() {
+    // const res = wx.getStorageSync('token')
+    // if (res && !this.meInfo.nickName) this.login()
+    // this.isLogin = !!res
+    // this.showDialog = !res
   },
   // 下拉刷新
   onPullDownRefresh() {
@@ -143,6 +177,7 @@ export default {
     },
     // 获取个人信息
     async login() {
+      wx.showLoading()
       try {
         const meInfo = await get('api/v1/member/getMemberInfo')
         const meFund = await get('api/v1/member/accountInfo')
@@ -150,6 +185,8 @@ export default {
         this.meInfo = { ...meInfo, ...zeroDeal(meFund) }
       } catch (e) {
         console.log(e)
+      } finally {
+        wx.hideLoading()
       }
     },
     /** banner type */
@@ -194,6 +231,61 @@ export default {
     // 我的订单
     moveToOrder() {
       moveTo('../order/main')
+    },
+    // 会员制度
+    moveToSystem() {
+      moveTo('../system/main')
+    },
+    // todo
+    // 获取loginCode
+    getLoginCode() {
+      const _this = this
+      wx.login({
+        success(res) {
+          if (res.code) {
+            _this.loginCode = res.code
+            // 发起网络请求
+          } else {
+            console.log('登录失败！' + res.errMsg)
+          }
+        }
+      })
+    },
+    // 获取用户登录
+    async getUserInfo(e) {
+      const _this = this
+      wx.showLoading({
+        title: '加载中...'
+      })
+      if (e.mp.detail.userInfo) {
+        try {
+          const result = await post('api/v1/login/weChatAuth', {
+            'code': this.loginCode,
+            'encrypted_data': e.mp.detail.encryptedData,
+            'iv': e.mp.detail.iv,
+            'parentId': -1
+          })
+          console.log(result)
+          // wx.setStorageSync('time', result.expMillis)
+          // 设置token 成功后调用获取个人信息的接口
+          _this.login()
+          // wx.setStorage({
+          //   data: result.token,
+          //   key: 'token',
+          //   success(res) {
+
+          //   }
+          // })
+        } catch (e) {
+          console.log(e)
+        } finally {
+          wx.hideLoading()
+        }
+      } else {
+        wx.hideLoading()
+        wx.showToast({ title: '授权失败!', icon: 'none' })
+        console.log('error')
+      }
     }
   }
 }
@@ -267,7 +359,6 @@ button::after {
         line-height: 50px;
         padding: 8rpx;
         font-size: 25rpx;
-        background: #e86453;
         border-radius: 10rpx;
         color: #fff;
       }
@@ -330,13 +421,14 @@ button::after {
 }
 .common-fun-wrap {
   display: flex;
+  flex-wrap: wrap;
   margin: 30rpx 40rpx;
-  padding: 10rpx 20rpx;
   background: #fff;
   border-radius: 25rpx;
   .me-item {
-    margin: 20rpx 40rpx 0 0;
+    width: 25%;
     text-align: center;
+    margin: 20rpx 0;
     image {
       width: 60rpx;
       height: 60rpx;

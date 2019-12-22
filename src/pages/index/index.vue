@@ -19,7 +19,6 @@
         @clickMenu="changeDot"
       ></tab>
       <!-- <tab :tab-data="tabData1" :size="80" scroll @change="changeDot"></tab> -->
-
       <!-- <bannerSwiper :imgUrls="imgUrls"></bannerSwiper> -->
     </view>
     <swiper
@@ -39,10 +38,9 @@
           @more="more"
         >
           <view class="cells">
-            <view style="position:relative">
+            <view style="position:relative" v-if="index === 0">
               <swiper
                 class="slideshow"
-                v-if="index === 0"
                 :indicator-dots="false"
                 :autoplay="true"
                 :interval="5000"
@@ -68,35 +66,46 @@
                 ></view>
               </view>
             </view>
-            <view v-if="index === 0" style="padding: 20rpx 16rpx">
-              <view style="display:flex;font-size:28rpx;">
+            <view
+              v-if="index === 0"
+              style="padding: 10rpx 16rpx;display:flex;;flex-wrap:wrap;justify-content:space-between"
+            >
+              <view
+                style="display:flex;flex-direction:column;align-items:center;font-size:26rpx;color:#666;margin-bottom:15rpx;width:25%;"
+                v-for="(item, iconIndex) in iconList"
+                :key="iconIndex"
+                @tap="moveToBdd(item)"
+              >
+                <image :src="item.imageUrl" style="width:130rpx;height:110rpx;" />
+                <text>{{item.title}}</text>
+              </view>
+            </view>
+            <view v-if="index === 0" style="padding: 0 16rpx 60rpx" @tap="moveToSpecial">
+              <view style="display:flex;font-size:28rpx;line-height:22px">
                 <view style="width:10rpx;height:44rpx;background:#d55251;margin-right:8rpx;"></view>
                 <text>推荐专题</text>
               </view>
               <view
-                style="height:440rpx;border-radius:10rpx;overflow:hidden;margin-top:10rpx;box-shadow: 0 0 60rpx rgba(213,82,81, .5)"
+                style="height:300rpx;border-radius:10rpx;overflow:hidden;margin-top:10rpx;box-shadow: 0 0 60rpx rgba(213,82,81, .5)"
               >
                 <image
-                  style="width:100%;height:70%"
+                  style="width:100%;height:100%"
+                  src="http://t16img.yangkeduo.com/pdd_oms/2019-12-22/b428eea7c3f22609f2228c8a3761490e.png"
+                />
+                <view
+                  style="display:flex;justify-content:space-between;padding:0 15rpx;margin: 15rpx 0 20rpx"
+                ></view>
+              </view>
+              <view
+                style="height:300rpx;border-radius:10rpx;overflow:hidden;margin-top:10rpx;box-shadow: 0 0 60rpx rgba(213,82,81, .5);margin-top:31rpx"
+              >
+                <image
+                  style="width:100%;height:100%"
                   src="http://t16img.yangkeduo.com/pdd_oms/2019-12-12/e94bc17cd9416e4c9f557ad3ee69bd36.png"
                 />
                 <view
                   style="display:flex;justify-content:space-between;padding:0 15rpx;margin: 15rpx 0 20rpx"
-                >
-                  <!-- <view
-                    v-for="item in 6"
-                    :key="item"
-                    style="width:15%;background:#eee;height:100rpx;"
-                  >1</view>-->
-                </view>
-                <view
-                  style="display:flex;justify-content:space-between;padding:0 15rpx;line-height:60rpx;"
-                >
-                  <text style="font-size: 29rpx;">12.12全民幸福日</text>
-                  <view
-                    style="height:60rpx;background:#d55251;width:150rpx;text-align:center;font-size:28rpx;border-radius:5rpx;color:#fff"
-                  >分享专题</view>
-                </view>
+                ></view>
               </view>
             </view>
 
@@ -135,7 +144,6 @@
         </scroll>
       </swiper-item>
     </swiper>
-    <authButton :showDialog.sync="showDialog" :isOverlay="true"></authButton>
   </view>
 </template>
 
@@ -145,14 +153,14 @@ import indexList from '@/components/index-list'
 import { PageBase, get } from '@/utils/http'
 import { moveTo } from '@/utils/common'
 import store from '../../store'
-import authButton from '@/components/auth-button'
 let pageStart = 0
 const classArray = [0, 8182, 6398, 8583, 239, 18637]
 export default {
-  components: { bannerSwiper, indexList, authButton },
+  components: { bannerSwiper, indexList },
   data() {
     return {
       bannerList: [],
+      iconList: [],
       showDialog: false,
       tabList: [{
         name: '精选'
@@ -279,7 +287,7 @@ export default {
         pageData.end = false
       } else {
         this.categoryData[this.currentDot].listData.push(...result)
-        pageData.end = this.pageList[this.currentDot].currentPage === 18
+        pageData.end = this.pageList[this.currentDot].currentPage === 20
       }
       if (this.oldCurrentDot === 0 || this.oldCurrentDot) {
         this.categoryData[this.oldCurrentDot].listData = []
@@ -321,6 +329,7 @@ export default {
       try {
         const result = await get('api/v1/index/banner')
         this.bannerList = result.indexBanner
+        this.iconList = result.indexIcon
         store.commit('setBanner', result)
       } catch (e) {
         console.log(e)
@@ -357,6 +366,10 @@ export default {
       const url = '../search/main'
       wx.switchTab({ url })
     },
+    // 移动专题
+    moveToSpecial() {
+      moveTo('../special/main', { id: 123 })
+    },
     // 移动详情页
     moveToDetail(item) {
       moveTo('../detail/main', { id: item.goodsId })
@@ -377,7 +390,7 @@ swiper {
 }
 .cells {
   background: #ffffff;
-  margin-top: 20rpx;
+  margin-top: 10rpx;
 }
 
 .cell {
@@ -421,7 +434,7 @@ swiper {
 .slideshow {
   margin: 0 auto;
   width: 99%;
-  height: 274rpx;
+  height: 260rpx;
   // border-radius: 20rpx;
   overflow: hidden;
   transform: translateY(0);

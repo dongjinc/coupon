@@ -21,6 +21,7 @@
 					scroll-top="{{scrollTop}}"
           enable-back-to-top="{{enableBackToTop}}"
 					lower-threshold="1500"
+          scroll-anchoring="true"
 					bindscrolltolower="more">
 				<view id="refresh"
 					  class="scroll__refresh {{successShow ? 'scroll__refresh--hidden' : ''}}"

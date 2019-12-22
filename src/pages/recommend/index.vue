@@ -18,8 +18,6 @@
           :end="item.end"
           :empty-show="item.emptyShow"
           :list-count="item.listData.length"
-          :iphone-top="sucessViewTop"
-          :refresh-size="loadingRefresh"
           @refresh="refresh"
           @more="more"
         >
@@ -30,7 +28,30 @@
               @tap="moveToDetail(child)"
               style="background:#fff"
             >
-              <indexList :item="child"></indexList>
+              <view class="item-container">
+                <image :src="child.goodsThumbnailUrl" lazy-load="true" />
+                <view class="item-right-container">
+                  <view class="right-title">{{ child.goodsName }}</view>
+                  <view class="right-sales">销量{{ child.salesTip }}</view>
+                  <view v-if="child.couponDiscount !== '0'">
+                    <text class="right-coupon coupon-cash">{{ child.couponDiscount }}元券</text>
+                    <!-- <text class="right-return-cash coupon-cash"></text> -->
+                  </view>
+                  <view class="right-bottom-container">
+                    <view class="post-coupon">
+                      <text v-if="child.couponDiscount !== '0'">券后</text>
+                      <text>¥</text>
+                      <text class="post-coupon-price">{{ child.couponPrice }}</text>
+                    </view>
+                    <view class="save-money">
+                      <text class="iconfont iconfenxiang"></text>
+                      <text>省</text>
+                      <text>¥</text>
+                      <text>{{ child.commission }}</text>
+                    </view>
+                  </view>
+                </view>
+              </view>
             </view>
           </view>
         </scroll>
@@ -43,25 +64,15 @@
 import indexList from '@/components/index-list'
 import { PageBase, get } from '@/utils/http'
 import { moveTo } from '@/utils/common'
-import store from '../../store'
-import authButton from '@/components/auth-button'
 const typeList = [0, 1, 2]
 let pageStart = 0
 export default {
-  components: { indexList, authButton },
+  components: { indexList },
   data() {
     return {
-      searchValue: '',
-      topList: [[], [], [], [], [], []],
       pageList: [],
-      bannerList: [],
-      indicatorDots: true,
-      autoplay: true,
-      interval: 4000,
-      duration: 1000,
-      showDialog: false,
       tabList: [{
-        name: '1块9包邮'
+        name: '9块9包邮'
       }, {
         name: '今日爆款'
       }, {
@@ -93,20 +104,8 @@ export default {
           page: pageStart,
           listData: []
         }
-      ],
-      isIphoneX: false,
-      sucessViewTop: 0,
-      loadingRefresh: 0
+      ]
     }
-  },
-  async onLoad() {
-    const iphoneInfo = store.state.systemInfo
-    const query = wx.createSelectorQuery()
-    query.select('.header-container').boundingClientRect()
-    query.exec(res => {
-      this.sucessViewTop = res[0].height + (iphoneInfo.model.search('iPhone X') !== -1 ? -44 : -44)
-      this.loadingRefresh = res[0].height + (iphoneInfo.model.search('iPhone X') !== -1 ? 30 : 0)
-    })
   },
   mounted() {
     this.pageList = [
@@ -114,7 +113,6 @@ export default {
       new PageBase('api/v1/goods/dayRecommend'),
       new PageBase('api/v1/goods/dayRecommend')
     ]
-    this.getBannerList()
     this.getList('refresh')
   },
   // 下拉刷新
@@ -149,7 +147,8 @@ export default {
         pageData.end = false
       } else {
         this.categoryData[this.currentDot].listData.push(...result)
-        pageData.end = false
+        console.log()
+        pageData.end = result.length === 0
       }
       // this.setCurrentData(currentCur, pageData)
     },
@@ -179,23 +178,6 @@ export default {
       this.currentDot = e.mp.detail.current === 6 ? 0 : e.mp.detail.current
       this.loadData()
     },
-    /** 获取banner */
-    async getBannerList() {
-      try {
-        const result = await get('api/v1/index/banner')
-        this.bannerList = result.indexBanner
-        store.commit('setBanner', result)
-      } catch (e) {
-        console.log(e)
-      }
-    },
-    /** banner type */
-    moveToBdd(item) {
-      const obj = {
-        40: this.moveToPdd(item)
-      }
-      console.log(obj[item.type])
-    },
     /** 跳转type */
     async moveToPdd(item) {
       try {
@@ -208,9 +190,6 @@ export default {
           }
         })
       } catch (e) {
-        if (e.code === 100) {
-          this.showDialog = true
-        }
       } finally {
         wx.hideLoading()
       }
@@ -293,6 +272,7 @@ swiper {
   transform: translateY(0);
 }
 .header-container {
+  position: fixed;
   left: 0;
   top: 0;
   width: 100%;

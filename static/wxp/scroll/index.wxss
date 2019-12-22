@@ -22,7 +22,7 @@
 .scroll__bottom {
   position: relative;
   height: 40rpx;
-  padding: 40rpx 0;
+  padding: 40rpx;
 }
 .scroll__loading {
   position: absolute;

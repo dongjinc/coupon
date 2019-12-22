@@ -60,7 +60,6 @@ export default {
       wx.login({
         success(res) {
           if (res.code) {
-            console.log(res.code)
             _this.loginCode = res.code
             // 发起网络请求
           } else {
@@ -84,7 +83,6 @@ export default {
             'parentId': -1
           })
           this.isLogin = true
-          console.log(result)
           wx.setStorageSync('time', result.expMillis)
           // 设置token 成功后调用获取个人信息的接口
           wx.setStorage({

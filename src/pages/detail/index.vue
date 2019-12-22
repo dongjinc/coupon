@@ -377,7 +377,7 @@ export default {
     // 移动相似商品页
     async moveToSimilar() {
       this.similarObj.page = 1
-      this.shopPopup = true
+      this.similarPopup = true
       await this.getSimilarList()
       this.$nextTick(() => {
         setTimeout(() => {

@@ -128,7 +128,7 @@ export default {
       try {
         const res = await wx.getStorageSync('search')
         if (res) {
-          this.searchHistoryList = res.map(item => item.length > 11 ? item.substr(0, 10) + '...' : item)
+          this.searchHistoryList = res.map(item => item.length > 13 ? item.substr(0, 13) + '...' : item)
         }
       } catch (e) { console.log(e) }
     },

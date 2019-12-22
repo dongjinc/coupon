@@ -46,11 +46,6 @@ Component({
       value: 93,
       observer: 'refreshChange'
     },
-    // 底部高度
-    bottomSize: {
-      type: Number,
-      value: 0
-    },
     // 颜色
     color: {
       type: String,
@@ -76,40 +71,47 @@ Component({
     scrollTop: 0,
     overOnePage: false,
     movableTop: 0,
-    successTop: 0
+    successTop: 0,
+    bottomSize: 0
   },
   attached() {
+    const result = getCurrentPages()
     const _this = this
+    this.setData({
+      bottomSize: (result[0].route === 'pages/recommend/main' ? 86 : 0)
+    })
     wx.getSystemInfo({
       success(res) {
+        _this.movableTop = res.model.search('iPhone X') !== -1 ? 0 : -20
+        _this.successTop = res.model.search('iPhone X') !== -1 ? 0 : 25
         _this.setData({
-          movableTop: res.statusBarHeight - 8,
-          successTop: res.statusBarHeight + 86.1
+          movableTop: res.statusBarHeight - (result[0].route === 'pages/recommend/main' ? _this.movableTop : 8),
+          successTop: res.statusBarHeight + (result[0].route === 'pages/recommend/main' ? _this.successTop : 86.1)
         })
       }
     })
   },
   methods: {
     /**
-		 * 处理 bindscrolltolower 失效情况
-		 */
+     * 处理 bindscrolltolower 失效情况
+     */
     scroll(e) {
       // 可以触发滚动表示超过一屏
-      this.setData({
-        overOnePage: true
-      })
-      clearTimeout(this.data.timer)
-      this.setData({
-        timer: setTimeout(() => {
-          this.setData({
-            scrollTop: e.detail.scrollTop
-          })
-        }, 100)
-      })
+      // this.setData({
+      //   overOnePage: true
+      // })
+      // clearTimeout(this.data.timer)
+      // this.setData({
+      //   timer: setTimeout(() => {
+      //     this.setData({
+      //       scrollTop: e.detail.scrollTop
+      //     })
+      //   }, 100)
+      // })
     },
     /**
-     * movable-view 滚动监听
-     */
+   * movable-view 滚动监听
+   */
     change(e) {
       let refreshStatus = this.data.refreshStatus,
         diff = e.detail.y
@@ -127,8 +129,8 @@ Component({
       }
     },
     /**
-     * movable-view 触摸结束事件
-     */
+   * movable-view 触摸结束事件
+   */
     touchend() {
       let refreshStatus = this.data.refreshStatus
 
@@ -149,8 +151,8 @@ Component({
       }
     },
     /**
-     * 加载更多
-     */
+   * 加载更多
+   */
     more() {
       if (!this.properties.end) {
         this.setData({
@@ -160,8 +162,8 @@ Component({
       }
     },
     /**
-     * 监听 requesting 字段变化, 来处理下拉刷新对应的状态变化
-     */
+   * 监听 requesting 字段变化, 来处理下拉刷新对应的状态变化
+   */
     requestingEnd(newVal, oldVal) {
       if (this.data.mode === 'more') return
 
@@ -197,8 +199,8 @@ Component({
       }
     },
     /**
-     * 监听下拉刷新高度变化, 如果改变重新初始化参数, 最小高度80rpx
-     */
+   * 监听下拉刷新高度变化, 如果改变重新初始化参数, 最小高度80rpx
+   */
     refreshChange(newVal, oldVal) {
       if (newVal <= 95) {
         this.setData({
@@ -209,8 +211,8 @@ Component({
       setTimeout(() => this.init(), 10)
     },
     /**
-     * 初始化scroll组件参数, 动态获取 下拉刷新区域 和 success 的高度
-     */
+   * 初始化scroll组件参数, 动态获取 下拉刷新区域 和 success 的高度
+   */
     init() {
       let { windowWidth } = wx.getSystemInfoSync()
       let successHeight = (windowWidth || 375) / 750 * 70
