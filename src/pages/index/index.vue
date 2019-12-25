@@ -80,29 +80,18 @@
                 <text>{{item.title}}</text>
               </view>
             </view>
-            <view v-if="index === 0" style="padding: 0 16rpx 60rpx" @tap="moveToSpecial">
-              <view style="display:flex;font-size:28rpx;line-height:22px">
+            <view v-if="index === 0" style="padding: 0 16rpx 16rpx">
+              <!-- <view style="display:flex;font-size:28rpx;line-height:22px">
                 <view style="width:10rpx;height:44rpx;background:#d55251;margin-right:8rpx;"></view>
                 <text>推荐专题</text>
-              </view>
+              </view>-->
               <view
-                style="height:300rpx;border-radius:10rpx;overflow:hidden;margin-top:10rpx;box-shadow: 0 0 60rpx rgba(213,82,81, .5)"
+                v-for="(item, themeIndex) in themeList"
+                :key="themeIndex"
+                @tap="moveToBdd(item)"
+                style="height:270rpx;border-radius:10rpx;overflow:hidden;margin:10rpx 0 15rpx;box-shadow: 0 0 60rpx rgba(213,82,81, .5)"
               >
-                <image
-                  style="width:100%;height:100%"
-                  src="http://t16img.yangkeduo.com/pdd_oms/2019-12-22/b428eea7c3f22609f2228c8a3761490e.png"
-                />
-                <view
-                  style="display:flex;justify-content:space-between;padding:0 15rpx;margin: 15rpx 0 20rpx"
-                ></view>
-              </view>
-              <view
-                style="height:300rpx;border-radius:10rpx;overflow:hidden;margin-top:10rpx;box-shadow: 0 0 60rpx rgba(213,82,81, .5);margin-top:31rpx"
-              >
-                <image
-                  style="width:100%;height:100%"
-                  src="http://t16img.yangkeduo.com/pdd_oms/2019-12-12/e94bc17cd9416e4c9f557ad3ee69bd36.png"
-                />
+                <image style="width:100%;height:100%" :src="item.imageUrl" />
                 <view
                   style="display:flex;justify-content:space-between;padding:0 15rpx;margin: 15rpx 0 20rpx"
                 ></view>
@@ -161,6 +150,7 @@ export default {
     return {
       bannerList: [],
       iconList: [],
+      themeList: [],
       showDialog: false,
       tabList: [{
         name: '精选'
@@ -298,6 +288,7 @@ export default {
     refresh() {
       this.pageList[this.currentDot].reset()
       this.getList('refresh', pageStart)
+      this.getBannerList()
     },
     // 加载更多
     more() {
@@ -330,6 +321,7 @@ export default {
         const result = await get('api/v1/index/banner')
         this.bannerList = result.indexBanner
         this.iconList = result.indexIcon
+        this.themeList = result.indexTheme
         store.commit('setBanner', result)
       } catch (e) {
         console.log(e)
@@ -338,9 +330,15 @@ export default {
     /** banner type */
     moveToBdd(item) {
       const obj = {
-        40: this.moveToPdd(item)
+        10: this.moveToSpecial,
+        20: this.moveToWebView,
+        40: this.moveToPdd
       }
-      console.log(obj[item.type])
+      obj[item.type](item)
+    },
+    /** webview */
+    moveToWebView(item) {
+      moveTo('../wx-public/main', { src: item.value })
     },
     /** 跳转type */
     async moveToPdd(item) {
@@ -367,8 +365,8 @@ export default {
       wx.switchTab({ url })
     },
     // 移动专题
-    moveToSpecial() {
-      moveTo('../special/main', { id: 123 })
+    moveToSpecial(item) {
+      moveTo(item.value)
     },
     // 移动详情页
     moveToDetail(item) {

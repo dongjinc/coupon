@@ -1,6 +1,6 @@
 /** 跳转路由 */
 const serialize = function (obj, ary = []) {
-  if (ary.length === 0) return ''
+  if (!obj) return ''
   for (let p in obj) {
     if (obj.hasOwnProperty(p) && obj[p]) {
       ary.push(`${encodeURIComponent(p)}=${encodeURIComponent(obj[p])}`)

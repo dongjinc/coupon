@@ -87,11 +87,11 @@
             @tap="getLoginCode"
           >授权登录</button>
         </view>
-        <view class="me-item" @tap="moveToSystem">
+        <view class="me-item">
           <image src="/static/images/system.png" />
           <view>会员制度</view>
         </view>
-        <view class="me-item" @tap="moveToOrder">
+        <view class="me-item">
           <image src="/static/images/friends.png" />
           <view>我的好友</view>
         </view>

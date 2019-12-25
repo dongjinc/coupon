@@ -6,6 +6,7 @@
     "pages/special/main",
     "pages/me/main",
     "pages/detail/main",
+    "pages/wx-public/main",
     "pages/income/main",
     "pages/order/main",
     "pages/withdrawal/main",
