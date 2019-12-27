@@ -1,3 +1,5 @@
+import { get, post } from './http'
+import store from '../store'
 /** 跳转路由 */
 const serialize = function (obj, ary = []) {
   if (!obj) return ''
@@ -18,4 +20,41 @@ export const moveTo = function (uri, param) {
 export const zeroDeal = function (obj) {
   for (let item in obj) { obj[item] = obj[item] * 1 || '0.00' }
   return obj
+}
+export const getLoginAnony = function () {
+  wx.login({
+    success(res) {
+      if (res.code) {
+        post('api/v1/login/weChat', { code: res.code }).then(res => {
+          wx.setStorage({
+            data: res.token,
+            key: 'token',
+            success(res) {
+              getLoginInfo()
+              // this.login()
+            }
+          })
+        })
+        // 发起网络请求
+      } else {
+        console.log('登录失败！' + res.errMsg)
+      }
+    }
+  })
+}
+export const getLoginInfo = function () {
+  get('api/v1/member/getMemberInfo').then(resOne => {
+    get('api/v1/member/accountInfo').then((resTwo) => {
+      store.commit('setUserInfo', { ...resOne, ...zeroDeal(resTwo) })
+    })
+  }, err => {
+    if (err.code === 101 || err.code === 103) {
+      wx.removeStorage({
+        key: 'token',
+        success: () => {
+          getLoginAnony()
+        }
+      })
+    }
+  })
 }

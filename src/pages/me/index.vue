@@ -91,7 +91,7 @@
           <image src="/static/images/system.png" />
           <view>会员制度</view>
         </view>
-        <view class="me-item">
+        <view class="me-item" @tap="moveToFriend">
           <image src="/static/images/friends.png" />
           <view>我的好友</view>
         </view>
@@ -133,7 +133,7 @@
 </template>
 <script>
 import { get, post } from '@/utils/http'
-import { moveTo, zeroDeal } from '@/utils/common'
+import { moveTo, getLoginInfo } from '@/utils/common'
 import authButton from '@/components/auth-button'
 import store from '../../store'
 export default {
@@ -151,7 +151,7 @@ export default {
   },
   onLoad() {
     const res = wx.getStorageSync('token')
-    if (res && !this.meInfo.nickName) this.login()
+    if (res && !this.meInfo.nickName) this.meInfo = store.state.userInfo
     this.isLogin = !!res
     this.showDialog = !res
     this.personalBanner = store.state.bannerObj.personalCenterBanner
@@ -175,26 +175,15 @@ export default {
     onClose() {
       this.showDialog = false
     },
-    // 获取个人信息
-    async login() {
-      wx.showLoading()
-      try {
-        const meInfo = await get('api/v1/member/getMemberInfo')
-        const meFund = await get('api/v1/member/accountInfo')
-
-        this.meInfo = { ...meInfo, ...zeroDeal(meFund) }
-      } catch (e) {
-        console.log(e)
-      } finally {
-        wx.hideLoading()
-      }
-    },
     /** banner type */
     moveToBdd(item) {
-      const obj = {
-        40: this.moveToPdd(item)
+      if (!this.$mp.page.isMoveing) {
+        this.$mp.page.isMoveing = true
+        const obj = {
+          40: this.moveToPdd
+        }
+        obj[item.type](item)
       }
-      console.log(obj[item.type])
     },
     /** 跳转type */
     async moveToPdd(item) {
@@ -204,11 +193,14 @@ export default {
           appId: result.appId,
           path: result.pagePath,
           success(res) {
-            // 打开成功
+            console.log(res)
           }
         })
       } catch (e) {
       } finally {
+        setTimeout(() => {
+          this.$mp.page.isMoveing = false
+        }, 400)
         wx.hideLoading()
       }
     },
@@ -236,6 +228,10 @@ export default {
     moveToSystem() {
       moveTo('../system/main')
     },
+    // 我的好友
+    moveToFriend() {
+      moveTo('../my-friend/main')
+    },
     // todo
     // 获取loginCode
     getLoginCode() {
@@ -253,29 +249,20 @@ export default {
     },
     // 获取用户登录
     async getUserInfo(e) {
-      const _this = this
       wx.showLoading({
         title: '加载中...'
       })
       if (e.mp.detail.userInfo) {
         try {
-          const result = await post('api/v1/login/weChatAuth', {
+          await post('api/v1/login/weChatAuth', {
             'code': this.loginCode,
             'encrypted_data': e.mp.detail.encryptedData,
             'iv': e.mp.detail.iv,
             'parentId': -1
           })
-          console.log(result)
           // wx.setStorageSync('time', result.expMillis)
           // 设置token 成功后调用获取个人信息的接口
-          _this.login()
-          // wx.setStorage({
-          //   data: result.token,
-          //   key: 'token',
-          //   success(res) {
-
-          //   }
-          // })
+          getLoginInfo()
         } catch (e) {
           console.log(e)
         } finally {

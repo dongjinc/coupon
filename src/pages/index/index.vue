@@ -329,6 +329,8 @@ export default {
     },
     /** banner type */
     moveToBdd(item) {
+      if (this.$mp.page.isMoveing) return false
+      this.$mp.page.isMoveing = true
       const obj = {
         10: this.moveToSpecial,
         20: this.moveToWebView,
@@ -356,6 +358,9 @@ export default {
           this.showDialog = true
         }
       } finally {
+        setTimeout(() => {
+          this.$mp.page.isMoveing = false
+        }, 400)
         wx.hideLoading()
       }
     },
