@@ -243,31 +243,24 @@
       custom-style="height: 18%;"
       @close="sharePopup = false"
     >
-      <view
-        @touchmove.stop.prevent
-        class="share-content"
-        style="display:flex;justify-content: space-around;"
-      >
-        <view style="display:flex;flex-direction:column;margin-top:20rpx">
-          <image src="/static/images/wechat.jpg" style="width:160rpx;height:150rpx" />
+      <view @touchmove.stop.prevent class="share-content">
+        <view class="left-wrap button-common">
+          <image src="/static/images/wechat.jpg" />
           <button open-type="share">发给好友</button>
         </view>
-        <view style="display:flex;flex-direction:column;margin-top:20rpx">
-          <image src="/static/images/poster.png" style="width:160rpx;height:140rpx" />
+        <view class="right-wrap button-common">
+          <image src="/static/images/poster.png" />
           <button @tap="createPoster">生成海报</button>
         </view>
       </view>
     </van-popup>
     <!-- 生成后的 -->
     <van-overlay :show="postedPopup" @click.stop="postedPopup = false">
-      <view style="height:100%;" v-if="postedPopup">
-        <view style="height:500px;;position: absolute;top: 10%;left: calc(50% - 150px);">
-          <canvas style="width: 300px; height: 100%;" canvas-id="firstCanvas"></canvas>
+      <view class="canvas-wrap" v-if="postedPopup">
+        <view class="content">
+          <canvas canvas-id="firstCanvas"></canvas>
         </view>
-        <view
-          @click.stop="savePoster"
-          style="width:140rpx;height:140rpx;border-radius:50%;margin:0 auto ;background:#fff;line-height:150rpx;text-align:center;font-size:29rpx;box-shadow:0 0 20rpx #eee;color:#444;position:absolute;bottom:5%;left:calc(50% - 35px)"
-        >保存本地</view>
+        <view class="save-btn" @click.stop="savePoster">保存本地</view>
       </view>
     </van-overlay>
 
@@ -316,6 +309,8 @@ export default {
     this.swiperHeight = windowWidth * 800 / 800 + 'px'
   },
   async onShow() {
+    // 防止分享出现问题
+    this.postedPopup = false
     /* eslint-disable no-undef */
     const list = getCurrentPages()
     if (list.length > 6 && list[list.length - 5].route === 'pages/detail/main') {
@@ -383,7 +378,6 @@ export default {
   methods: {
     // 详情页
     async getGoodDetail() {
-      console.log(this.currentPageId, 999)
       wx.showLoading({ title: '加载中...' })
       try {
         const result = await get('api/v1/goods/detail', {
@@ -517,10 +511,12 @@ export default {
         title: '保存中...',
         mask: true
       })
+      // 将 canvas 生成文件的临时路径 (本地路径)
       wx.canvasToTempFilePath({
         canvasId: 'firstCanvas',
         success: res => {
           const tempFilePath = res.tempFilePath
+          // 保存图片到系统相册
           wx.saveImageToPhotosAlbum({
             filePath: tempFilePath,
             success: res => {
@@ -529,7 +525,14 @@ export default {
                 title: '保存成功!',
                 duration: 1000
               })
-              console.log(res)
+            },
+            fail: () => {
+              wx.hideLoading()
+              wx.showToast({
+                title: '保存失败!',
+                icon: 'none',
+                duration: 1500
+              })
             }
           })
         }
@@ -539,7 +542,8 @@ export default {
     createPoster() {
       this.sharePopup = false
       wx.showLoading({
-        title: '生成海报中...'
+        title: '生成海报中...',
+        mask: true
       })
       var context = wx.createCanvasContext('firstCanvas')
       context.beginPath()// 开始一个新的路径
@@ -640,8 +644,8 @@ export default {
           context.strokeRect(14.5, 111.5, 271, 271)
           context.drawImage(res.path, 15, 112, 270, 270)
           // 绘制头像
-          // that.drawPortrait(context)
-          that.getSunCode(context)
+          that.drawPortrait(context)
+          // that.getSunCode(context)
         },
         fail: function (res) {
           console.log(res)
@@ -654,24 +658,12 @@ export default {
     /** 获取太阳码 */
     async getSunCode(ctx) {
       const result = await get('api/v1/share/getSunCodeByteArray', { type: 20, value: this.currentPageId })
-      // console.log(wx.base64ToArrayBuffer(result))
-      // console.log(wx.env.USER_DATA_PATH)
-      // var imageData = result.replace(/^data:image\/\w+;base64,/, '')
-      // var imgPath = wx.env.USER_DATA_PATH + '/detail/sun.png'
-      // var fs = wx.getFileSystemManager()
-      // fs.writeFileSync(imgPath, imageData, 'base64')
-      // const love = await base64src(result)
       const fsm = wx.getFileSystemManager()
       var showImgData = result
-
       // showImgData = showImgData.replace(/\ +/g, '') // 去掉空格方法
-
       showImgData = showImgData.replace(/[\r\n]/g, '')
-
       const buffer = wx.base64ToArrayBuffer(showImgData)
-
       const fileName = wx.env.USER_DATA_PATH + '/share_img.png'
-
       fsm.writeFileSync(fileName, buffer, 'binary')
 
       console.log(fileName)
@@ -691,21 +683,23 @@ export default {
       ctx.font = '10px Arial'
       ctx.fillText('长按扫码去购买', 209, 462)
       // 绘制头像
-      this.drawPortrait(ctx)
+      wx.hideLoading()
+      ctx.draw()
+      this.postedPopup = true
       // todo 优化
       // 用wx.getFileSystemManager().unlink方法，删除binary格式图片；
-      // setTimeout(() => {
-      //   fsm.unlink({
-      //     filePath: fileName,
-      //     success: res => {
-      //       console.log('删除成功')
-      //     }
-      //   })
-      // }, 5000)
+      setTimeout(() => {
+        fsm.unlink({
+          filePath: fileName,
+          success: res => {
+            console.log('删除成功')
+          }
+        })
+      }, 2000)
     },
     /** 绘制头像 */
     drawPortrait(ctx) {
-      const that = this
+      let that = this
       wx.downloadFile({
         url: store.state.userInfo.avatarUrl,
         success: res => {
@@ -719,9 +713,7 @@ export default {
           ctx.clip()
           ctx.drawImage(res.tempFilePath, 15, 55, avatorWidth, avatorWidth)
           ctx.restore()
-          wx.hideLoading()
-          ctx.draw()
-          that.postedPopup = true
+          that.getSunCode(ctx)
         }
       })
     },
@@ -797,6 +789,34 @@ page {
   color: #91918f;
 }
 .share-content {
+  display: flex;
+  justify-content: space-around;
+  .button-common {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20rpx;
+    flex: 1;
+    align-items: center;
+  }
+  .left-wrap {
+    image {
+      width: 160rpx;
+      height: 150rpx;
+    }
+    button {
+      margin-left: 8rpx;
+    }
+  }
+  .right-wrap {
+    image {
+      width: 130rpx;
+      height: 130rpx;
+      margin-top: 8rpx;
+    }
+    button {
+      margin-left: 4rpx;
+    }
+  }
   button {
     font-size: 31rpx;
     background: transparent;
@@ -809,6 +829,34 @@ page {
   }
   button::after {
     border: none !important;
+  }
+}
+.canvas-wrap {
+  height: 100%;
+  .content {
+    height: 1000rpx;
+    position: absolute;
+    top: calc(45% - 500rpx);
+    left: calc(50% - 300rpx);
+    canvas {
+      width: 300px;
+      height: 100%;
+    }
+  }
+  .save-btn {
+    width: 140rpx;
+    height: 140rpx;
+    border-radius: 50%;
+    margin: 0 auto;
+    background: #fff;
+    line-height: 150rpx;
+    text-align: center;
+    font-size: 29rpx;
+    box-shadow: 0 0 20rpx #eee;
+    color: #444;
+    position: absolute;
+    bottom: 5%;
+    left: calc(50% - 70rpx);
   }
 }
 .detail-container {
