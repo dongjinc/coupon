@@ -3,6 +3,7 @@ import store from './store'
 import { getLoginAnony, getLoginInfo } from '@/utils/common'
 export default {
   async onLaunch() {
+    console.log(process.env)
     /** 获取感知登录判断 是否存在token */
     wx.getStorage({
       key: 'token',

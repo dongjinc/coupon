@@ -165,7 +165,7 @@
     <!-- 分享以及立刻购买 -->
     <view class="share-container font-25" :class="[isIponeX?'is-iphone-x':'']">
       <view class="share-purchase-commodity bg-left">
-        <button open-type="share">分享商品</button>
+        <button @tap="shareGoods">分享商品</button>
         <!-- <view>
           <text class="iconfont iconjinbi font-25"></text>拿奖励
         </view>-->
@@ -236,6 +236,41 @@
         </view>
       </scroll-view>
     </van-popup>
+    <!-- 分享 -->
+    <van-popup
+      :show="sharePopup"
+      position="bottom"
+      custom-style="height: 18%;"
+      @close="sharePopup = false"
+    >
+      <view
+        @touchmove.stop.prevent
+        class="share-content"
+        style="display:flex;justify-content: space-around;"
+      >
+        <view style="display:flex;flex-direction:column;margin-top:20rpx">
+          <image src="/static/images/wechat.jpg" style="width:160rpx;height:150rpx" />
+          <button open-type="share">发给好友</button>
+        </view>
+        <view style="display:flex;flex-direction:column;margin-top:20rpx">
+          <image src="/static/images/poster.png" style="width:160rpx;height:140rpx" />
+          <button @tap="createPoster">生成海报</button>
+        </view>
+      </view>
+    </van-popup>
+    <!-- 生成后的 -->
+    <van-overlay :show="postedPopup" @click.stop="postedPopup = false">
+      <view style="height:100%;" v-if="postedPopup">
+        <view style="height:500px;;position: absolute;top: 10%;left: calc(50% - 150px);">
+          <canvas style="width: 300px; height: 100%;" canvas-id="firstCanvas"></canvas>
+        </view>
+        <view
+          @click.stop="savePoster"
+          style="width:140rpx;height:140rpx;border-radius:50%;margin:0 auto ;background:#fff;line-height:150rpx;text-align:center;font-size:29rpx;box-shadow:0 0 20rpx #eee;color:#444;position:absolute;bottom:5%;left:calc(50% - 35px)"
+        >保存本地</view>
+      </view>
+    </van-overlay>
+
     <authButton :showDialog.sync="showDialog" :isOverlay="true"></authButton>
   </view>
 </template>
@@ -268,14 +303,14 @@ export default {
       shopObj: {
         page: 1
       },
-      showDialog: false
+      showDialog: false,
+      sharePopup: false,
+      postedPopup: false
     }
   },
   async onLoad() {
     this.goodsItem = {}
     const { windowWidth, model } = store.state.systemInfo
-    const iphoneRect = await wx.getMenuButtonBoundingClientRect()
-    console.log(iphoneRect)
     this.topBack =
       750 / windowWidth * 1 * (model.search('iPhone X') !== -1 ? 50 : 26) + 'rpx'
     this.swiperHeight = windowWidth * 800 / 800 + 'px'
@@ -288,6 +323,11 @@ export default {
       console.log(list, this.route)
     }
     this.currentPageId = list[list.length - 1].options.id
+    // 二维码扫描进来没有id
+    if (!this.currentPageId) {
+      const result = await get('/api/v1/share/getCustomParameter', { uuid: list[list.length - 1].options.scene })
+      this.currentPageId = result.value
+    }
     if (!list[list.length - 1].data.goodsItem) {
       this.similarPopup = false
       this.shopPopup = false
@@ -297,26 +337,30 @@ export default {
       // 商品详情
       this.goodsItem = list[list.length - 1].data.goodsItem
       // 相似弹出框
-      this.similarPopup = !!list[list.length - 1].data.showSimilar
+      this.similarPopup = !!list[list.length - 1].data.similarPopup
       // 相似商品列表
       this.similarList = list[list.length - 1].data.similarList || []
       // 相似商品分页
       this.$set(this.similarObj, 'page', list[list.length - 1].data.similarPage || 1)
       this.similarTop = this.recordsTop = list[list.length - 1].data.recordsTop || 0
       // 商铺弹出框
-      this.shopPopup = !!list[list.length - 1].data.showShop
+      this.shopPopup = !!list[list.length - 1].data.shopPopup
       // 商品分页
       this.$set(this.shopObj, 'page', list[list.length - 1].data.shopPage || 1)
     }
   },
   onHide() {
+    const memory = ['similarPopup', 'similarList', 'recordsTop', 'shopPopup']
     /* eslint-disable no-undef */
     const list = getCurrentPages()
-    list[list.length - 1].data.showSimilar = this.similarPopup
-    list[list.length - 1].data.similarList = this.similarList
+    // list[list.length - 1].data.showSimilar = this.similarPopup
+    // list[list.length - 1].data.similarList = this.similarList
+    // list[list.length - 1].data.recordsTop = this.recordsTop
+    // list[list.length - 1].data.showShop = this.shopPopup
+    memory.forEach(item => {
+      list[list.length - 1].data[item] = this[item]
+    })
     list[list.length - 1].data.similarPage = this.similarObj.page
-    list[list.length - 1].data.recordsTop = this.recordsTop
-    list[list.length - 1].data.showShop = this.shopPopup
     list[list.length - 1].data.shopPage = this.shopObj.page
   },
   // 下拉刷新
@@ -330,13 +374,16 @@ export default {
   },
   // 分享
   onShareAppMessage() {
+    this.sharePopup = false
     return {
-      title: this.goodsItem.goodsName
+      title: this.goodsItem.goodsName,
+      imageUrl: this.goodsItem.goodsImageUrl
     }
   },
   methods: {
     // 详情页
     async getGoodDetail() {
+      console.log(this.currentPageId, 999)
       wx.showLoading({ title: '加载中...' })
       try {
         const result = await get('api/v1/goods/detail', {
@@ -366,7 +413,6 @@ export default {
         })
         return false
       }
-
       moveTo('../detail/main', { id: item.goodsId })
     },
     // 相似商品页
@@ -460,6 +506,248 @@ export default {
       // rpx与px单位之间的换算 : 750/windowWidth = 屏幕的高度（rpx）/windowHeight
       // https://www.jb51.net/article/138776.htm 计算swiper图片
     },
+    // 分享 绘制canvas
+    shareGoods() {
+      this.sharePopup = true
+      console.log('share')
+    },
+    // 保存海报
+    savePoster() {
+      wx.showLoading({
+        title: '保存中...',
+        mask: true
+      })
+      wx.canvasToTempFilePath({
+        canvasId: 'firstCanvas',
+        success: res => {
+          const tempFilePath = res.tempFilePath
+          wx.saveImageToPhotosAlbum({
+            filePath: tempFilePath,
+            success: res => {
+              wx.hideLoading()
+              wx.showToast({
+                title: '保存成功!',
+                duration: 1000
+              })
+              console.log(res)
+            }
+          })
+        }
+      })
+    },
+    // 生成海报
+    createPoster() {
+      this.sharePopup = false
+      wx.showLoading({
+        title: '生成海报中...'
+      })
+      var context = wx.createCanvasContext('firstCanvas')
+      context.beginPath()// 开始一个新的路径
+      /** 绘制中间 */
+      context.rect(0, 50, 300, 430)
+      context.setFillStyle('#fff')
+      context.fill()
+      const myGradient = context.createLinearGradient(0, 100, 300, 100)
+      myGradient.addColorStop(0, '#d55251')
+      myGradient.addColorStop(1, '#ef7a82')
+      context.setFillStyle(myGradient)
+      context.setStrokeStyle('#fff')
+      // context.setLineJoin('round')
+      // context.strokeRect(0, 0, 300, 100)
+      /** 矩形 */
+      context = this.drawRect(context, 0, 0, 300, 50, 12)
+      context.fill()
+      /** 填充文字 */
+      context.setFillStyle('#F0F8FF')
+      context.font = '19px Arial'
+      context.fillText('藤蔓生活', 15, 32)
+      context.font = '14px sans-serif'
+      context.fillText('美好', 130, 32)
+      context.fillText('生活', 180, 32)
+      context.fillText('品质', 230, 32)
+      context.setFillStyle('#000')
+      context.fillText(store.state.userInfo.nickName, 75, 73)
+      context.font = '14px Arial'
+      context.fillText('推荐给你一个好物哟', 75, 99)
+
+      /** 原市场价格 */
+      if (this.goodsItem.couponDiscount !== '0') {
+        context.setFillStyle('#999999')
+        context.font = '12px Arial'
+        context.fillText('市场价 ¥', 14.5, 430)
+        context.font = '16px sans-serif'
+        context.fillText(this.goodsItem.minGroupPrice, 65, 430)
+      }
+
+      context.setFillStyle('#cd4939')
+      context.font = '16px Arial'
+      context.fillText('¥', 14.5, 410)
+
+      context.font = '25px sans-serif'
+      context.fillText(this.goodsItem.couponPrice, 27, 410)
+
+      context.font = '13px Arial'
+      context.setFillStyle('#999999')
+
+      /** 删除线 */
+      // context.beginPath()
+      // context.setStrokeStyle('#999999')
+      // context.setLineCap('square')
+      // context.setLineWidth(2)
+      // const price = this.goodsItem.couponPrice.length
+      // context.moveTo(16.5, 475)
+      // context.lineTo(70 + price * 9, 475)
+      // context.stroke()
+
+      /** canvas 换行 */
+      let text = this.goodsItem.goodsName
+      const chr = text.split('')
+      let temp = ''
+      const listArr = []
+      for (let i = 0; i < chr.length; i++) {
+        if (context.measureText(temp).width < 150) {
+          temp += chr[i]
+        } else {
+          i--
+          listArr.push(temp)
+          temp = ''
+        }
+      }
+      listArr.push(temp)
+      /** 两行 */
+      if (listArr.length > 2) {
+        const textArr = listArr[1].split('')
+        let temp = ''
+        for (let i = 0; i < textArr.length; i++) {
+          if (context.measureText(temp).width < 130) {
+            temp += textArr[i]
+          } else {
+            break
+          }
+        }
+        listArr[1] = temp + '...'
+      }
+      const sitY = this.goodsItem.couponDiscount !== '0' ? 450 : 430
+      for (var b = 0; b < 2; b++) {
+        context.fillText(listArr[b], 14.5, sitY + b * 18, 300)
+      }
+      const that = this
+      wx.getImageInfo({
+        src: this.goodsItem.goodsImageUrl,
+        success: function (res) {
+          console.log(res.path)
+          context.setStrokeStyle('red')
+          context.strokeRect(14.5, 111.5, 271, 271)
+          context.drawImage(res.path, 15, 112, 270, 270)
+          // 绘制头像
+          // that.drawPortrait(context)
+          that.getSunCode(context)
+        },
+        fail: function (res) {
+          console.log(res)
+        }
+      })
+      // setTimeout(() => {
+
+      // }, 2000)
+    },
+    /** 获取太阳码 */
+    async getSunCode(ctx) {
+      const result = await get('api/v1/share/getSunCodeByteArray', { type: 20, value: this.currentPageId })
+      // console.log(wx.base64ToArrayBuffer(result))
+      // console.log(wx.env.USER_DATA_PATH)
+      // var imageData = result.replace(/^data:image\/\w+;base64,/, '')
+      // var imgPath = wx.env.USER_DATA_PATH + '/detail/sun.png'
+      // var fs = wx.getFileSystemManager()
+      // fs.writeFileSync(imgPath, imageData, 'base64')
+      // const love = await base64src(result)
+      const fsm = wx.getFileSystemManager()
+      var showImgData = result
+
+      // showImgData = showImgData.replace(/\ +/g, '') // 去掉空格方法
+
+      showImgData = showImgData.replace(/[\r\n]/g, '')
+
+      const buffer = wx.base64ToArrayBuffer(showImgData)
+
+      const fileName = wx.env.USER_DATA_PATH + '/share_img.png'
+
+      fsm.writeFileSync(fileName, buffer, 'binary')
+
+      console.log(fileName)
+      var avatorWidth = 60
+      var avatorHeight = 60
+      var avatarurlX = 215 // 绘制的头像在画布上的位置
+      var avatarurlY = 390 // 绘制的头像在画布上的位置
+      ctx.save()
+      ctx.beginPath() // 开始绘制
+      ctx.arc(avatorWidth / 2 + avatarurlX, avatorHeight / 2 + avatarurlY, avatorWidth / 2, 0, Math.PI * 2, false)
+      ctx.clip()
+      ctx.drawImage(fileName, 215, 390, avatorWidth, avatorWidth)
+      ctx.restore()
+
+      // 长按扫码去购买
+      ctx.setFillStyle('#999999')
+      ctx.font = '10px Arial'
+      ctx.fillText('长按扫码去购买', 209, 462)
+      // 绘制头像
+      this.drawPortrait(ctx)
+      // todo 优化
+      // 用wx.getFileSystemManager().unlink方法，删除binary格式图片；
+      // setTimeout(() => {
+      //   fsm.unlink({
+      //     filePath: fileName,
+      //     success: res => {
+      //       console.log('删除成功')
+      //     }
+      //   })
+      // }, 5000)
+    },
+    /** 绘制头像 */
+    drawPortrait(ctx) {
+      const that = this
+      wx.downloadFile({
+        url: store.state.userInfo.avatarUrl,
+        success: res => {
+          var avatorWidth = 50
+          var avatorHeight = 50
+          var avatarurlX = 15 // 绘制的头像在画布上的位置
+          var avatarurlY = 55 // 绘制的头像在画布上的位置
+          ctx.save()
+          ctx.beginPath() // 开始绘制
+          ctx.arc(avatorWidth / 2 + avatarurlX, avatorHeight / 2 + avatarurlY, avatorWidth / 2, 0, Math.PI * 2, false)
+          ctx.clip()
+          ctx.drawImage(res.tempFilePath, 15, 55, avatorWidth, avatorWidth)
+          ctx.restore()
+          wx.hideLoading()
+          ctx.draw()
+          that.postedPopup = true
+        }
+      })
+    },
+    /** 绘制圆矩形 */
+    drawRect(ctx, x, y, w, h, r) {
+      // 参考文章 https://www.zhangxinxu.com/study/201406/image-border-radius-canvas.html
+      ctx.beginPath()
+      ctx.moveTo(x + r, y)
+      ctx.arcTo(x + w, y, x + w, y + h, r)
+      ctx.arcTo(x + w, y + h, x, y + h, 1)
+      ctx.arcTo(x, y + h, x, y, 1)
+      ctx.arcTo(x, y, x + w, y, r)
+      ctx.closePath()
+      return ctx
+    },
+    /** 绘制圆头像 */
+    drawCricleHead(ctx, x, y, w, h, image) {
+      console.log(image)
+      ctx.save()
+      ctx.beginPath()
+      ctx.arc(w / 2 + x, h / 2 + y, w / 2, 0, Math.Pi * 2, false)
+      ctx.clip()
+      ctx.drawImage(image, x, y, w, h)
+      ctx.restore()
+      return ctx
+    },
     async toPddWeApp() {
       try {
         const result = await get('api/v1/goods/generateWeAppInfo', {
@@ -507,6 +795,21 @@ page {
 }
 .color-91918f {
   color: #91918f;
+}
+.share-content {
+  button {
+    font-size: 31rpx;
+    background: transparent;
+    position: absolute;
+    height: 200rpx;
+    line-height: 340rpx;
+    ::after {
+      border: none !important;
+    }
+  }
+  button::after {
+    border: none !important;
+  }
 }
 .detail-container {
   .back {

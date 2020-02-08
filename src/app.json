@@ -11,7 +11,8 @@
     "pages/order/main",
     "pages/withdrawal/main",
     "pages/system/main",
-    "pages/my-friend/main"
+    "pages/my-friend/main",
+    "pages/counter/main"
   ],
   "window": {
     "backgroundTextStyle": "light",

@@ -3,10 +3,7 @@
   "backgroundTextStyle": "dark",
   "navigationBarTextStyle": "white",
   "usingComponents": {
-    "van-button": "/static/vant/button/index",
-    "van-search": "/static/vant/search/index",
-    "van-tab": "/static/vant/tab/index",
-    "van-tabs": "/static/vant/tabs/index"
+    "van-button": "/static/vant/button/index"
   },
   "navigationBarTitleText": "我的收入",
   "enablePullDownRefresh": true

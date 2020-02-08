@@ -149,9 +149,21 @@ export default {
       showDialog: false
     }
   },
-  onLoad() {
+  async onLoad() {
+    const result = await get('api/v1/member/cumulativeAccount')
+    const results = await get('api/v1/member/soonAccount')
+    console.log(result, results)
     const res = wx.getStorageSync('token')
-    if (res && !this.meInfo.nickName) this.meInfo = store.state.userInfo
+    if (res && !this.meInfo.nickName) {
+      this.meInfo = store.state.userInfo
+      // 防止快速切换到 我的 页面
+      if (!store.state.userInfo.id) {
+        setTimeout(() => {
+          this.meInfo = store.state.userInfo
+          this.personalBanner = store.state.bannerObj.personalCenterBanner
+        }, 300)
+      }
+    }
     this.isLogin = !!res
     this.showDialog = !res
     this.personalBanner = store.state.bannerObj.personalCenterBanner
@@ -206,19 +218,21 @@ export default {
     },
     /** 我的收入 */
     moveToIncome() {
-      wx.showToast({
-        title: '可提现额需大于1元',
-        icon: 'none'
-      })
-      // moveTo('../income/main')
+      moveTo('../income/main')
     },
     // 提现
-    moveToWithdrawal() {
-      wx.showToast({
-        title: '可提现额需大于1元',
-        icon: 'none'
-      })
-      // moveTo('../withdrawal/main')
+    async moveToWithdrawal() {
+      if (this.meInfo.money < 1) {
+        wx.showToast({
+          title: '可提现额需大于1元',
+          icon: 'none'
+        })
+        return false
+      }
+      // todo
+      // const result = await get('api/v1/takeMoney/applyTakeMoney?money=200')
+      // console.log(result)
+      moveTo('../withdrawal/main')
     },
     // 我的订单
     moveToOrder() {

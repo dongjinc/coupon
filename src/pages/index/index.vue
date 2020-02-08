@@ -60,7 +60,7 @@
               >
                 <view
                   style="width:16rpx;height:16rpx;background:#fff;border-radius:10rpx;transition:all .3s"
-                  v-for="(item, indexd) in 3"
+                  v-for="(item, indexd) in bannerList.length"
                   :key="indexd"
                   :class="[indexd === bannerDot? 'banner-active': '']"
                 ></view>
@@ -231,6 +231,9 @@ export default {
     if (iphoneInfo.model !== 'iphone X') { this.searchTop = iphoneRect.top - 11 + 'px' }
   },
   mounted() {
+    // wx.navigateTo({
+    //   url: '../counter/main'
+    // })
     this.pageList = [
       new PageBase('api/v1/goods/topList'),
       new PageBase('api/v1/goods/catList'),
@@ -255,6 +258,12 @@ export default {
       wx.hideNavigationBarLoading() // 完成停止加载
       wx.stopPullDownRefresh() // 停止下拉刷新
     }, 1500)
+  },
+  // 分享
+  onShareAppMessage() {
+    return {
+      title: '藤蔓生活'
+    }
   },
   methods: {
     changeDot(e) {

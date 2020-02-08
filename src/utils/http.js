@@ -1,4 +1,5 @@
 import { global } from './global.js'
+import { getLoginAnony } from './common'
 /**
  * @param {使用科里化} method
  * @param {*} url
@@ -14,6 +15,15 @@ const request = (method, url) => {
         success(res) {
           if (res.data.code === 1) {
             return resolve(res.data.data)
+          }
+          /** 请重新登录 */
+          if (res.data.code === 102) {
+            wx.removeStorage({
+              key: 'token',
+              success: res => {
+                getLoginAnony()
+              }
+            })
           }
           reject(res.data)
         },
@@ -49,16 +59,19 @@ const serialize = function (obj, ary = []) {
 export const post = request('POST', global.node_uri)
 
 export class PageBase {
-  currentPage = 0
-  pageApi = ''
+  currentPage = 0;
+  pageApi = '';
   constructor(api) {
     this.pageApi = api
   }
   /** 首页List */
   getPageList = async function (param) {
-    const result = await get(this.pageApi, { page: this.currentPage, ...param })
+    const result = await get(this.pageApi, {
+      page: this.currentPage,
+      ...param
+    })
     return result
-  }
+  };
   next(param) {
     this.currentPage++
     return this.getPageList(param)

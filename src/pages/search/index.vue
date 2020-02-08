@@ -3,7 +3,7 @@
     <view class="search-input" style="display:flex;flex-direction:column">
       <van-search
         style="flex:1"
-        :focus="true"
+        :focus="focus"
         background="null"
         use-action-slot
         clearable
@@ -78,6 +78,7 @@ export default {
       searchHistoryList: [],
       searchExploreList: [],
       searching: false,
+      focus: true,
       formObj: {
         page: 1,
         sortType: 0
