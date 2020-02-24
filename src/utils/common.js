@@ -43,10 +43,9 @@ export const getLoginAnony = function () {
   })
 }
 export const getLoginInfo = function () {
-  get('api/v1/member/getMemberInfo').then(resOne => {
-    get('api/v1/member/accountInfo').then((resTwo) => {
-      store.commit('setUserInfo', { ...resOne, ...zeroDeal(resTwo) })
-    })
+  get('api/v1/member/getMemberInfo').then(async resOne => {
+    store.commit('setUserInfo', { ...resOne })
+    await getUserInfo()
   }, err => {
     if (err.code === 101 || err.code === 103) {
       wx.removeStorage({
@@ -57,4 +56,9 @@ export const getLoginInfo = function () {
       })
     }
   })
+}
+/** 刷新账户信息 */
+export const getUserInfo = async function () {
+  const result = await get('api/v1/member/accountInfo')
+  store.commit('setUserInfo', { ...store.state.userInfo, ...zeroDeal(result) })
 }

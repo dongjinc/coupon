@@ -4,5 +4,9 @@
   "backgroundTextStyle": "dark",
   "navigationBarTextStyle": "black",
   "backgroundColor": "#f6f5f4",
+  "usingComponents": {
+    "van-button": "/static/vant/button/index",
+    "van-popup": "/static/vant/popup/index"
+  },
   "enablePullDownRefresh": true
 }

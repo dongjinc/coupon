@@ -66,6 +66,7 @@
                 ></view>
               </view>
             </view>
+            <official-account></official-account>
             <view
               v-if="index === 0"
               style="padding: 10rpx 16rpx;display:flex;;flex-wrap:wrap;justify-content:space-between"

@@ -32,6 +32,7 @@
 
         <view class="income-wrap">
           <view class="income-content">
+            <!-- @tap="moveToWithdrawal" -->
             <view class="income-content-left" @tap="moveToWithdrawal">
               <text>可提现余额</text>
               <view>
@@ -39,7 +40,8 @@
                 <text style="font-size:58rpx;">{{meInfo.money}}</text>
               </view>
             </view>
-            <view class="income-content-right" @tap="moveToIncome">
+            <!--  @tap="moveToIncome" -->
+            <view class="income-content-right" @tap="moveToWithdrawal">
               <!-- <view>我的收入</view> -->
               <view>立即提现</view>
               <view class="iconfont iconyou"></view>
@@ -87,7 +89,7 @@
             @tap="getLoginCode"
           >授权登录</button>
         </view>
-        <view class="me-item">
+        <view class="me-item" @tap="moveToSystem">
           <image src="/static/images/system.png" />
           <view>会员制度</view>
         </view>
@@ -150,9 +152,7 @@ export default {
     }
   },
   async onLoad() {
-    const result = await get('api/v1/member/cumulativeAccount')
-    const results = await get('api/v1/member/soonAccount')
-    console.log(result, results)
+    this.$_eventBus.$on('withdrawal-money', this.refreshMyInfo)
     const res = wx.getStorageSync('token')
     if (res && !this.meInfo.nickName) {
       this.meInfo = store.state.userInfo
@@ -184,6 +184,12 @@ export default {
     }, 1500)
   },
   methods: {
+    /** 提现后刷新用户信息 */
+    refreshMyInfo() {
+      // todo 匿名用户可提现吗
+      console.log(store.state.userInfo)
+      this.meInfo = store.state.userInfo
+    },
     onClose() {
       this.showDialog = false
     },
@@ -222,13 +228,13 @@ export default {
     },
     // 提现
     async moveToWithdrawal() {
-      if (this.meInfo.money < 1) {
-        wx.showToast({
-          title: '可提现额需大于1元',
-          icon: 'none'
-        })
-        return false
-      }
+      // if (this.meInfo.money < 1) {
+      //   wx.showToast({
+      //     title: '可提现额需大于1元',
+      //     icon: 'none'
+      //   })
+      //   return false
+      // }
       // todo
       // const result = await get('api/v1/takeMoney/applyTakeMoney?money=200')
       // console.log(result)
@@ -240,7 +246,7 @@ export default {
     },
     // 会员制度
     moveToSystem() {
-      moveTo('../system/main')
+      moveTo('../wx-public/main', { src: store.state.bannerObj.memberSystem[0].value })
     },
     // 我的好友
     moveToFriend() {
@@ -379,7 +385,7 @@ button::after {
       justify-content: space-between;
       align-items: center;
       &-left {
-        width: 60%;
+        width: 70%;
         display: flex;
         flex-direction: column;
       }

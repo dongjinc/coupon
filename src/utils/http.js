@@ -17,13 +17,18 @@ const request = (method, url) => {
             return resolve(res.data.data)
           }
           /** 请重新登录 */
-          if (res.data.code === 102) {
-            wx.removeStorage({
-              key: 'token',
-              success: res => {
-                getLoginAnony()
-              }
-            })
+          switch (res.data.code) {
+            case 101:
+            case 102:
+            case 103:
+            case 104:
+              wx.removeStorage({
+                key: 'token',
+                success: res => {
+                  getLoginAnony()
+                }
+              })
+              break
           }
           reject(res.data)
         },
@@ -60,6 +65,9 @@ export const post = request('POST', global.node_uri)
 
 export class PageBase {
   currentPage = 0;
+  /** 空值计数3页后 表示没有更多 */
+  emptyCountPage = 0;
+  canNext = true;
   pageApi = '';
   constructor(api) {
     this.pageApi = api
@@ -70,9 +78,16 @@ export class PageBase {
       page: this.currentPage,
       ...param
     })
+    if (result.length === 0) {
+      this.emptyCountPage++
+      if (this.emptyCountPage >= 3) {
+        this.canNext = false
+      }
+    }
     return result
   };
   next(param) {
+    if (!this.canNext) return false
     this.currentPage++
     return this.getPageList(param)
   }

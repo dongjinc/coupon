@@ -1,9 +1,9 @@
 {
-  "navigationBarBackgroundColor": "#e84443",
   "backgroundTextStyle": "dark",
-  "navigationBarTextStyle": "white",
+  "navigationBarTextStyle": "black",
   "usingComponents": {
-    "van-button": "/static/vant/button/index"
+    "van-button": "/static/vant/button/index",
+    "van-divider": "/static/vant/divider/index"
   },
   "navigationBarTitleText": "我的收入",
   "enablePullDownRefresh": true

@@ -375,6 +375,9 @@ export default {
       imageUrl: this.goodsItem.goodsImageUrl
     }
   },
+  onUnload() {
+    this.$_eventBus.$emit('focus', false)
+  },
   methods: {
     // 详情页
     async getGoodDetail() {
@@ -639,7 +642,6 @@ export default {
       wx.getImageInfo({
         src: this.goodsItem.goodsImageUrl,
         success: function (res) {
-          console.log(res.path)
           context.setStrokeStyle('red')
           context.strokeRect(14.5, 111.5, 271, 271)
           context.drawImage(res.path, 15, 112, 270, 270)
@@ -666,7 +668,6 @@ export default {
       const fileName = wx.env.USER_DATA_PATH + '/share_img.png'
       fsm.writeFileSync(fileName, buffer, 'binary')
 
-      console.log(fileName)
       var avatorWidth = 60
       var avatorHeight = 60
       var avatarurlX = 215 // 绘制的头像在画布上的位置
