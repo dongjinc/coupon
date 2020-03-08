@@ -142,7 +142,7 @@ export default {
           duration: 1300
         })
       }
-      if (this.money * 1 > this.memberMoney.money * 1) {
+      if (this.money * 1 > this.memberMoney.money * 1 || this.money * 1 <= 0) {
         return wx.showToast({
           title: '输入金额有误!',
           icon: 'none',

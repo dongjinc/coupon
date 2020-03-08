@@ -11,7 +11,6 @@
             src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1573834603444&di=6f0b79cf28303fb69de7d3afc3c4f84e&imgtype=0&src=http%3A%2F%2Fwx1.sinaimg.cn%2Flarge%2Fac18b792ly1ftczwflpczj20dm0dmgq2.jpg"
             style="width:35rpx;height:35rpx"
           />
-          <!-- <text style="margin:0 15rpx 0 10rpx">订单:</text> -->
           <text>{{item.remark}}</text>
         </view>
         <view style="display:flex;justify-content:space-between;margin:20rpx 0">
@@ -60,9 +59,9 @@ export default {
     const { nickName, avatarUrl } = store.state.userInfo
     this.userInfo = { nickName, avatarUrl }
     this.pageBase = {
-      pageLoader: new PageBase('/api/v1/member/accountDetailList')
+      pageLoader: new PageBase('api/v1/member/accountDetailList')
     }
-    this.getIncomeList()
+    this.getIncomeList(true)
   },
   // 下拉刷新
   async onPullDownRefresh() {
@@ -90,7 +89,11 @@ export default {
           this.incomeList.push(...result)
         }
       } catch (e) {
-        console.log(e)
+        wx.showToast({
+          title: (e && e.message) || '获取列表失败！',
+          icon: 'none',
+          duration: 2000
+        })
       }
     }
   }

@@ -138,12 +138,22 @@
         </view>
       </view>
     </van-popup>
+    <!-- 生成后的 -->
+    <van-overlay :show="postedPopup" @click.stop="postedPopup = false">
+      <view class="canvas-wrap" v-if="postedPopup">
+        <view class="content">
+          <canvas canvas-id="firstCanvas"></canvas>
+        </view>
+        <view class="save-btn" @click.stop="savePoster">保存本地</view>
+      </view>
+    </van-overlay>
   </view>
 </template>
 <script>
+import store from '@/store'
 import { PageBase, get } from '@/utils/http'
 import { formatTime } from '@/utils'
-
+import { drawInit, drawPortrait, getSunCode } from '@/utils/common'
 export default {
   name: 'myFriend',
   data() {
@@ -159,7 +169,8 @@ export default {
       // 上为0 下为1
       activeDot: 1,
       // 展示 popup
-      showPopup: false
+      showPopup: false,
+      postedPopup: false
     }
   },
   watch: {
@@ -186,6 +197,7 @@ export default {
     this.sharePopup = false
     return {
       title: '邀请好友',
+      path: '/pages/index/main?userId=' + store.state.systemInfo.id,
       imageUrl: '/static/images/invite-share.png'
     }
   },
@@ -207,19 +219,81 @@ export default {
       })
       try {
         const result = await get('api/v1/member/friendsList')
-        result.forEach(item => {
-          item.invitationTime = item.invitationTime && formatTime(new Date(item.invitationTime))
-        })
-        this.inviteChildList = result
+        if (result) {
+          result.forEach(item => {
+            item.invitationTime = item.invitationTime && formatTime(new Date(item.invitationTime))
+          })
+          this.inviteChildList = result
+        }
       } catch (e) {
         console.log(e)
       } finally {
         wx.hideLoading()
       }
     },
+    /** 生成海报 */
+    async createPoster() {
+      this.showPopup = false
+      wx.showLoading({
+        title: '生成海报中...',
+        mask: true
+      })
+      let context = drawInit()
+      context = await drawPortrait(context)
+      wx.getImageInfo({
+        src: '/static/images/invite-canvas.png',
+        success: async res => {
+          context.setStrokeStyle('red')
+          context.strokeRect(14.5, 111.5, 271, 351)
+          context.drawImage('/' + res.path, 15, 112, 270, 350)
+          // that.getSunCode(context)
+        },
+        fail: function (res) {
+          console.log(res)
+        }
+      })
+      // 绘制头像
+      context = await getSunCode(context, { type: 10, value: 1022 }, 120, 377, 120, 377)
+      context.draw()
+      this.postedPopup = true
+      wx.hideLoading()
+    },
     /** 展示邀请 */
     showInvitePopup() {
       this.showPopup = true
+    },
+    // 保存海报
+    savePoster() {
+      wx.showLoading({
+        title: '保存中...',
+        mask: true
+      })
+      // 将 canvas 生成文件的临时路径 (本地路径)
+      wx.canvasToTempFilePath({
+        canvasId: 'firstCanvas',
+        success: res => {
+          const tempFilePath = res.tempFilePath
+          // 保存图片到系统相册
+          wx.saveImageToPhotosAlbum({
+            filePath: tempFilePath,
+            success: res => {
+              wx.hideLoading()
+              wx.showToast({
+                title: '保存成功!',
+                duration: 1000
+              })
+            },
+            fail: () => {
+              wx.hideLoading()
+              wx.showToast({
+                title: '保存失败!',
+                icon: 'none',
+                duration: 1500
+              })
+            }
+          })
+        }
+      })
     },
     focusItem(item, index) {
       this.activeIndex = index
@@ -297,6 +371,34 @@ page {
   }
   button::after {
     border: none !important;
+  }
+}
+.canvas-wrap {
+  height: 100%;
+  .content {
+    height: 950rpx;
+    position: absolute;
+    top: calc(45% - 500rpx);
+    left: calc(50% - 300rpx);
+    canvas {
+      width: 300px;
+      height: 100%;
+    }
+  }
+  .save-btn {
+    width: 140rpx;
+    height: 140rpx;
+    border-radius: 50%;
+    margin: 0 auto;
+    background: #fff;
+    line-height: 150rpx;
+    text-align: center;
+    font-size: 29rpx;
+    box-shadow: 0 0 20rpx #eee;
+    color: #444;
+    position: absolute;
+    bottom: 5%;
+    left: calc(50% - 70rpx);
   }
 }
 </style>

@@ -4,15 +4,27 @@ import { getLoginAnony, getLoginInfo } from '@/utils/common'
 export default {
   async onLaunch() {
     /** 获取感知登录判断 是否存在token */
-    wx.getStorage({
-      key: 'token',
-      success: () => {
-        getLoginInfo()
-      },
-      fail(res) {
-        getLoginAnony()
+    const result = wx.getStorageSync('token')
+    try {
+      if (result) {
+        await getLoginInfo()
+      } else {
+        await getLoginAnony()
       }
-    })
+    } catch (e) {
+    } finally {
+      console.log(1)
+      this.$_eventBus.$emit('onLoad')
+    }
+    // wx.getStorage({
+    //   key: 'token',
+    //   success: async () => {
+    //     await getLoginInfo()
+    //   },
+    //   fail: async res => {
+    //     await getLoginAnony()
+    //   }
+    // })
     wx.getSystemInfo({
       success: res => {
         store.commit('setSysInfo', res)

@@ -51,7 +51,11 @@
               >
                 <block v-for="(items, indexs) in bannerList" :key="indexs">
                   <swiper-item style="display:flex;" @click="moveToBdd(items)">
-                    <image :src="items.imageUrl" style="margin:0 auto;max-height:100%;width:100%" />
+                    <image
+                      :src="items.imageUrl"
+                      style="margin:0 auto;max-height:100%;width:100%"
+                      :lazy-load="true"
+                    />
                   </swiper-item>
                 </block>
               </swiper>
@@ -77,7 +81,7 @@
                 :key="iconIndex"
                 @tap="moveToBdd(item)"
               >
-                <image :src="item.imageUrl" style="width:130rpx;height:110rpx;" />
+                <image :src="item.imageUrl" style="width:130rpx;height:110rpx;" :lazy-load="true" />
                 <text>{{item.title}}</text>
               </view>
             </view>
@@ -92,7 +96,7 @@
                 @tap="moveToBdd(item)"
                 style="height:270rpx;border-radius:10rpx;overflow:hidden;margin:10rpx 0 15rpx;box-shadow: 0 0 60rpx rgba(213,82,81, .5)"
               >
-                <image style="width:100%;height:100%" :src="item.imageUrl" />
+                <image style="width:100%;height:100%" :src="item.imageUrl" :lazy-load="true" />
                 <view
                   style="display:flex;justify-content:space-between;padding:0 15rpx;margin: 15rpx 0 20rpx"
                 ></view>
@@ -106,7 +110,7 @@
               style="background:#fff"
             >
               <view class="item-container">
-                <image :src="child.goodsThumbnailUrl" lazy-load="true" />
+                <image :src="child.goodsThumbnailUrl" :lazy-load="true" />
                 <view class="item-right-container">
                   <view class="right-title">{{ child.goodsName }}</view>
                   <view class="right-sales">销量{{ child.salesTip }}</view>
@@ -134,19 +138,40 @@
         </scroll>
       </swiper-item>
     </swiper>
+    <van-dialog
+      use-slot
+      :show="showInvite"
+      show-cancel-button
+      confirm-button-open-type="getUserInfo"
+      @close="onClose"
+      @getuserinfo="getUserInfo"
+    >
+      <view style="padding: 30rpx;display:flex;flex-direction:column">
+        <view style="display:flex;align-items:center;justify-content:center">
+          <image
+            style="width:60rpx;height:60rpx;border-radius:50%;margin-right:20rpx"
+            :src="inviteUserInfo.avatarUrl"
+          />
+          <text>{{inviteUserInfo.nickName}}</text>
+        </view>
+        <text style="text-align:center;margin: 30rpx 0 10rpx;">邀请你加入 藤蔓</text>
+      </view>
+    </van-dialog>
   </view>
 </template>
 
 <script>
 import bannerSwiper from '@/components/banner-swiper'
 import indexList from '@/components/index-list'
-import { PageBase, get } from '@/utils/http'
-import { moveTo } from '@/utils/common'
+import { PageBase, get, post } from '@/utils/http'
+import { moveTo, getLoginCode, getLoginInfo } from '@/utils/common'
 import store from '../../store'
+import myMixin from '@/utils/my-mixin'
 let pageStart = 0
 const classArray = [0, 8182, 6398, 8583, 239, 18637]
 export default {
   components: { bannerSwiper, indexList },
+  mixins: [myMixin],
   data() {
     return {
       bannerList: [],
@@ -218,7 +243,9 @@ export default {
         }
       ],
       searchTop: '22px',
-      bannerDot: 0
+      bannerDot: 0,
+      showInvite: false,
+      inviteUserInfo: {}
     }
   },
   watch: {
@@ -226,27 +253,13 @@ export default {
       this.oldCurrentDot = oldVal
     }
   },
-  async onLoad() {
+  async onLoad(query) {
+    this.userId = query.userId
     const iphoneInfo = store.state.systemInfo
     const iphoneRect = await wx.getMenuButtonBoundingClientRect()
     if (iphoneInfo.model !== 'iphone X') { this.searchTop = iphoneRect.top - 11 + 'px' }
   },
-  mounted() {
-    // wx.navigateTo({
-    //   url: '../counter/main'
-    // })
-    this.pageList = [
-      new PageBase('api/v1/goods/topList'),
-      new PageBase('api/v1/goods/catList'),
-      new PageBase('api/v1/goods/catList'),
-      new PageBase('api/v1/goods/catList'),
-      new PageBase('api/v1/goods/catList'),
-      new PageBase('api/v1/goods/catList')
-    ]
-    // this.getTopList()
-    this.getBannerList()
-    this.getList('refresh', pageStart)
-  },
+
   onReachBottom() {
     // 到底部触发刷新
     this.getTopList(false)
@@ -267,6 +280,76 @@ export default {
     }
   },
   methods: {
+    async onAfterLoad() {
+      console.log(123)
+      // await getLoginAnony()
+      await this.getBannerList()
+
+      // wx.navigateTo({
+      //   url: '../counter/main'
+      // })
+      this.pageList = [
+        new PageBase('api/v1/goods/topList'),
+        new PageBase('api/v1/goods/catList'),
+        new PageBase('api/v1/goods/catList'),
+        new PageBase('api/v1/goods/catList'),
+        new PageBase('api/v1/goods/catList'),
+        new PageBase('api/v1/goods/catList')
+      ]
+      // this.getTopList()
+
+      await this.getList('refresh', pageStart)
+      if (this.userId) {
+        this.showInvite = true
+        this.getInviteUserInfo(this.userId)
+      }
+    },
+    /** 获取邀请用户信息 */
+    async getInviteUserInfo(id) {
+      try {
+        const result = await get('api/v1/member/getMemberSimplify', { userId: id })
+        this.inviteUserInfo = result
+      } catch (e) {
+        console.log(e)
+      }
+    },
+    async getUserInfo(e) {
+      const code = await getLoginCode()
+      wx.showLoading({
+        title: '加载中...'
+      })
+      if (e.mp.detail.userInfo) {
+        try {
+          await post('api/v1/login/weChatAuth', {
+            'code': code,
+            'encrypted_data': e.mp.detail.encryptedData,
+            'iv': e.mp.detail.iv,
+            'parentId': -1
+          })
+          // wx.setStorageSync('time', result.expMillis)
+          // 设置token 成功后调用获取个人信息的接口
+          getLoginInfo()
+
+          /** 绑定关系 */
+          await get('api/v1/member/bind', { parentId: this.inviteUserInfo.userId })
+          wx.showToast({
+            title: '师徒关系绑定成功！',
+            duration: 1500
+          })
+        } catch (e) {
+          wx.showToast({
+            title: (e && e.message) || '师徒关系绑定失败！',
+            icon: 'none',
+            duration: 2000
+          })
+        } finally {
+          wx.hideLoading()
+        }
+      } else {
+        wx.hideLoading()
+        wx.showToast({ title: '授权失败!', icon: 'none' })
+      }
+    },
     changeDot(e) {
       this.currentDot = e.mp.detail.current
     },
@@ -277,9 +360,15 @@ export default {
       // this.setCurrentData(currentCur, pageData);
       wx.showNavigationBarLoading()
       // 模拟异步获取数据场景
-      const result = await this.pageList[this.currentDot].next(
-        { catId: classArray[this.currentDot] }
-      )
+      let result
+      try {
+        result = await this.pageList[this.currentDot].next(
+          { catId: classArray[this.currentDot] }
+        )
+        console.log(result)
+      } catch (e) {
+        console.log(e)
+      }
       pageData.requesting = false
       wx.hideNavigationBarLoading()
       if (type === 'refresh') {
@@ -386,6 +475,9 @@ export default {
     // 移动详情页
     moveToDetail(item) {
       moveTo('../detail/main', { id: item.goodsId })
+    },
+    onClose() {
+      this.showInvite = false
     }
   }
 }

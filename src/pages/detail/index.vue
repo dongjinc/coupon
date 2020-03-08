@@ -37,14 +37,13 @@
           class="coupon-rest"
         >{{goodsItem.couponDiscount}}元券剩余{{goodsItem.couponRemainQuantity}}张</text>
       </view>
-      <!-- <view class="commodity-return-cash">
+
+      <view class="commodity-return-cash" @tap="toWebView">
         <text class="cash">返现</text>
-        <text class="estimate">
-          得16%预计
-          <text style="color:#be5041">1.29元</text>，晋升到中级预计赚2.66元
-        </text>
+        <rich-text type="text" :nodes="goodsItem.cashContext"></rich-text>
         <text class="iconfont iconyou right" style="margin-left:auto"></text>
-      </view>-->
+      </view>
+
       <text class="commodity-name">{{goodsItem.goodsName}}</text>
       <view class="commodity-service font-25">
         <text>拼多多，拼多多，拼的多，省的多。</text>
@@ -270,12 +269,14 @@
 <script>
 import { get } from '@/utils/http'
 import indexList from '@/components/index-list'
-import { moveTo } from '@/utils/common'
+import { moveTo, drawPortrait, getSunCode, drawInit } from '@/utils/common'
 import authButton from '@/components/auth-button'
 import store from '@/store'
+import myMixin from '@/utils/my-mixin'
 export default {
   name: 'detail',
   components: { indexList, authButton },
+  mixins: [myMixin],
   data() {
     return {
       swiperHeight: '375px',
@@ -301,7 +302,18 @@ export default {
       postedPopup: false
     }
   },
-  async onLoad() {
+  async onLoad(query) {
+    console.log(1)
+    if (query.scene) {
+      /** 二维码扫码进来 */
+      this.scene = query.scene
+      this.onAfterLoad()
+    }
+    if (query.share) {
+      this.currentPageId = query.id
+      this.onAfterLoad()
+    }
+
     this.goodsItem = {}
     const { windowWidth, model } = store.state.systemInfo
     this.topBack =
@@ -318,17 +330,14 @@ export default {
       console.log(list, this.route)
     }
     this.currentPageId = list[list.length - 1].options.id
-    // 二维码扫描进来没有id
-    if (!this.currentPageId) {
-      const result = await get('/api/v1/share/getCustomParameter', { uuid: list[list.length - 1].options.scene })
-      this.currentPageId = result.value
-    }
-    if (!list[list.length - 1].data.goodsItem) {
+    if (!list[list.length - 1].data.goodsItem && !list[list.length - 1].options.share) {
       this.similarPopup = false
       this.shopPopup = false
-      await this.getGoodDetail()
+      this.currentPageId && await this.getGoodDetail()
       list[list.length - 1].data.goodsItem = this.goodsItem
-    } else {
+    }
+
+    if (list[list.length - 1].data.goodsItem) {
       // 商品详情
       this.goodsItem = list[list.length - 1].data.goodsItem
       // 相似弹出框
@@ -372,13 +381,29 @@ export default {
     this.sharePopup = false
     return {
       title: this.goodsItem.goodsName,
-      imageUrl: this.goodsItem.goodsImageUrl
+      imageUrl: this.goodsItem.goodsImageUrl,
+      path: '/pages/detail/main?id=' + this.currentPageId + '&share=true'
     }
   },
   onUnload() {
     this.$_eventBus.$emit('focus', false)
   },
   methods: {
+    async onAfterLoad() {
+      // 二维码扫描进来没有id
+      if (this.scene) {
+        try {
+          const result = await get('/api/v1/share/getCustomParameter', { uuid: this.scene })
+          this.currentPageId = result.value
+        } catch (e) {
+          console.log(e)
+        }
+      }
+      /** 针对二维码和分享进来用户 */
+      const list = getCurrentPages()
+      if (this.currentPageId) await this.getGoodDetail()
+      list[list.length - 1].data.goodsItem = this.goodsItem
+    },
     // 详情页
     async getGoodDetail() {
       wx.showLoading({ title: '加载中...' })
@@ -548,34 +573,7 @@ export default {
         title: '生成海报中...',
         mask: true
       })
-      var context = wx.createCanvasContext('firstCanvas')
-      context.beginPath()// 开始一个新的路径
-      /** 绘制中间 */
-      context.rect(0, 50, 300, 430)
-      context.setFillStyle('#fff')
-      context.fill()
-      const myGradient = context.createLinearGradient(0, 100, 300, 100)
-      myGradient.addColorStop(0, '#d55251')
-      myGradient.addColorStop(1, '#ef7a82')
-      context.setFillStyle(myGradient)
-      context.setStrokeStyle('#fff')
-      // context.setLineJoin('round')
-      // context.strokeRect(0, 0, 300, 100)
-      /** 矩形 */
-      context = this.drawRect(context, 0, 0, 300, 50, 12)
-      context.fill()
-      /** 填充文字 */
-      context.setFillStyle('#F0F8FF')
-      context.font = '19px Arial'
-      context.fillText('藤蔓生活', 15, 32)
-      context.font = '14px sans-serif'
-      context.fillText('美好', 130, 32)
-      context.fillText('生活', 180, 32)
-      context.fillText('品质', 230, 32)
-      context.setFillStyle('#000')
-      context.fillText(store.state.userInfo.nickName, 75, 73)
-      context.font = '14px Arial'
-      context.fillText('推荐给你一个好物哟', 75, 99)
+      let context = drawInit()
 
       /** 原市场价格 */
       if (this.goodsItem.couponDiscount !== '0') {
@@ -646,7 +644,7 @@ export default {
           context.strokeRect(14.5, 111.5, 271, 271)
           context.drawImage(res.path, 15, 112, 270, 270)
           // 绘制头像
-          that.drawPortrait(context)
+          that.getSunCode(context)
           // that.getSunCode(context)
         },
         fail: function (res) {
@@ -659,26 +657,8 @@ export default {
     },
     /** 获取太阳码 */
     async getSunCode(ctx) {
-      const result = await get('api/v1/share/getSunCodeByteArray', { type: 20, value: this.currentPageId })
-      const fsm = wx.getFileSystemManager()
-      var showImgData = result
-      // showImgData = showImgData.replace(/\ +/g, '') // 去掉空格方法
-      showImgData = showImgData.replace(/[\r\n]/g, '')
-      const buffer = wx.base64ToArrayBuffer(showImgData)
-      const fileName = wx.env.USER_DATA_PATH + '/share_img.png'
-      fsm.writeFileSync(fileName, buffer, 'binary')
-
-      var avatorWidth = 60
-      var avatorHeight = 60
-      var avatarurlX = 215 // 绘制的头像在画布上的位置
-      var avatarurlY = 390 // 绘制的头像在画布上的位置
-      ctx.save()
-      ctx.beginPath() // 开始绘制
-      ctx.arc(avatorWidth / 2 + avatarurlX, avatorHeight / 2 + avatarurlY, avatorWidth / 2, 0, Math.PI * 2, false)
-      ctx.clip()
-      ctx.drawImage(fileName, 215, 390, avatorWidth, avatorWidth)
-      ctx.restore()
-
+      ctx = await drawPortrait(ctx)
+      ctx = await getSunCode(ctx, { type: 20, value: this.currentPageId })
       // 长按扫码去购买
       ctx.setFillStyle('#999999')
       ctx.font = '10px Arial'
@@ -687,59 +667,9 @@ export default {
       wx.hideLoading()
       ctx.draw()
       this.postedPopup = true
-      // todo 优化
-      // 用wx.getFileSystemManager().unlink方法，删除binary格式图片；
-      setTimeout(() => {
-        fsm.unlink({
-          filePath: fileName,
-          success: res => {
-            console.log('删除成功')
-          }
-        })
-      }, 2000)
     },
-    /** 绘制头像 */
-    drawPortrait(ctx) {
-      let that = this
-      wx.downloadFile({
-        url: store.state.userInfo.avatarUrl,
-        success: res => {
-          var avatorWidth = 50
-          var avatorHeight = 50
-          var avatarurlX = 15 // 绘制的头像在画布上的位置
-          var avatarurlY = 55 // 绘制的头像在画布上的位置
-          ctx.save()
-          ctx.beginPath() // 开始绘制
-          ctx.arc(avatorWidth / 2 + avatarurlX, avatorHeight / 2 + avatarurlY, avatorWidth / 2, 0, Math.PI * 2, false)
-          ctx.clip()
-          ctx.drawImage(res.tempFilePath, 15, 55, avatorWidth, avatorWidth)
-          ctx.restore()
-          that.getSunCode(ctx)
-        }
-      })
-    },
-    /** 绘制圆矩形 */
-    drawRect(ctx, x, y, w, h, r) {
-      // 参考文章 https://www.zhangxinxu.com/study/201406/image-border-radius-canvas.html
-      ctx.beginPath()
-      ctx.moveTo(x + r, y)
-      ctx.arcTo(x + w, y, x + w, y + h, r)
-      ctx.arcTo(x + w, y + h, x, y + h, 1)
-      ctx.arcTo(x, y + h, x, y, 1)
-      ctx.arcTo(x, y, x + w, y, r)
-      ctx.closePath()
-      return ctx
-    },
-    /** 绘制圆头像 */
-    drawCricleHead(ctx, x, y, w, h, image) {
-      console.log(image)
-      ctx.save()
-      ctx.beginPath()
-      ctx.arc(w / 2 + x, h / 2 + y, w / 2, 0, Math.Pi * 2, false)
-      ctx.clip()
-      ctx.drawImage(image, x, y, w, h)
-      ctx.restore()
-      return ctx
+    toWebView() {
+      moveTo('../wx-public/main', { src: this.goodsItem.cashContextLink.value })
     },
     async toPddWeApp() {
       try {
@@ -923,6 +853,9 @@ page {
       display: flex;
       align-items: center;
       font-size: 23rpx;
+      rich-text {
+        margin-left: 10rpx;
+      }
       .cash {
         padding: 5rpx 8rpx;
         background: #be5041;

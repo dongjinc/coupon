@@ -9,6 +9,5 @@
     "scroll": "/static/wxp/scroll/index"
   },
   "navigationBarTitleText": "藤蔓生活",
-  "navigationStyle": "custom",
-  "enablePullDownRefresh": true
+  "navigationStyle": "custom"
 }

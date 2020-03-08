@@ -12,9 +12,16 @@ const request = (method, url) => {
         header: { ...global.header, token: wx.getStorageSync('token') || '' },
         method: method,
         data: param,
-        success(res) {
+        success: async res => {
           if (res.data.code === 1) {
             return resolve(res.data.data)
+          }
+          if (res.data.code === 0) {
+            const result = await getLoginAnony()
+            if (result) {
+              // console.log(api,)
+              resolve(await get(api))
+            }
           }
           /** 请重新登录 */
           switch (res.data.code) {
@@ -24,15 +31,20 @@ const request = (method, url) => {
             case 104:
               wx.removeStorage({
                 key: 'token',
-                success: res => {
-                  getLoginAnony()
+                success: async res => {
+                  const result = await getLoginAnony()
+                  // console.log(api)
+                  if (result) {
+                    resolve(await get(api))
+                  }
                 }
               })
               break
           }
-          reject(res.data)
+          // reject(res.data)
         },
         fail(err) {
+          // console.log(err, 111)
           reject(err)
         }
       })
@@ -78,6 +90,7 @@ export class PageBase {
       page: this.currentPage,
       ...param
     })
+    console.log(result)
     if (result.length === 0) {
       this.emptyCountPage++
       if (this.emptyCountPage >= 3) {

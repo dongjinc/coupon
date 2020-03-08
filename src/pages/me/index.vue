@@ -282,7 +282,9 @@ export default {
           })
           // wx.setStorageSync('time', result.expMillis)
           // 设置token 成功后调用获取个人信息的接口
-          getLoginInfo()
+          await getLoginInfo()
+          // 刷新登录信息
+          this.meInfo = store.state.userInfo
         } catch (e) {
           console.log(e)
         } finally {
