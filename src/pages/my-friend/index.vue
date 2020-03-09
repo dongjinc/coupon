@@ -1,100 +1,106 @@
 <template>
   <view>
-    <view style="height: 170rpx;background: #ef7a82;border-radius: 0 0 50px 50px;padding-top:30px;">
-      <view style="display:flex;justify-content:space-around">
-        <view style="display:flex;flex-direction:column;text-align:center;color:#f0f0f4">
-          <text style="font-size:14px">我的好友</text>
-          <view>
-            <text style="font-size: 15px;font-weight:bold;margin-right:5rpx">好友数:</text>
-            <text style="font-size: 14px;font-weight:bold">{{parentInfo.subordinateNum || 0}}</text>
+    <scroll-view :scroll-y="true" style="height: 100vh" @scrolltolower="more">
+      <view
+        style="height: 170rpx;background: #ef7a82;border-radius: 0 0 50px 50px;padding-top:30px;"
+      >
+        <view style="display:flex;justify-content:space-around">
+          <view style="display:flex;flex-direction:column;text-align:center;color:#f0f0f4">
+            <text style="font-size:14px">我的好友</text>
+            <view>
+              <text style="font-size: 15px;font-weight:bold;margin-right:5rpx">好友数:</text>
+              <text style="font-size: 14px;font-weight:bold">{{parentInfo.subordinateNum || 0}}</text>
+            </view>
           </view>
-        </view>
-        <!-- <view style="display:flex;flex-direction:column;text-align:center;color:#fff">
+          <!-- <view style="display:flex;flex-direction:column;text-align:center;color:#fff">
           <text style="font-size:14px">我的直推的合伙人</text>
           <text style="font-size: 35px;margin-top:15px;font-weight:bold">0</text>
-        </view>-->
-        <view style="display:flex;align-items:center;text-align:center;color:#fff">
-          <view
-            style="background: #a88462;padding: 2px 10rpx;border-radius: 20px;display: flex;align-items: center;"
-          >
-            <button
-              size="mini"
-              class="invite-btn"
-              style="display: flex;align-items: center;"
-              @tap="showInvitePopup"
+          </view>-->
+          <view style="display:flex;align-items:center;text-align:center;color:#fff">
+            <view
+              style="background: #a88462;padding: 2px 10rpx;border-radius: 20px;display: flex;align-items: center;"
             >
-              立即邀请
-              <image
-                src="/static/images/invite.png"
-                style="width:15px;height:15px;margin-left:10rpx"
-              />
-            </button>
-          </view>
-        </view>
-      </view>
-      <view
-        v-if="parentInfo.xjdkqMember"
-        style="width:100%;height:100rpx;position:absolute;top:200rpx;"
-      >
-        <view
-          style="display:flex;align-items:center;width:93%;height:120rpx;background:#fff;margin:0 auto;border-radius:50rpx;box-shadow:0 10px 9px #eee;font-size:27rpx"
-        >
-          <view style="margin: 0 20rpx">
-            <image :src="inviteInfo" style="width:60rpx;height:60rpx;border-radius:50%" />
-          </view>
-          <view style="display:flex;flex-direction:column">
-            <div>
-              <text>{{inviteInfo}}</text>
-              <text
-                style="margin-left:25rpx;background:#FFC0CB;border-radius:15px;padding:0 10rpx;color:#fff"
-              >我的邀请人</text>
-            </div>
-            <text>称号</text>
-          </view>
-        </view>
-      </view>
-      <view :style="{'margin-top':parentInfo.xjdkqMember?'95px':'60px'}">
-        <view
-          style="display:flex;justify-content:space-around;font-size:29rpx;padding:15rpx 0;border-bottom:1px solid #eee"
-        >
-          <view
-            v-for="(item, index) in sortList"
-            :key="index"
-            :class="[activeIndex === index?'activeItem': '']"
-            style="position:relative;color:#444"
-            @tap="focusItem(item, index)"
-          >
-            {{item.name}}
-            <view style="position:absolute;right:-23rpx;top:5rpx;" v-if="item.isDot">
-              <i
-                :class="[activeDot === 0 && activeIndex === index?'activeItem': '', 'iconfont','iconsanjiaoxing']"
-              ></i>
-              <i
-                :class="[activeDot === 1 && activeIndex === index?'activeItem': '', 'iconfont','iconsanjiaoxing-xia']"
-              ></i>
+              <button
+                size="mini"
+                class="invite-btn"
+                style="display: flex;align-items: center;"
+                @tap="showInvitePopup"
+              >
+                立即邀请
+                <image
+                  src="/static/images/invite.png"
+                  style="width:15px;height:15px;margin-left:10rpx"
+                />
+              </button>
             </view>
           </view>
         </view>
-        <view v-if="!!inviteChildList.length">
+        <view
+          v-if="parentInfo.xjdkqMember"
+          style="width:100%;height:100rpx;position:absolute;top:200rpx;"
+        >
           <view
-            v-for="item in inviteChildList"
-            :key="item"
-            style="padding: 0 50rpx;border-bottom: 2rpx solid #eee"
+            style="display:flex;align-items:center;width:93%;height:120rpx;background:#fff;margin:0 auto;border-radius:50rpx;box-shadow:0 10px 9px #eee;font-size:27rpx"
           >
-            <view style="display:flex;font-size:28rpx;padding:20rpx 0 10rpx;">
-              <image :src="item.avatarUrl" style="width:60rpx;height:60rpx;border-radius:50%" />
-              <view style="display:flex;flex-direction: column;margin-left:20rpx;font-size:27rpx">
-                <view style="height:40rpx; line-height:52rpx;">
-                  <text style="font-size:30rpx;color:#333">{{item.nickName}}</text>
-                  <text
-                    style="margin-left: 5rpx;padding: 5rpx;background: #cadbfd;color:#6495ED;border-radius: 10rpx"
-                  >会员</text>
-                </view>
-                <view style="color:#999; line-height:60rpx;margin-top:20rpx">
-                  <text>邀请时间:</text>
-                  <text style="margin-left: 5rpx;">{{item.invitationTime}}</text>
-                </view>
-                <!-- <view style="color:#555; line-height:60rpx">
+            <view style="margin: 0 20rpx">
+              <image
+                :src="parentInfo.xjdkqMember.avatarUrl"
+                style="width:60rpx;height:60rpx;border-radius:50%"
+              />
+            </view>
+            <view style="display:flex;flex-direction:column">
+              <div>
+                <text>{{parentInfo.xjdkqMember.nickName}}</text>
+                <text
+                  style="margin-left:25rpx;background:#FFC0CB;border-radius:15px;padding:0 10rpx;color:#fff"
+                >我的邀请人</text>
+              </div>
+              <text>称号</text>
+            </view>
+          </view>
+        </view>
+        <view :style="{'margin-top':parentInfo.xjdkqMember?'95px':'60px'}">
+          <view
+            style="display:flex;justify-content:space-around;font-size:29rpx;padding:15rpx 0;border-bottom:1px solid #eee"
+          >
+            <view
+              v-for="(item, index) in sortList"
+              :key="index"
+              :class="[activeIndex === index?'activeItem': '']"
+              style="position:relative;color:#444"
+              @tap="focusItem(item, index)"
+            >
+              {{item.name}}
+              <view style="position:absolute;right:-23rpx;top:5rpx;" v-if="item.isDot">
+                <i
+                  :class="[activeDot === 0 && activeIndex === index?'activeItem': '', 'iconfont','iconsanjiaoxing']"
+                ></i>
+                <i
+                  :class="[activeDot === 1 && activeIndex === index?'activeItem': '', 'iconfont','iconsanjiaoxing-xia']"
+                ></i>
+              </view>
+            </view>
+          </view>
+          <view v-if="!!inviteChildList.length">
+            <view
+              v-for="item in inviteChildList"
+              :key="item"
+              style="padding: 0 50rpx;border-bottom: 2rpx solid #eee"
+            >
+              <view style="display:flex;font-size:28rpx;padding:20rpx 0 10rpx;">
+                <image :src="item.avatarUrl" style="width:60rpx;height:60rpx;border-radius:50%" />
+                <view style="display:flex;flex-direction: column;margin-left:20rpx;font-size:27rpx">
+                  <view style="height:40rpx; line-height:52rpx;">
+                    <text style="font-size:30rpx;color:#333">{{item.nickName}}</text>
+                    <text
+                      style="margin-left: 5rpx;padding: 5rpx;background: #cadbfd;color:#6495ED;border-radius: 10rpx"
+                    >会员</text>
+                  </view>
+                  <view style="color:#999; line-height:60rpx;margin-top:20rpx">
+                    <text>邀请时间:</text>
+                    <text style="margin-left: 5rpx;">{{item.invitationTime}}</text>
+                  </view>
+                  <!-- <view style="color:#555; line-height:60rpx">
                 <text>直邀好友:</text>
                 <text style="margin-left: 5rpx;">2</text>
               </view>
@@ -105,21 +111,22 @@
               <view style="color:#555; line-height:60rpx">
                 <text>最近登录时间:</text>
                 <text style="margin-left: 5rpx;">2019-12-01 23:12:10</text>
-                </view>-->
+                  </view>-->
+                </view>
               </view>
             </view>
           </view>
-        </view>
-        <view
-          @tap="showInvitePopup"
-          v-else
-          style="text-align:center;font-size: 28rpx;margin-top: 25rpx;"
-        >
-          暂无好友，快去
-          <text style="color: #ef7a82;margin-right: 14rpx;">邀请</text>吧！
+          <view
+            @tap="showInvitePopup"
+            v-else
+            style="text-align:center;font-size: 28rpx;margin-top: 25rpx;"
+          >
+            暂无好友，快去
+            <text style="color: #ef7a82;margin-right: 14rpx;">邀请</text>吧！
+          </view>
         </view>
       </view>
-    </view>
+    </scroll-view>
     <!-- 分享 -->
     <van-popup
       :show="showPopup"
@@ -181,12 +188,11 @@ export default {
     }
   },
   async onLoad() {
-    this.getInviteInfo()
-    this.getParentInfo()
     this.pageBase = {
       pageLoaders: new PageBase('api/v1/member/friendsList')
     }
-    console.log(this.pageBase)
+    this.nextPage(true)
+    this.getParentInfo()
   },
 
   onUnload() {
@@ -197,7 +203,7 @@ export default {
     this.sharePopup = false
     return {
       title: '邀请好友',
-      path: '/pages/index/main?userId=' + store.state.systemInfo.id,
+      path: '/pages/index/main?userId=' + store.state.userInfo.id,
       imageUrl: '/static/images/invite-share.png'
     }
   },
@@ -212,18 +218,22 @@ export default {
       }
     },
     /** 获取我的邀请集合 */
-    async getInviteInfo() {
+    async nextPage(reset) {
       wx.showLoading({
         title: '加载中...',
         mask: true
       })
       try {
-        const result = await get('api/v1/member/friendsList')
+        const result = await this.pageBase.pageLoaders.next()
         if (result) {
           result.forEach(item => {
             item.invitationTime = item.invitationTime && formatTime(new Date(item.invitationTime))
           })
-          this.inviteChildList = result
+          if (reset) {
+            this.inviteChildList = result
+          } else {
+            this.inviteChildList.push(...result)
+          }
         }
       } catch (e) {
         console.log(e)
@@ -231,6 +241,7 @@ export default {
         wx.hideLoading()
       }
     },
+
     /** 生成海报 */
     async createPoster() {
       this.showPopup = false
@@ -246,7 +257,6 @@ export default {
           context.setStrokeStyle('red')
           context.strokeRect(14.5, 111.5, 271, 351)
           context.drawImage('/' + res.path, 15, 112, 270, 350)
-          // that.getSunCode(context)
         },
         fail: function (res) {
           console.log(res)
@@ -294,6 +304,10 @@ export default {
           })
         }
       })
+    },
+    /** 加载更多 */
+    more() {
+      this.nextPage()
     },
     focusItem(item, index) {
       this.activeIndex = index

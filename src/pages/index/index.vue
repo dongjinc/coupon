@@ -279,9 +279,13 @@ export default {
       title: '藤蔓生活'
     }
   },
+  onShow() {
+    if (this.userId) {
+      this.getInviteUserInfo(this.userId)
+    }
+  },
   methods: {
     async onAfterLoad() {
-      console.log(123)
       // await getLoginAnony()
       await this.getBannerList()
 
@@ -299,18 +303,17 @@ export default {
       // this.getTopList()
 
       await this.getList('refresh', pageStart)
-      if (this.userId) {
-        this.showInvite = true
-        this.getInviteUserInfo(this.userId)
-      }
     },
     /** 获取邀请用户信息 */
     async getInviteUserInfo(id) {
       try {
         const result = await get('api/v1/member/getMemberSimplify', { userId: id })
+        this.showInvite = true
         this.inviteUserInfo = result
       } catch (e) {
         console.log(e)
+      } finally {
+        delete this.userId
       }
     },
     async getUserInfo(e) {
@@ -319,6 +322,7 @@ export default {
         title: '加载中...'
       })
       if (e.mp.detail.userInfo) {
+        let error
         try {
           await post('api/v1/login/weChatAuth', {
             'code': code,
@@ -337,13 +341,14 @@ export default {
             duration: 1500
           })
         } catch (e) {
-          wx.showToast({
-            title: (e && e.message) || '师徒关系绑定失败！',
+          error = (e && e.message) || '师徒关系绑定失败！'
+        } finally {
+          wx.hideLoading()
+          error && wx.showToast({
+            title: error,
             icon: 'none',
             duration: 2000
           })
-        } finally {
-          wx.hideLoading()
         }
       } else {
         wx.hideLoading()

@@ -3,6 +3,7 @@
     "pages/index/main",
     "pages/recommend/main",
     "pages/search/main",
+    "pages/detail/main",
     "pages/special/main",
     "pages/me/main",
     "pages/wx-public/main",

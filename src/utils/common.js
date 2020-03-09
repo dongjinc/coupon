@@ -28,7 +28,6 @@ export const getLoginAnony = function () {
     try {
       wx.setStorageSync('token', result.token)
       await getLoginInfo()
-      console.log(result, 888)
       resolve(result)
     } catch (e) { }
   })

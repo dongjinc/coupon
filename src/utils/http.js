@@ -5,6 +5,7 @@ import { getLoginAnony } from './common'
  * @param {*} url
  */
 const request = (method, url) => {
+  let tryNum = 0
   return function (api, param = {}) {
     return new Promise((resolve, reject) => {
       wx.request({
@@ -16,26 +17,32 @@ const request = (method, url) => {
           if (res.data.code === 1) {
             return resolve(res.data.data)
           }
-          if (res.data.code === 0) {
-            const result = await getLoginAnony()
-            if (result) {
-              // console.log(api,)
-              resolve(await get(api))
-            }
+          /** 关系绑定失败！ */
+          if (res.data.code === 200) {
+            reject(res.data)
           }
           /** 请重新登录 */
           switch (res.data.code) {
+            case 0:
             case 101:
             case 102:
             case 103:
             case 104:
               wx.removeStorage({
                 key: 'token',
-                success: async res => {
+                success: async () => {
                   const result = await getLoginAnony()
-                  // console.log(api)
                   if (result) {
-                    resolve(await get(api))
+                    tryNum++
+                    if (tryNum >= 3) {
+                      tryNum = 0
+                      return reject(res.data)
+                    }
+                    try {
+                      method === 'get' ? resolve(await get(api)) : resolve(await post(api, param))
+                    } catch (e) {
+                      reject(e)
+                    }
                   }
                 }
               })
@@ -55,7 +62,7 @@ const request = (method, url) => {
  * @param
  *  method GET
  */
-const gets = request('GET', global.node_uri)
+const gets = request('get', global.node_uri)
 export const get = function (api, param) {
   if (!param) return gets(api)
   return gets(api + serialize(param))
@@ -73,7 +80,7 @@ const serialize = function (obj, ary = []) {
  * @param
  *  method POST
  */
-export const post = request('POST', global.node_uri)
+export const post = request('post', global.node_uri)
 
 export class PageBase {
   currentPage = 0;
@@ -90,7 +97,6 @@ export class PageBase {
       page: this.currentPage,
       ...param
     })
-    console.log(result)
     if (result.length === 0) {
       this.emptyCountPage++
       if (this.emptyCountPage >= 3) {

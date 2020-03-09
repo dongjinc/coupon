@@ -72,6 +72,7 @@ Component({
     overOnePage: false,
     movableTop: 0,
     successTop: 0,
+
     bottomSize: 0
   },
   attached() {
