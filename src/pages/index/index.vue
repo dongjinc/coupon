@@ -370,7 +370,6 @@ export default {
         result = await this.pageList[this.currentDot].next(
           { catId: classArray[this.currentDot] }
         )
-        console.log(result)
       } catch (e) {
         console.log(e)
       }
@@ -476,6 +475,7 @@ export default {
     // 移动专题
     moveToSpecial(item) {
       moveTo(item.value)
+      this.$mp.page.isMoveing = false
     },
     // 移动详情页
     moveToDetail(item) {

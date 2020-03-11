@@ -3,5 +3,5 @@ var prodEnv = require('./prod.env')
 
 module.exports = merge(prodEnv, {
   NODE_ENV: '"development"',
-  BASE_URL: '"https://portal.xjdkq.n2o2l.com"'
+  BASE_URL: '"https://test.xjdkq-api.n2o2l.com"'
 })
