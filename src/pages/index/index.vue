@@ -288,7 +288,6 @@ export default {
     async onAfterLoad() {
       // await getLoginAnony()
       await this.getBannerList()
-
       // wx.navigateTo({
       //   url: '../counter/main'
       // })

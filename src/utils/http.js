@@ -24,6 +24,7 @@ const request = (method, url) => {
           /** 请重新登录 */
           switch (res.data.code) {
             case 0:
+            case 100:
             case 101:
             case 102:
             case 103:
