@@ -18,12 +18,11 @@ const request = (method, url) => {
             return resolve(res.data.data)
           }
           /** 关系绑定失败！ */
-          if (res.data.code === 200) {
+          if (res.data.code === 0 || res.data.code === 200) {
             reject(res.data)
           }
           /** 请重新登录 */
           switch (res.data.code) {
-            case 0:
             case 100:
             case 101:
             case 102:

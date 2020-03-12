@@ -83,7 +83,7 @@ Component({
     })
     wx.getSystemInfo({
       success(res) {
-        _this.movableTop = res.model.search('iPhone X') !== -1 ? 20 : 0
+        _this.movableTop = res.model.search('iPhone X') !== -1 ? 0 : -20
         _this.successTop = res.model.search('iPhone X') !== -1 ? 0 : 25
         _this.setData({
           movableTop: res.statusBarHeight - (result[0].route === 'pages/recommend/main' ? _this.movableTop : 8),

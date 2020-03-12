@@ -317,6 +317,7 @@ export default {
     },
     async getUserInfo(e) {
       const code = await getLoginCode()
+      console.log(code)
       wx.showLoading({
         title: '加载中...'
       })
