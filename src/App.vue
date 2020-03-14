@@ -3,6 +3,11 @@ import store from './store'
 import { getLoginAnony, getLoginInfo } from '@/utils/common'
 export default {
   async onLaunch() {
+    wx.getSystemInfo({
+      success: res => {
+        store.commit('setSysInfo', res)
+      }
+    })
     /** 获取感知登录判断 是否存在token */
     const result = wx.getStorageSync('token')
     try {
@@ -13,7 +18,6 @@ export default {
       }
     } catch (e) {
     } finally {
-      console.log(1)
       this.$_eventBus.$emit('onLoad')
     }
     // wx.getStorage({
@@ -25,11 +29,7 @@ export default {
     //     await getLoginAnony()
     //   }
     // })
-    wx.getSystemInfo({
-      success: res => {
-        store.commit('setSysInfo', res)
-      }
-    })
+
     // 判断更新版本问题
     const updateManager = wx.getUpdateManager()
     updateManager.onCheckForUpdate(function (res) {

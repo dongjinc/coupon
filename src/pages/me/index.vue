@@ -40,7 +40,7 @@
                 <text style="font-size:58rpx;">{{meInfo.money}}</text>
               </view>
             </view>
-            <!--  @tap="moveToIncome" -->
+            <!--  @tap="moveToWithdrawal" -->
             <view class="income-content-right" @tap="moveToWithdrawal">
               <!-- <view>我的收入</view> -->
               <view>立即提现</view>
@@ -134,8 +134,8 @@
   </view>
 </template>
 <script>
-import { get, post } from '@/utils/http'
-import { moveTo, getLoginInfo } from '@/utils/common'
+import { get } from '@/utils/http'
+import { moveTo, getLoginInfo, getWeChatAuth } from '@/utils/common'
 import authButton from '@/components/auth-button'
 import store from '../../store'
 export default {
@@ -187,7 +187,6 @@ export default {
     /** 提现后刷新用户信息 */
     refreshMyInfo() {
       // todo 匿名用户可提现吗
-      console.log(store.state.userInfo)
       this.meInfo = store.state.userInfo
     },
     onClose() {
@@ -222,35 +221,21 @@ export default {
         wx.hideLoading()
       }
     },
-    /** 我的收入 */
-    moveToIncome() {
-      moveTo('../income/main')
-    },
     // 提现
     async moveToWithdrawal() {
-      // if (this.meInfo.money < 1) {
-      //   wx.showToast({
-      //     title: '可提现额需大于1元',
-      //     icon: 'none'
-      //   })
-      //   return false
-      // }
-      // todo
-      // const result = await get('api/v1/takeMoney/applyTakeMoney?money=200')
-      // console.log(result)
-      moveTo('../withdrawal/main')
+      moveTo('/mine/pages/withdrawal/main')
     },
     // 我的订单
     moveToOrder() {
-      moveTo('../order/main')
+      moveTo('/mine/pages/order/main')
     },
     // 会员制度
     moveToSystem() {
-      moveTo('../wx-public/main', { src: store.state.bannerObj.memberSystem[0].value })
+      moveTo('/wx-public/pages/main', { src: store.state.bannerObj.memberSystem[0].value })
     },
     // 我的好友
     moveToFriend() {
-      moveTo('../my-friend/main')
+      moveTo('/mine/pages/my-friend/main')
     },
     // todo
     // 获取loginCode
@@ -274,12 +259,7 @@ export default {
       })
       if (e.mp.detail.userInfo) {
         try {
-          await post('api/v1/login/weChatAuth', {
-            'code': this.loginCode,
-            'encrypted_data': e.mp.detail.encryptedData,
-            'iv': e.mp.detail.iv,
-            'parentId': -1
-          })
+          await getWeChatAuth(this.loginCode, e.mp.detail.encryptedData, e.mp.detail.iv)
           // wx.setStorageSync('time', result.expMillis)
           // 设置token 成功后调用获取个人信息的接口
           await getLoginInfo()

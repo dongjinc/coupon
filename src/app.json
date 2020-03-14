@@ -3,16 +3,36 @@
     "pages/index/main",
     "pages/recommend/main",
     "pages/search/main",
-    "pages/detail/main",
-    "pages/special/main",
-    "pages/me/main",
-    "pages/wx-public/main",
-    "pages/income/main",
-    "pages/order/main",
-    "pages/withdrawal/main",
-    "pages/system/main",
-    "pages/my-friend/main",
-    "pages/counter/main"
+    "pages/me/main"
+  ],
+  "subpackages": [
+    {
+      "root": "detail",
+      "pages": [
+        "pages/main"
+      ]
+    },
+    {
+      "root": "mine",
+      "pages": [
+        "pages/income/main",
+        "pages/order/main",
+        "pages/withdrawal/main",
+        "pages/my-friend/main"
+      ]
+    },
+    {
+      "root": "theme",
+      "pages": [
+        "pages/main"
+      ]
+    },
+    {
+      "root": "wx-public",
+      "pages": [
+        "pages/main"
+      ]
+    }
   ],
   "window": {
     "backgroundTextStyle": "light",

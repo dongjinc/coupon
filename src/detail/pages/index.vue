@@ -302,8 +302,10 @@ export default {
       postedPopup: false
     }
   },
+  created() {
+    console.log(999)
+  },
   async onLoad(query) {
-    console.log(1)
     if (query.scene) {
       /** 二维码扫码进来 */
       this.scene = query.scene
@@ -325,7 +327,7 @@ export default {
     this.postedPopup = false
     /* eslint-disable no-undef */
     const list = getCurrentPages()
-    if (list.length > 6 && list[list.length - 5].route === 'pages/detail/main') {
+    if (list.length > 6 && list[list.length - 5].route === 'detail/pages/main') {
       // wx.navigateBack(-4)
       console.log(list, this.route)
     }
@@ -382,11 +384,8 @@ export default {
     return {
       title: this.goodsItem.goodsName,
       imageUrl: this.goodsItem.goodsImageUrl,
-      path: '/pages/detail/main?id=' + this.currentPageId + '&share=true'
+      path: '/detail/pages/main?id=' + this.currentPageId + '&share=true'
     }
-  },
-  onUnload() {
-    this.$_eventBus.$emit('focus', false)
   },
   methods: {
     async onAfterLoad() {
@@ -429,13 +428,14 @@ export default {
       /* eslint-disable no-undef */
       const list = getCurrentPages()
       this.similarTop = this.recordsTop
-      if (list.length > 6 && list[list.length - 5].route === 'pages/detail/main') {
+      console.log(list[list.length - 1].route)
+      if (list.length > 6 && list[list.length - 5].route === 'detail/pages/main') {
         wx.redirectTo({
-          url: '../detail/main?id=' + item.goodsId
+          url: '/detail/pages/main?id=' + item.goodsId
         })
         return false
       }
-      moveTo('../detail/main', { id: item.goodsId })
+      moveTo('/detail/pages/main', { id: item.goodsId })
     },
     // 相似商品页
     moreLoad() {
@@ -651,9 +651,6 @@ export default {
           console.log(res)
         }
       })
-      // setTimeout(() => {
-
-      // }, 2000)
     },
     /** 获取太阳码 */
     async getSunCode(ctx) {
@@ -669,7 +666,7 @@ export default {
       this.postedPopup = true
     },
     toWebView() {
-      moveTo('../wx-public/main', { src: this.goodsItem.cashContextLink.value })
+      moveTo('/pages/wx-public/main', { src: this.goodsItem.cashContextLink.value })
     },
     async toPddWeApp() {
       try {

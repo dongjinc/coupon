@@ -32,20 +32,19 @@ export const getLoginAnony = function () {
     } catch (e) { }
   })
 }
+/** 获取账户信息 */
 export const getLoginInfo = async function () {
-  await get('api/v1/member/getMemberInfo').then(async resOne => {
-    store.commit('setUserInfo', { ...resOne })
-    await getUserInfo()
-  }, err => {
-    if (err.code === 101 || err.code === 103) {
-      wx.removeStorage({
-        key: 'token',
-        success: () => {
-          getLoginAnony()
-        }
-      })
-    }
-  })
+  const resOne = await get('api/v1/member/getMemberInfo')
+  store.commit('setUserInfo', { ...resOne })
+  await getUserInfo()
+  // if (err.code === 101 || err.code === 103) {
+  //   wx.removeStorage({
+  //     key: 'token',
+  //     success: () => {
+  //       getLoginAnony()
+  //     }
+  //   })
+  // }
 }
 /** 刷新账户信息 */
 export const getUserInfo = async function () {
@@ -69,6 +68,16 @@ export const getLoginCode = function () {
     })
   })
 }
+/** 用户授权 */
+export const getWeChatAuth = async function (code, encryptedData, iv) {
+  await post('api/v1/login/weChatAuth', {
+    'code': code,
+    'encrypted_data': encryptedData,
+    'iv': iv,
+    'parentId': -1
+  })
+}
+
 /** 绘制初始化 */
 export function drawInit() {
   var context = wx.createCanvasContext('firstCanvas')

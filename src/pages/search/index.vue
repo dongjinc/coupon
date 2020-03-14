@@ -113,8 +113,7 @@ export default {
       formObj: {
         page: 1,
         sortType: 0
-      },
-      isDetail: false
+      }
     }
   },
   onLoad(param) {
@@ -141,6 +140,15 @@ export default {
   },
   onShow() {
     if (!this.isDetail) { this.$_eventBus.$emit('focus', true) }
+    setTimeout(() => {
+      this.isDetail = false
+    }, 1000)
+  },
+  onHide() {
+    /* eslint-disable no-undef */
+    const list = getCurrentPages()
+
+    console.log(111, list)
   },
   onReachBottom() {
     // 到底部触发刷新
@@ -260,7 +268,7 @@ export default {
     // 移动详情页
     moveToDetail(item) {
       this.isDetail = true
-      moveTo('../detail/main', { id: item.goodsId })
+      moveTo('/detail/pages/main', { id: item.goodsId })
     }
   }
 }
@@ -276,15 +284,15 @@ page {
   padding: 10px 0 10px 16px !important;
 }
 .search-input {
+  width: 100%;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
   top: 0;
   z-index: 100;
-  width: 100%;
   background: #d55251;
   .input-wrap {
-    padding-left: 25rpx;
+    padding: 10rpx 0 0 25rpx;
     margin-bottom: 12rpx;
     display: flex;
     align-items: center;

@@ -126,7 +126,7 @@ export default {
     },
     // 移动详情页
     moveToDetail(item) {
-      moveTo('../detail/main', { id: item.goodsId })
+      moveTo('/detail/pages/main', { id: item.goodsId })
     },
     // 复制Api
     copyOrderItem(item) {

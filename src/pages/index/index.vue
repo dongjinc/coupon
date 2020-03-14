@@ -163,8 +163,8 @@
 <script>
 import bannerSwiper from '@/components/banner-swiper'
 import indexList from '@/components/index-list'
-import { PageBase, get, post } from '@/utils/http'
-import { moveTo, getLoginCode, getLoginInfo } from '@/utils/common'
+import { PageBase, get } from '@/utils/http'
+import { moveTo, getLoginCode, getLoginInfo, getWeChatAuth } from '@/utils/common'
 import store from '../../store'
 import myMixin from '@/utils/my-mixin'
 let pageStart = 0
@@ -253,11 +253,13 @@ export default {
       this.oldCurrentDot = oldVal
     }
   },
-  async onLoad(query) {
-    this.userId = query.userId
+  async created() {
     const iphoneInfo = store.state.systemInfo
     const iphoneRect = await wx.getMenuButtonBoundingClientRect()
     if (iphoneInfo.model !== 'iphone X') { this.searchTop = iphoneRect.top - 11 + 'px' }
+  },
+  async onLoad(query) {
+    this.userId = query.userId
   },
 
   onReachBottom() {
@@ -279,18 +281,14 @@ export default {
       title: '藤蔓生活'
     }
   },
-  onShow() {
-    if (this.userId) {
-      this.getInviteUserInfo(this.userId)
-    }
-  },
   methods: {
-    async onAfterLoad() {
-      // await getLoginAnony()
+    async onAfterLoad(query) {
+      if (query.userId) {
+        this.getInviteUserInfo(query.userId)
+      }
+
       await this.getBannerList()
-      // wx.navigateTo({
-      //   url: '../counter/main'
-      // })
+
       this.pageList = [
         new PageBase('api/v1/goods/topList'),
         new PageBase('api/v1/goods/catList'),
@@ -317,19 +315,13 @@ export default {
     },
     async getUserInfo(e) {
       const code = await getLoginCode()
-      console.log(code)
       wx.showLoading({
         title: '加载中...'
       })
       if (e.mp.detail.userInfo) {
         let error
         try {
-          await post('api/v1/login/weChatAuth', {
-            'code': code,
-            'encrypted_data': e.mp.detail.encryptedData,
-            'iv': e.mp.detail.iv,
-            'parentId': -1
-          })
+          await getWeChatAuth(code, e.mp.detail.encryptedData, e.mp.detail.iv)
           // wx.setStorageSync('time', result.expMillis)
           // 设置token 成功后调用获取个人信息的接口
           getLoginInfo()
@@ -443,7 +435,7 @@ export default {
     },
     /** webview */
     moveToWebView(item) {
-      moveTo('../wx-public/main', { src: item.value })
+      moveTo('/wx-public/pages/main', { src: item.value })
     },
     /** 跳转type */
     async moveToPdd(item) {
@@ -479,7 +471,7 @@ export default {
     },
     // 移动详情页
     moveToDetail(item) {
-      moveTo('../detail/main', { id: item.goodsId })
+      moveTo('/detail/pages/main', { id: item.goodsId })
     },
     onClose() {
       this.showInvite = false
